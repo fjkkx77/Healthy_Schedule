@@ -4,249 +4,212 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>健康时间表 2026</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
 :root {
-  --bg: #f2f2f7;
-  --card: rgba(255,255,255,0.9);
-  --card-solid: #ffffff;
-  --border: rgba(0,0,0,0.07);
-  --separator: rgba(0,0,0,0.1);
+  --accent:      #0969da;
+  --accent-soft: rgba(9,105,218,.12);
 
-  --label:  #1c1c1e;
-  --label2: #3a3a3c;
-  --label3: #636366;
-  --label4: #8e8e93;
-  --label5: #aeaeb2;
-
-  --blue:   #007aff;
-  --green:  #34c759;
-  --orange: #ff9500;
-  --red:    #ff3b30;
-  --teal:   #32ade6;
-  --indigo: #5856d6;
-
-  --blue-bg:   rgba(0,122,255,0.1);
-  --green-bg:  rgba(52,199,89,0.12);
-  --orange-bg: rgba(255,149,0,0.11);
-  --red-bg:    rgba(255,59,48,0.09);
-  --teal-bg:   rgba(50,173,230,0.11);
-
-  --shadow-xs: 0 1px 2px rgba(0,0,0,0.06);
-  --shadow-sm: 0 1px 4px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04);
-  --shadow:    0 2px 14px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.05);
-
-  --r:  12px;
-  --rl: 16px;
-
-  --font: 'Noto Sans SC', -apple-system, 'PingFang SC', sans-serif;
+  --blue:      #0969da; --blue-soft:   rgba(9,105,218,.12);
+  --green:     #1a7f37; --green-soft:  rgba(26,127,55,.12);
+  --orange:    #9a6700; --orange-soft: rgba(154,103,0,.12);
+  --red:       #cf222e; --red-soft:    rgba(207,34,46,.1);
+  --teal:      #0598bc; --teal-soft:   rgba(5,152,188,.12);
+  --indigo:    #6639ba; --indigo-soft: rgba(102,57,186,.12);
 }
+@media (prefers-color-scheme: dark) {
+  :root {
+    --accent:      #4493f8;
+    --accent-soft: rgba(68,147,248,.15);
 
-html { -webkit-text-size-adjust: 100%; }
-
-body {
-  font-family: var(--font);
-  background: var(--bg);
-  color: var(--label);
-  min-height: 100vh;
-  font-size: 15px;
-  line-height: 1.55;
+    --blue:      #4493f8; --blue-soft:   rgba(68,147,248,.15);
+    --green:     #3fb950; --green-soft:  rgba(63,185,80,.15);
+    --orange:    #d29922; --orange-soft: rgba(210,153,34,.15);
+    --red:       #f85149; --red-soft:    rgba(248,81,73,.13);
+    --teal:      #39c5cf; --teal-soft:   rgba(57,197,207,.15);
+    --indigo:    #a371f7; --indigo-soft: rgba(163,113,247,.15);
+  }
 }
 
 body::before {
   content: '';
   position: fixed; inset: 0; z-index: -1;
   background:
-    radial-gradient(ellipse 80% 45% at 10% 0%, rgba(0,122,255,0.06) 0%, transparent 55%),
-    radial-gradient(ellipse 60% 40% at 90% 95%, rgba(52,199,89,0.05) 0%, transparent 55%),
-    #f2f2f7;
+    radial-gradient(ellipse 80% 45% at 10% 0%, var(--blue-soft) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 40% at 90% 95%, var(--green-soft) 0%, transparent 55%),
+    var(--bg);
 }
 
-.wrap { max-width: 680px; margin: 0 auto; padding: 0 16px 56px; }
-
-/* HEADER */
-header { padding: 52px 4px 20px; }
-.eyebrow {
-  display: inline-flex; align-items: center; gap: 6px;
-  background: var(--blue-bg); border-radius: 20px;
-  padding: 4px 12px; margin-bottom: 12px;
-  font-size: 11px; font-weight: 600; color: var(--blue);
-  letter-spacing: 0.05em; text-transform: uppercase;
-}
-.eyebrow-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--blue); }
-h1 {
-  font-size: clamp(26px, 6vw, 34px); font-weight: 600;
-  color: var(--label); letter-spacing: -0.02em; line-height: 1.2;
-  margin-bottom: 5px;
-}
-.header-sub { font-size: 14px; color: var(--label4); }
-.pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+.pills { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 16px; }
 .pill {
-  background: var(--card-solid); border: 1px solid var(--border);
-  border-radius: 20px; padding: 3px 10px;
-  font-size: 11px; color: var(--label3); font-weight: 500;
-  box-shadow: var(--shadow-xs);
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 20px; padding: 4px 12px;
+  font-size: var(--text-xs); color: var(--text-3); font-weight: 500;
+  box-shadow: var(--shadow-1);
 }
 
-/* SECTION */
-.slabel {
-  font-size: 12px; font-weight: 600; color: var(--label4);
-  text-transform: uppercase; letter-spacing: 0.04em;
-  margin: 28px 4px 8px;
+/* ENTRY CARD */
+.entry-card {
+  display: flex; align-items: center; gap: 14px;
+  background: linear-gradient(135deg, #1f8863, #12a683);
+  border-radius: var(--radius-lg); box-shadow: 0 6px 20px rgba(31,136,99,.28);
+  padding: 18px 20px; text-decoration: none; margin-top: 6px;
+  transition: transform .18s cubic-bezier(.16,1,.3,1), box-shadow .18s ease;
 }
-.slabel em { font-style: normal; font-weight: 400; text-transform: none; font-size: 11px; color: var(--label5); }
+.entry-card:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(31,136,99,.34); }
+.entry-ico {
+  width: 46px; height: 46px; border-radius: var(--radius-sm); flex-shrink: 0;
+  background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 23px;
+}
+.entry-mid { flex: 1; min-width: 0; }
+.entry-t { font-size: var(--text-md); font-weight: 700; color: #fff; }
+.entry-d { font-size: var(--text-xs); color: rgba(255,255,255,0.85); margin-top: 2px; }
+.entry-chev { color: rgba(255,255,255,0.75); font-size: 24px; flex-shrink: 0; }
 
 /* PRINCIPLES */
-.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
-@media(max-width: 400px) { .grid2 { grid-template-columns: 1fr; } }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 480px) { .grid2 { grid-template-columns: 1fr; } }
 
 .pcard {
-  background: var(--card-solid); border: 1px solid var(--border);
-  border-radius: var(--rl); box-shadow: var(--shadow-sm);
-  padding: 13px 14px; display: flex; align-items: flex-start; gap: 10px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); box-shadow: var(--shadow-1);
+  padding: 16px 17px; display: flex; align-items: flex-start; gap: 12px;
+  transition: box-shadow .18s ease, transform .18s ease;
 }
-.pcard:active { opacity: 0.75; }
+.pcard:hover { box-shadow: var(--shadow-2); transform: translateY(-1px); }
 .picon {
-  width: 34px; height: 34px; border-radius: 9px; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center; font-size: 17px;
-}
-.ptitle { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
-.pdesc  { font-size: 12px; color: var(--label4); line-height: 1.5; }
-
-/* TIMELINE */
-.tl { display: flex; flex-direction: column; gap: 8px; }
-
-.tcard {
-  background: var(--card-solid); border: 1px solid var(--border);
-  border-radius: var(--rl); box-shadow: var(--shadow-sm);
-  overflow: hidden;
-  transition: box-shadow 0.2s ease;
-}
-.tcard.open { box-shadow: var(--shadow); }
-
-.thead {
-  display: flex; align-items: center; gap: 11px;
-  padding: 13px 15px; cursor: pointer; user-select: none;
-}
-.ticon {
-  width: 38px; height: 38px; border-radius: 11px; flex-shrink: 0;
+  width: 38px; height: 38px; border-radius: var(--radius-sm); flex-shrink: 0;
   display: flex; align-items: center; justify-content: center; font-size: 19px;
 }
-.tmid { flex: 1; min-width: 0; }
-.ttime { font-size: 11.5px; color: var(--label4); font-weight: 500; margin-bottom: 1px; font-variant-numeric: tabular-nums; }
-.tlabel { font-size: 14.5px; font-weight: 600; line-height: 1.3; }
-.tbadges { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 5px; }
-.bdg {
-  font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 5px; letter-spacing: 0.02em;
+.ptitle { font-size: var(--text-sm); font-weight: 700; margin-bottom: 3px; color: var(--text-1); }
+.pdesc  { font-size: var(--text-xs); color: var(--text-4); line-height: 1.55; }
+
+/* TIMELINE */
+.tl { display: flex; flex-direction: column; gap: 10px; }
+
+.tcard {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); box-shadow: var(--shadow-1);
+  overflow: hidden;
+  transition: box-shadow .2s ease;
 }
-.bdg-s { background: var(--blue-bg);   color: var(--blue); }
-.bdg-d { background: var(--orange-bg); color: var(--orange); }
-.bdg-w { background: var(--teal-bg);   color: var(--teal); }
-.bdg-r { background: var(--red-bg);    color: var(--red); }
+.tcard.open { box-shadow: var(--shadow-2); }
+
+.thead {
+  display: flex; align-items: center; gap: 13px;
+  padding: 16px 18px; cursor: pointer; user-select: none;
+  transition: background .15s ease;
+}
+.thead:hover { background: var(--border-soft); }
+.ticon {
+  width: 44px; height: 44px; border-radius: var(--radius-sm); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 22px;
+}
+.tmid { flex: 1; min-width: 0; }
+.ttime { font-size: var(--text-xs); color: var(--text-4); font-weight: 600; margin-bottom: 2px; font-variant-numeric: tabular-nums; }
+.tlabel { font-size: var(--text-md); font-weight: 700; line-height: 1.3; color: var(--text-1); }
+.tbadges { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 7px; }
+.bdg {
+  font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 6px; letter-spacing: .02em;
+}
+.bdg-s { background: var(--blue-soft);   color: var(--blue); }
+.bdg-d { background: var(--orange-soft); color: var(--orange); }
+.bdg-w { background: var(--teal-soft);   color: var(--teal); }
+.bdg-r { background: var(--red-soft);    color: var(--red); }
 
 .tchev {
-  color: var(--label5); font-size: 10px; flex-shrink: 0;
-  transition: transform 0.25s cubic-bezier(0.4,0,0.2,1);
+  color: var(--text-4); font-size: 12px; flex-shrink: 0;
+  transition: transform .25s cubic-bezier(.4,0,.2,1);
 }
 .tcard.open .tchev { transform: rotate(180deg); }
 
-.tbody { display: none; border-top: 1px solid var(--separator); }
+.tbody { display: none; border-top: 1px solid var(--border-soft); }
 .tcard.open .tbody { display: block; }
 
-.trows { padding: 8px 15px; }
+.trows { padding: 10px 18px; }
 .trow {
-  display: flex; align-items: flex-start; gap: 10px;
-  padding: 9px 0; border-bottom: 1px solid rgba(0,0,0,0.05);
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 11px 0; border-bottom: 1px solid var(--border-soft);
 }
 .trow:last-child { border-bottom: none; }
 .trow-icon {
-  width: 26px; height: 26px; border-radius: 7px; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center; font-size: 13px; margin-top: 1px;
+  width: 30px; height: 30px; border-radius: var(--radius-sm); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 15px; margin-top: 1px;
 }
-.trow-cat { font-size: 10.5px; font-weight: 600; margin-bottom: 2px; }
-.trow-val { font-size: 13px; color: var(--label2); line-height: 1.5; }
+.trow-cat { font-size: var(--text-xs); font-weight: 700; margin-bottom: 3px; }
+.trow-val { font-size: var(--text-sm); color: var(--text-2); line-height: 1.6; }
 
-.trow.ts .trow-icon { background: var(--blue-bg); }
+.trow.ts .trow-icon { background: var(--blue-soft); }
 .trow.ts .trow-cat  { color: var(--blue); }
-.trow.tw .trow-icon { background: var(--teal-bg); }
+.trow.tw .trow-icon { background: var(--teal-soft); }
 .trow.tw .trow-cat  { color: var(--teal); }
-.trow.td .trow-icon { background: var(--orange-bg); }
+.trow.td .trow-icon { background: var(--orange-soft); }
 .trow.td .trow-cat  { color: var(--orange); }
-.trow.tr .trow-icon { background: var(--red-bg); }
+.trow.tr .trow-icon { background: var(--red-soft); }
 .trow.tr .trow-cat  { color: var(--red); }
 
 .ebox {
-  margin: 2px 15px 13px;
-  background: rgba(0,122,255,0.05); border: 1px solid rgba(0,122,255,0.11);
-  border-radius: 9px; padding: 10px 12px;
-  font-size: 12px; color: var(--label3); line-height: 1.65;
+  margin: 4px 18px 16px;
+  background: var(--blue-soft); border: 1px solid var(--blue-soft);
+  border-radius: var(--radius-sm); padding: 12px 15px;
+  font-size: var(--text-xs); color: var(--text-3); line-height: 1.7;
 }
-.ebox strong { color: var(--blue); font-weight: 600; }
+.ebox strong { color: var(--blue); font-weight: 700; }
 
 /* WATER */
-.wgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
-@media(max-width: 380px) { .wgrid { grid-template-columns: 1fr; } }
+.wgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 480px) { .wgrid { grid-template-columns: 1fr; } }
 .wcard {
-  background: var(--card-solid); border: 1px solid rgba(50,173,230,0.15);
-  border-radius: var(--rl); box-shadow: var(--shadow-sm); padding: 13px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); box-shadow: var(--shadow-1); padding: 16px 17px;
+  transition: box-shadow .18s ease, transform .18s ease;
 }
-.wcard-icon { font-size: 21px; margin-bottom: 5px; }
-.wcard-t { font-size: 12.5px; font-weight: 600; color: var(--teal); margin-bottom: 3px; }
-.wcard-b { font-size: 12px; color: var(--label3); line-height: 1.6; }
-.wcard-b strong { color: var(--label2); }
+.wcard:hover { box-shadow: var(--shadow-2); transform: translateY(-1px); }
+.wcard-icon { font-size: 25px; margin-bottom: 7px; }
+.wcard-t { font-size: var(--text-sm); font-weight: 700; color: var(--teal); margin-bottom: 4px; }
+.wcard-b { font-size: var(--text-xs); color: var(--text-3); line-height: 1.6; }
+.wcard-b strong { color: var(--text-2); }
 
 /* IOS LIST */
 .ioslist {
-  background: var(--card-solid); border: 1px solid var(--border);
-  border-radius: var(--rl); box-shadow: var(--shadow-sm); overflow: hidden;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); box-shadow: var(--shadow-1); overflow: hidden;
 }
 .iosrow {
-  display: flex; align-items: flex-start; gap: 11px;
-  padding: 12px 15px; border-bottom: 1px solid rgba(0,0,0,0.055);
+  display: flex; align-items: flex-start; gap: 13px;
+  padding: 15px 18px; border-bottom: 1px solid var(--border-soft);
+  transition: background .15s ease;
 }
+.iosrow:hover { background: var(--border-soft); }
 .iosrow:last-child { border-bottom: none; }
 .iosrow-icon {
-  width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center; font-size: 14px; margin-top: 1px;
+  width: 36px; height: 36px; border-radius: var(--radius-sm); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 17px; margin-top: 1px;
 }
-.iosrow-t { font-size: 14px; font-weight: 500; margin-bottom: 1px; }
-.iosrow-v { font-size: 13px; color: var(--label3); }
-.iosrow-n { font-size: 11px; color: var(--label5); margin-top: 1px; }
+.iosrow-t { font-size: var(--text-sm); font-weight: 600; margin-bottom: 2px; color: var(--text-1); }
+.iosrow-v { font-size: var(--text-sm); color: var(--text-3); }
+.iosrow-n { font-size: var(--text-xs); color: var(--text-4); margin-top: 2px; }
 
 /* POP */
-.pgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
-@media(max-width: 380px) { .pgrid { grid-template-columns: 1fr; } }
+.pgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 480px) { .pgrid { grid-template-columns: 1fr; } }
 .ppcrd {
-  background: var(--card-solid); border: 1px solid var(--border);
-  border-radius: var(--rl); box-shadow: var(--shadow-sm); padding: 13px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); box-shadow: var(--shadow-1); padding: 16px 17px;
+  transition: box-shadow .18s ease, transform .18s ease;
 }
-.ppcrd-ico { font-size: 22px; margin-bottom: 5px; }
-.ppcrd-t { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
-.ppcrd-b { font-size: 12px; color: var(--label3); line-height: 1.55; }
-
-/* FOOTER */
-footer {
-  border-top: 1px solid var(--separator); margin-top: 28px;
-  padding: 24px 4px 8px;
-  text-align: center; font-size: 12px; color: var(--label4); line-height: 2;
-}
-footer strong { color: var(--label3); }
-
-/* FADE IN */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.fadeup { animation: fadeUp 0.38s ease both; }
+.ppcrd:hover { box-shadow: var(--shadow-2); transform: translateY(-1px); }
+.ppcrd-ico { font-size: 26px; margin-bottom: 7px; }
+.ppcrd-t { font-size: var(--text-sm); font-weight: 700; margin-bottom: 4px; color: var(--text-1); }
+.ppcrd-b { font-size: var(--text-xs); color: var(--text-3); line-height: 1.6; }
 </style>
 </head>
 <body>
 <div class="wrap">
 
   <header class="fadeup" style="animation-delay:.02s">
-    <div class="eyebrow"><span class="eyebrow-dot"></span>2026 最新证据版</div>
+    <div class="eyebrow">2026 最新证据版</div>
     <h1>最佳综合健康时间表</h1>
     <p class="header-sub">作息 · 饮食 · 喝水 · 运动 · 四合一</p>
     <div class="pills">
@@ -259,22 +222,31 @@ footer strong { color: var(--label3); }
     </div>
   </header>
 
+  <a href="ulcer.html" class="entry-card fadeup" style="animation-delay:.05s">
+    <div class="entry-ico">🦷</div>
+    <div class="entry-mid">
+      <div class="entry-t">口腔溃疡管理</div>
+      <div class="entry-d">服药方案 · 阶段追踪 · 复发预防</div>
+    </div>
+    <span class="entry-chev">›</span>
+  </a>
+
   <div class="slabel fadeup" style="animation-delay:.06s">核心原则</div>
   <div class="grid2 fadeup" style="animation-delay:.09s">
     <div class="pcard">
-      <div class="picon" style="background:var(--blue-bg)">⏰</div>
+      <div class="picon" style="background:var(--blue-soft)">⏰</div>
       <div><div class="ptitle">节律对齐</div><div class="pdesc">时机与「做什么」同等重要，规律性比绝对时长更关键</div></div>
     </div>
     <div class="pcard">
-      <div class="picon" style="background:var(--orange-bg)">🎯</div>
+      <div class="picon" style="background:var(--orange-soft)">🎯</div>
       <div><div class="ptitle">一致性第一</div><div class="pdesc">每周 ±30 分钟偏差；周末勿「补觉」或熬夜</div></div>
     </div>
     <div class="pcard">
-      <div class="picon" style="background:var(--green-bg)">🍽️</div>
+      <div class="picon" style="background:var(--green-soft)">🍽️</div>
       <div><div class="ptitle">进食窗口</div><div class="pdesc">推荐 10–12 小时，8:00–18:00，早窗口优于晚</div></div>
     </div>
     <div class="pcard">
-      <div class="picon" style="background:var(--red-bg)">👤</div>
+      <div class="picon" style="background:var(--red-soft)">👤</div>
       <div><div class="ptitle">个性化调整</div><div class="pdesc">夜猫型可后移 30–60 分钟；慢性病须咨询医生</div></div>
     </div>
   </div>
@@ -292,11 +264,11 @@ footer strong { color: var(--label3); }
 
   <div class="slabel fadeup" style="animation-delay:.23s">📅 每周建议</div>
   <div class="ioslist fadeup" style="animation-delay:.25s">
-    <div class="iosrow"><div class="iosrow-icon" style="background:var(--red-bg)">🏃</div><div><div class="iosrow-t">有氧运动</div><div class="iosrow-v">每周 ≥ 150 分钟中高强度</div><div class="iosrow-n">晨练对节律对齐略优；规律性优于绝对时长</div></div></div>
-    <div class="iosrow"><div class="iosrow-icon" style="background:var(--orange-bg)">💪</div><div><div class="iosrow-t">力量训练</div><div class="iosrow-v">每周 2 天</div><div class="iosrow-n">可分散在晨间或下午进行</div></div></div>
-    <div class="iosrow"><div class="iosrow-icon" style="background:var(--green-bg)">🍽️</div><div><div class="iosrow-t">进食窗口</div><div class="iosrow-v">8:00–18:00（10 小时 eTRE）</div><div class="iosrow-n">可放宽至 8:00–19:00；早窗口优于晚（2026 BMJ meta）</div></div></div>
-    <div class="iosrow"><div class="iosrow-icon" style="background:var(--blue-bg)">😴</div><div><div class="iosrow-t">睡眠</div><div class="iosrow-v">7–9 小时</div><div class="iosrow-n">周末偏差 ≤ 30 分钟，禁止「补觉式熬夜」</div></div></div>
-    <div class="iosrow"><div class="iosrow-icon" style="background:rgba(88,86,214,0.1)">📈</div><div><div class="iosrow-t">效果监测</div><div class="iosrow-v">3–4 周后评估</div><div class="iosrow-n">睡眠质量（PSQI）、体重、血糖/血压、精力水平</div></div></div>
+    <div class="iosrow"><div class="iosrow-icon" style="background:var(--red-soft)">🏃</div><div><div class="iosrow-t">有氧运动</div><div class="iosrow-v">每周 ≥ 150 分钟中高强度</div><div class="iosrow-n">晨练对节律对齐略优；规律性优于绝对时长</div></div></div>
+    <div class="iosrow"><div class="iosrow-icon" style="background:var(--orange-soft)">💪</div><div><div class="iosrow-t">力量训练</div><div class="iosrow-v">每周 2 天</div><div class="iosrow-n">可分散在晨间或下午进行</div></div></div>
+    <div class="iosrow"><div class="iosrow-icon" style="background:var(--green-soft)">🍽️</div><div><div class="iosrow-t">进食窗口</div><div class="iosrow-v">8:00–18:00（10 小时 eTRE）</div><div class="iosrow-n">可放宽至 8:00–19:00；早窗口优于晚（2026 BMJ meta）</div></div></div>
+    <div class="iosrow"><div class="iosrow-icon" style="background:var(--blue-soft)">😴</div><div><div class="iosrow-t">睡眠</div><div class="iosrow-v">7–9 小时</div><div class="iosrow-n">周末偏差 ≤ 30 分钟，禁止「补觉式熬夜」</div></div></div>
+    <div class="iosrow"><div class="iosrow-icon" style="background:var(--indigo-soft)">📈</div><div><div class="iosrow-t">效果监测</div><div class="iosrow-v">3–4 周后评估</div><div class="iosrow-n">睡眠质量（PSQI）、体重、血糖/血压、精力水平</div></div></div>
   </div>
 
   <div class="slabel fadeup" style="animation-delay:.27s">⚠️ 特殊人群</div>
@@ -320,7 +292,7 @@ footer strong { color: var(--label3); }
 <script>
 const data = [
   {
-    emoji:"☀️", ibg:"var(--orange-bg)",
+    emoji:"☀️", ibg:"var(--orange-soft)",
     time:"06:00 – 06:30", label:"清晨醒来 · 光照激活",
     tags:["s","w"],
     rows:[
@@ -332,7 +304,7 @@ const data = [
     ev:"AHA 2025 声明：晨光是首要昼夜节律同步器，可前移生物钟、提升全天警觉性、降低心血管风险。AASM：规律醒睡时间比绝对时长更重要。"
   },
   {
-    emoji:"🌅", ibg:"var(--orange-bg)",
+    emoji:"🌅", ibg:"var(--orange-soft)",
     time:"06:30 – 07:30", label:"晨间激活 · 轻运动",
     tags:["r","w"],
     rows:[
@@ -344,7 +316,7 @@ const data = [
     ev:"AHA 2025 + 多项 RCT：晨练可前移生物钟、提升代谢率和脂肪氧化、改善胰岛素敏感性、降低全天血压。WHO：每周 ≥150 分钟中强度有氧。"
   },
   {
-    emoji:"🥣", ibg:"var(--orange-bg)",
+    emoji:"🥣", ibg:"var(--orange-soft)",
     time:"07:30 – 08:00", label:"早餐 · 全天最重要一餐",
     tags:["d","w"],
     rows:[
@@ -356,7 +328,7 @@ const data = [
     ev:"AHA 声明：首餐 <8:00am 可使 2 型糖尿病风险降 53%；每延迟 1 小时首餐，CVD 风险升 6%。Johns Hopkins：早餐是重置外周生物钟的关键，不可跳过。2026 BMJ meta：早时间限制进食（eTRE）优于晚窗口。"
   },
   {
-    emoji:"💻", ibg:"var(--blue-bg)",
+    emoji:"💻", ibg:"var(--blue-soft)",
     time:"08:00 – 12:00", label:"上午工作 · 高效认知",
     tags:["w","d"],
     rows:[
@@ -368,7 +340,7 @@ const data = [
     ev:"Mayo Clinic：餐间均匀补水防脱水；2024 PMC：水摄入与认知能力正相关。稳定血糖有助于维持上午注意力和工作效率。"
   },
   {
-    emoji:"🥗", ibg:"var(--green-bg)",
+    emoji:"🥗", ibg:"var(--green-soft)",
     time:"12:00 – 13:00", label:"午餐 · 代谢效率最佳",
     tags:["d","w"],
     rows:[
@@ -380,7 +352,7 @@ const data = [
     ev:"AHA + 2025 chrononutrition 综述：中午进食与生物钟代谢峰值匹配，胰岛素敏感性较高，相同热量摄入对代谢的负担最小。"
   },
   {
-    emoji:"📋", ibg:"var(--blue-bg)",
+    emoji:"📋", ibg:"var(--blue-soft)",
     time:"13:00 – 17:00", label:"下午工作 · 运动备选",
     tags:["w","r"],
     rows:[
@@ -392,7 +364,7 @@ const data = [
     ev:"AHA 2025：下午运动（13:00–16:00）对血糖控制和心血管获益显著；多项 2025 研究显示下午体温峰值时运动性能更高。晨练与下午练对健康均有益，选最易坚持的时段。"
   },
   {
-    emoji:"🌿", ibg:"var(--green-bg)",
+    emoji:"🌿", ibg:"var(--green-soft)",
     time:"17:00 – 19:00", label:"晚餐 · 最迟 19:00 结束",
     tags:["d","w","r"],
     rows:[
@@ -404,7 +376,7 @@ const data = [
     ev:"Johns Hopkins：晚餐宜 17:00–19:00，末餐后禁食 13+ 小时。AHA：末餐 >21:00 使 T2D 风险升 28%；每延迟 1 小时末餐，脑血管风险升 8%。2025 TIMED-EAT RCT 证实早晚餐窗口降低体重、血压、胆固醇。"
   },
   {
-    emoji:"🌙", ibg:"var(--blue-bg)",
+    emoji:"🌙", ibg:"var(--blue-soft)",
     time:"19:00 – 21:00", label:"晚间放松 · 禁食阶段",
     tags:["s","w"],
     rows:[
@@ -416,7 +388,7 @@ const data = [
     ev:"Mayo Clinic：全天均匀分布饮水，避免睡前大量饮水干扰睡眠。AHA：夜宵干扰褪黑素节律和胰岛素代谢，增加夜间血糖负担。"
   },
   {
-    emoji:"🕯️", ibg:"var(--blue-bg)",
+    emoji:"🕯️", ibg:"var(--blue-soft)",
     time:"21:00 – 22:30", label:"睡前准备 · 关闭刺激",
     tags:["s"],
     rows:[
@@ -428,7 +400,7 @@ const data = [
     ev:"AASM 2024 共识：睡前 2 小时避免咖啡因、剧烈运动、强光等刺激物；规律就寝时间比绝对时长更关键。室温 18–20℃ 有助于核心体温下降，促进深度睡眠。"
   },
   {
-    emoji:"😴", ibg:"rgba(88,86,214,0.1)",
+    emoji:"😴", ibg:"var(--indigo-soft)",
     time:"22:30 – 06:30", label:"睡眠 · 全天恢复核心",
     tags:["s"],
     rows:[
