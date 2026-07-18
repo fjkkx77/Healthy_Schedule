@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#f6f8fa" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)">
 <title>口腔溃疡管理 · 健康档案</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/style.css">
@@ -57,12 +59,15 @@ body::before {
   font-size: var(--text-sm); font-weight: 600; background: var(--card);
   border: 1px solid var(--border); color: var(--text-3);
   cursor: pointer; user-select: none; transition: all .18s cubic-bezier(.16,1,.3,1);
-  box-shadow: var(--shadow-1);
+  box-shadow: var(--shadow-1); touch-action: manipulation; min-height: 44px;
 }
-.ptab:hover { border-color: var(--accent); transform: translateY(-1px); box-shadow: var(--shadow-2); }
+@media (hover: hover) and (pointer: fine) {
+  .ptab:hover { border-color: var(--accent); transform: translateY(-1px); box-shadow: var(--shadow-2); }
+  .ptab.on:hover { transform: none; }
+}
+.ptab:active { transform: scale(.96); }
 .ptab .pico { display: block; font-size: 21px; margin-bottom: 5px; }
 .ptab.on { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow: var(--shadow-2); }
-.ptab.on:hover { transform: none; }
 
 /* PHASE CONTENT */
 .pcontent {
@@ -118,7 +123,9 @@ body::before {
 /* CABINET */
 .cabinet { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-2); overflow: hidden; }
 .cabrow { display: flex; align-items: flex-start; gap: 14px; padding: 15px 20px; border-bottom: 1px solid var(--border-soft); transition: background .15s ease; }
-.cabrow:hover { background: var(--border-soft); }
+@media (hover: hover) and (pointer: fine) {
+  .cabrow:hover { background: var(--border-soft); }
+}
 .cabrow:last-child { border-bottom: none; }
 .cabrow-icon { width: 34px; height: 34px; border-radius: 9px; background: var(--accent-soft); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; margin-top: 1px; }
 .cabrow-icon.warn { background: var(--amber-soft); }
@@ -134,7 +141,9 @@ body::before {
   padding: 17px 18px; display: flex; align-items: flex-start; gap: 13px;
   transition: box-shadow .18s ease, transform .18s ease;
 }
-.tcard2:hover { box-shadow: var(--shadow-2); transform: translateY(-1px); }
+@media (hover: hover) and (pointer: fine) {
+  .tcard2:hover { box-shadow: var(--shadow-2); transform: translateY(-1px); }
+}
 .ticon2 {
   width: 38px; height: 38px; border-radius: var(--radius-sm); flex-shrink: 0; background: var(--accent-soft);
   display: flex; align-items: center; justify-content: center; font-size: 19px;
@@ -144,9 +153,12 @@ body::before {
 .tlink {
   display: block; text-align: center; margin-top: 12px; font-size: var(--text-sm); font-weight: 600;
   color: var(--accent); text-decoration: none; padding: 14px; background: var(--accent-soft); border-radius: var(--radius-md);
-  transition: background .15s ease;
+  transition: background .15s ease, transform .15s ease; touch-action: manipulation;
 }
-.tlink:hover { background: color-mix(in srgb, var(--accent-soft) 60%, var(--accent) 40%); }
+@media (hover: hover) and (pointer: fine) {
+  .tlink:hover { background: color-mix(in srgb, var(--accent-soft) 60%, var(--accent) 40%); }
+}
+.tlink:active { transform: scale(.98); background: color-mix(in srgb, var(--accent-soft) 60%, var(--accent) 40%); }
 
 /* REDFLAG */
 .rfcard {
