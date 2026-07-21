@@ -64,6 +64,14 @@ body::before {
   .entry-card:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(31,136,99,.34); }
 }
 .entry-card:active { transform: scale(.98); box-shadow: 0 4px 14px rgba(31,136,99,.28); }
+.entry-card-red {
+  background: linear-gradient(135deg, #cf222e, #e8590c);
+  box-shadow: 0 6px 20px rgba(207,34,46,.28);
+}
+@media (hover: hover) and (pointer: fine) {
+  .entry-card-red:hover { box-shadow: 0 10px 26px rgba(207,34,46,.34); }
+}
+.entry-card-red:active { box-shadow: 0 4px 14px rgba(207,34,46,.28); }
 .entry-ico {
   width: 46px; height: 46px; border-radius: var(--radius-sm); flex-shrink: 0;
   background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 23px;
@@ -245,6 +253,15 @@ body::before {
     <div class="entry-mid">
       <div class="entry-t">口腔溃疡管理</div>
       <div class="entry-d">服药方案 · 阶段追踪 · 复发预防</div>
+    </div>
+    <span class="entry-chev">›</span>
+  </a>
+
+  <a href="cardio.html" class="entry-card entry-card-red fadeup" style="animation-delay:.06s">
+    <div class="entry-ico">🫀</div>
+    <div class="entry-mid">
+      <div class="entry-t">心梗 · 脑梗 · 猝死急救</div>
+      <div class="entry-d">识别信号 · CPR急救 · 分人群预防方案</div>
     </div>
     <span class="entry-chev">›</span>
   </a>
