@@ -7,6 +7,8 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+/* 关掉浏览器自带的下拉刷新，改由 assets/pull-to-refresh.js 接管，否则两套会同时触发 */
+html, body { overscroll-behavior-y: contain; }
 img, svg { display: block; max-width: 100%; }
 a { color: inherit; }
 
@@ -128,3 +130,40 @@ footer strong { color: var(--text-3); }
   html { scroll-behavior: auto; }
   .fadeup { animation: none; }
 }
+
+/* ============================================================
+   下拉刷新（节点由 assets/pull-to-refresh.js 生成）
+   颜色跟随各页的 --accent：首页蓝、溃疡页绿、急救页红
+   ============================================================ */
+#ptr-indicator {
+  position: fixed;
+  top: calc(-44px + env(safe-area-inset-top, 0px));
+  left: 50%; margin-left: -18px;
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--card); border: 1px solid var(--border);
+  box-shadow: 0 4px 14px rgba(0,0,0,.18);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--accent); opacity: 0; pointer-events: none; z-index: 350;
+}
+/* 跟手过程中必须关掉过渡，只在松手回弹时开，否则整个手势拖泥带水 */
+#ptr-indicator.ptr-animate { transition: transform .25s ease, opacity .25s ease; }
+#ptr-indicator svg { width: 20px; height: 20px; }
+#ptr-indicator .ptr-arrow { transition: transform .2s ease; }
+#ptr-indicator.ptr-ready .ptr-arrow { transform: rotate(180deg); }
+#ptr-indicator .ptr-spinner { display: none; }
+#ptr-indicator.ptr-loading .ptr-arrow { display: none; }
+#ptr-indicator.ptr-loading .ptr-spinner { display: block; animation: ptr-spin .8s linear infinite; }
+@keyframes ptr-spin { to { transform: rotate(360deg); } }
+
+#ptr-tip {
+  position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%) translateY(20px);
+  width: max-content; max-width: min(420px, calc(100vw - 2rem));
+  background: var(--text-1); color: var(--card);
+  border-radius: var(--radius-md); padding: .85rem 1.1rem;
+  font-size: var(--text-sm); line-height: 1.5; box-shadow: var(--shadow-3);
+  z-index: 400; opacity: 0; pointer-events: none;
+  transition: opacity .25s, transform .25s;
+}
+#ptr-tip[hidden] { display: none; }
+#ptr-tip.show { opacity: 1; transform: translateX(-50%) translateY(0); }
