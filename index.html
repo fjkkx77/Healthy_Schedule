@@ -119,13 +119,32 @@ body::before {
 .anchor-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(92px, 1fr)); gap: 10px; }
 .afield { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
 .afield label { font-size: 11px; font-weight: 700; color: var(--text-4); letter-spacing: .02em; }
-.afield select {
+.afield select,
+.afield input[type="time"] {
   font-family: inherit; font-size: 16px;   /* 低于 16px 会触发 iOS 自动放大页面 */
   font-weight: 600; color: var(--text-1);
   background: var(--bg); border: 1px solid var(--border);
   border-radius: var(--radius-sm); padding: 10px 8px; min-height: 44px;
   width: 100%; touch-action: manipulation;
 }
+/* 自动推荐时输入框只读展示：保持可读（不用 opacity 压暗，小字对比度会不达标） */
+.afield input[type="time"]:disabled {
+  background: var(--accent-soft); color: var(--accent);
+  border-color: transparent; -webkit-text-fill-color: var(--accent);
+}
+.autochk {
+  display: flex; align-items: center; gap: 7px; min-height: 44px;
+  font-size: var(--text-xs); color: var(--text-3);
+  cursor: pointer; user-select: none; touch-action: manipulation;
+}
+.autochk input { width: 18px; height: 18px; flex-shrink: 0; accent-color: var(--accent); }
+.recwhy {
+  margin-top: 12px; background: var(--accent-soft); border-radius: var(--radius-sm);
+  padding: 12px 14px; font-size: var(--text-xs); color: var(--text-2); line-height: 1.7;
+}
+.recwhy[hidden] { display: none; }
+.recwhy strong { color: var(--accent); }
+.recwhy-h { font-weight: 700; color: var(--accent); margin-bottom: 5px; }
 /* 自己声明了 display:grid 的元素必须补这条，否则 [hidden] 的 UA 样式被盖掉、元素照样显示 */
 #aFreeWrap[hidden] { display: none; }
 #aFreeWrap { margin-top: 10px; }
@@ -376,27 +395,30 @@ body::before {
 
   <div class="slabel fadeup" style="animation-delay:.12s">⚓ 你的锚点 <em>· 只填两个时间，其余全部推导</em></div>
   <div class="anchor fadeup" style="animation-delay:.13s">
-    <div class="anchor-h">只需要你的入睡时间和起床时间</div>
-    <div class="anchor-d">因为被科学验证的是<strong>相对量</strong>（睡够多久、间隔多久、窗口多长），不是某个绝对钟点。剩下的——时型、体温最低点、晨光窗口、咖啡因和运动的截止时刻、进食窗口——<strong>全部由这两个时间推导</strong>，每一条都标了出处。</div>
+    <div class="anchor-h">填一个、填两个、或者一个都不填</div>
+    <div class="anchor-d">因为被科学验证的是<strong>相对量</strong>（睡够多久、间隔多久、窗口多长），不是某个绝对钟点。时间可以精确到分钟；<strong>没填的那个我按证据替你推，并把凭什么这么推写出来</strong>。时型、体温最低点、晨光窗口、咖啡因与运动的截止时刻、进食窗口，全部由这两个时间推导。</div>
     <div class="anchor-grid">
       <div class="afield">
         <label for="aSleepT">入睡时间</label>
-        <select id="aSleepT"></select>
+        <input type="time" id="aSleepT" step="60">
+        <label class="autochk"><input type="checkbox" id="aSleepAuto"> 让它替我推荐</label>
       </div>
       <div class="afield">
         <label for="aWakeT">起床时间</label>
-        <select id="aWakeT"></select>
+        <input type="time" id="aWakeT" step="60">
+        <label class="autochk"><input type="checkbox" id="aWakeAuto"> 让它替我推荐</label>
       </div>
     </div>
+    <div class="recwhy" id="aRecWhy" hidden></div>
     <label class="achk"><input type="checkbox" id="aFreeOn"> 休息日作息不一样（勾选后可算出校正时型和社会时差）</label>
     <div class="anchor-grid" id="aFreeWrap" hidden>
       <div class="afield">
         <label for="aSleepF">休息日入睡</label>
-        <select id="aSleepF"></select>
+        <input type="time" id="aSleepF" step="60">
       </div>
       <div class="afield">
         <label for="aWakeF">休息日起床</label>
-        <select id="aWakeF"></select>
+        <input type="time" id="aWakeF" step="60">
       </div>
     </div>
     <div class="anchor-out" id="aOut"></div>
@@ -470,8 +492,85 @@ body::before {
        → 剧烈运动截止 = S−1h → Stutz 2019 meta
        → 进食窗口            → 10–12h 内取最大，且末餐距就寝 ≥3h
    ============================================================ */
-const STORE_KEY = "scheduleAnchorV2";
-const DEFAULTS = { sleepT: 1350, wakeT: 360, freeOn: false, sleepF: 1410, wakeF: 480 };
+const STORE_KEY = "scheduleAnchorV3";
+// 首次进来两个时间都交给推荐引擎，让用户先看到"凭什么这么推"
+const DEFAULTS = { sleepT: 1350, wakeT: 360, autoS: true, autoW: true, freeOn: false, sleepF: 1410, wakeF: 480 };
+
+/* ---------- 推荐引擎 ----------
+   只在用户没填的那一侧起作用。三条可依赖的硬事实：
+   ① 入睡落在 22:00–22:59 这一档，CVD 发病率最低
+      （UK Biobank n=103,712 加速度计客观记录，观察性，主要体现在女性）
+   ② 成人睡眠时长推荐 7–9 小时（AASM / AHA）
+   ③ 在 7–9 小时内，没有证据说明哪个具体时长最优
+   所以时长的取舍只能靠"平局打破"，规则写在 tie-break 注释里，界面上也照实说。
+*/
+const BED_LO = 1320, BED_HI = 1379;      // 22:00–22:59
+const DUR_MIN = 420, DUR_MAX = 540;      // 7–9 小时
+const DUR_TIE = 450;                     // 平局时取 7.5h：在区间内，且恰好 5 个 90 分钟周期
+
+function recommend(a) {
+  const autoS = !!a.autoS, autoW = !!a.autoW;
+  if (!autoS && !autoW) return null;
+
+  if (autoS && autoW) {
+    const bed = 1350;                    // 22:30 = 22:00–22:59 这一档的中点
+    return { sleepT: bed, wakeT: (bed + DUR_TIE) % 1440, dur: DUR_TIE, mode: "both", inWin: true, cyc: true };
+  }
+
+  if (autoS) {
+    // 已知起床 → 在 7–9h 里挑时长，优先让就寝落进 22:00–22:59，其次周期对齐
+    const W = a.wakeT;
+    const cands = [];
+    for (let d = DUR_MIN; d <= DUR_MAX; d += 5) {
+      const bed = ((W - d) % 1440 + 1440) % 1440;
+      const inWin = bed >= BED_LO && bed <= BED_HI;
+      cands.push({ d: d, bed: bed, inWin: inWin, cyc: d % 90 === 0,
+                   score: (inWin ? 2 : 0) + (d % 90 === 0 ? 1 : 0) });
+    }
+    cands.sort(function (x, y) {
+      if (y.score !== x.score) return y.score - x.score;
+      return Math.abs(x.d - DUR_TIE) - Math.abs(y.d - DUR_TIE);   // 同分取最接近 7.5h 的
+    });
+    const b = cands[0];
+    return { sleepT: b.bed, wakeT: W, dur: b.d, mode: "fromWake", inWin: b.inWin, cyc: b.cyc };
+  }
+
+  // 已知入睡 → 就寝已定，只能挑时长
+  const S = a.sleepT;
+  const bedNow = ((S % 1440) + 1440) % 1440;
+  return {
+    sleepT: S, wakeT: (S + DUR_TIE) % 1440, dur: DUR_TIE, mode: "fromSleep",
+    inWin: bedNow >= BED_LO && bedNow <= BED_HI, cyc: true
+  };
+}
+
+function recReason(r) {
+  if (!r) return "";
+  const tie = "在 <strong>7–9 小时</strong>（AASM / AHA）里<strong>没有证据说明哪个具体时长最优</strong>，所以这里取 <strong>" +
+    hTxt(DUR_TIE) + "</strong> 属于<strong>平局打破</strong>：它既在推荐区间内，又恰好是 5 个 90 分钟周期。不是「7.5 比 8 更好」。";
+  const winSrc = "依据：UK Biobank 用加速度计客观记录 103,712 人、随访 5.7 年（Eur Heart J Digital Health 2021），入睡落在 <strong>22:00–23:00</strong> 这一档的心血管病发病率最低。<em>观察性证据，且主要体现在女性身上。</em>";
+
+  if (r.mode === "both") {
+    return "<div class='recwhy-h'>🤖 两个时间都由我推荐</div>" +
+      "锚点取<strong>全表唯一有直接「钟点」证据的那一条</strong>：入睡 <strong>22:30</strong>（22:00–23:00 这一档的中点）。" +
+      "再往后推 " + hTxt(DUR_TIE) + " 得到起床 <strong>" + fmt((1350 + DUR_TIE) % 1440) + "</strong>。<br>" + tie + "<br>" + winSrc;
+  }
+  if (r.mode === "fromWake") {
+    const head = "<div class='recwhy-h'>🤖 入睡时间由我推荐</div>你填了起床 <strong>" + fmt(r.wakeT) +
+      "</strong>，我在 7–9 小时里挑了 <strong>" + hTxt(r.dur) + "</strong>，反推入睡 <strong>" + fmt(r.sleepT) + "</strong>。<br>";
+    if (r.inWin) {
+      return head + "选它是因为<strong>这样算出的就寝正好落进 22:00–23:00</strong>" +
+        (r.cyc ? "，并且同时是 90 分钟的整数倍。" : "。") + "<br>" + winSrc;
+    }
+    return head + "⚠️ <strong>按你这个起床时间，7–9 小时内没有任何时长能让就寝落进 22:00–23:00</strong>" +
+      "（要落进去得睡 " + hTxt(((r.wakeT - BED_HI) % 1440 + 1440) % 1440) + "–" +
+      hTxt(((r.wakeT - BED_LO) % 1440 + 1440) % 1440) + "，已超出推荐区间）。所以这里退而求其次，只保证时长合理。<br>" + tie;
+  }
+  return "<div class='recwhy-h'>🤖 起床时间由我推荐</div>你填了入睡 <strong>" + fmt(r.sleepT) +
+    "</strong>，就寝时刻已经定了，我能挑的只有时长 → 起床 <strong>" + fmt(r.wakeT) + "</strong>。<br>" + tie +
+    (r.inWin ? "<br>顺带一提：你的入睡时间正好落在 22:00–23:00 这一档。<br>" + winSrc
+             : "<br>另：" + winSrc + " 你目前是 " + fmt(r.sleepT) + "，<strong>但规律性仍比钟点更重要</strong>，不必硬迁就。");
+}
 
 function pad2(n) { return (n < 10 ? "0" : "") + n; }
 function fmt(m) { m = ((m % 1440) + 1440) % 1440; return pad2(Math.floor(m / 60)) + ":" + pad2(m % 60); }
@@ -486,8 +585,10 @@ function span(a, b) { let d = b - a; if (d <= 0) d += 1440; return d; }
 function readAnchor() {
   let a = null;
   try { a = JSON.parse(localStorage.getItem(STORE_KEY) || "null"); } catch (e) { a = null; }
-  const ok = a && ["sleepT", "wakeT", "sleepF", "wakeF"].every(function (k) { return typeof a[k] === "number"; });
-  return ok ? a : Object.assign({}, DEFAULTS);
+  const ok = a && ["sleepT", "wakeT", "sleepF", "wakeF"].every(function (k) {
+    return typeof a[k] === "number" && a[k] >= 0 && a[k] < 1440;
+  });
+  return ok ? Object.assign({}, DEFAULTS, a) : Object.assign({}, DEFAULTS);
 }
 
 /* ---------- 推导引擎 ---------- */
@@ -777,22 +878,22 @@ const selSleepF = document.getElementById("aSleepF");
 const selWakeF = document.getElementById("aWakeF");
 const chkFree = document.getElementById("aFreeOn");
 const freeWrap = document.getElementById("aFreeWrap");
+const chkSleepAuto = document.getElementById("aSleepAuto");
+const chkWakeAuto = document.getElementById("aWakeAuto");
+const recWhy = document.getElementById("aRecWhy");
 
-(function fillOptions() {
-  let night = "", morning = "";
-  for (let m = 0; m < 1440; m += 15) {
-    const o = '<option value="' + m + '">' + fmt(m) + "</option>";
-    // 入睡：19:00–翌日 04:00；起床：04:00–12:00
-    if (m >= 1140 || m <= 240) night += o;
-    if (m >= 240 && m <= 720) morning += o;
-  }
-  // 入睡下拉按 19:00→23:45→00:00→04:00 的自然顺序排
-  let ordered = "";
-  for (let m = 1140; m < 1440; m += 15) ordered += '<option value="' + m + '">' + fmt(m) + "</option>";
-  for (let m = 0; m <= 240; m += 15) ordered += '<option value="' + m + '">' + fmt(m) + "</option>";
-  selSleepT.innerHTML = ordered; selSleepF.innerHTML = ordered;
-  selWakeT.innerHTML = morning; selWakeF.innerHTML = morning;
-})();
+/* <input type="time"> 读写：值是 "HH:MM"，可精确到分钟。
+   空值在 iOS 上完全看不出是干什么用的，所以任何情况下都不让它空着——
+   解析失败一律回退到传入的兜底值。 */
+function readTime(el, fallback) {
+  const v = (el.value || "").trim();
+  const m = /^(\d{1,2}):(\d{2})$/.exec(v);
+  if (!m) return fallback;
+  const h = +m[1], mi = +m[2];
+  if (h > 23 || mi > 59) return fallback;
+  return h * 60 + mi;
+}
+function writeTime(el, min) { el.value = fmt(min); }
 
 function renderAnchorOut(a, d) {
   const notes = [];
@@ -870,10 +971,23 @@ function renderTimeline(d, blocks) {
 
 function apply(save) {
   const a = {
-    sleepT: +selSleepT.value, wakeT: +selWakeT.value,
+    sleepT: readTime(selSleepT, DEFAULTS.sleepT),
+    wakeT: readTime(selWakeT, DEFAULTS.wakeT),
+    autoS: chkSleepAuto.checked,
+    autoW: chkWakeAuto.checked,
     freeOn: chkFree.checked,
-    sleepF: +selSleepF.value, wakeF: +selWakeF.value
+    sleepF: readTime(selSleepF, DEFAULTS.sleepF),
+    wakeF: readTime(selWakeF, DEFAULTS.wakeF)
   };
+
+  // 推荐引擎只补用户没填的那一侧，补完写回输入框（所以框永远不为空）
+  const rec = recommend(a);
+  if (rec) { a.sleepT = rec.sleepT; a.wakeT = rec.wakeT; }
+  selSleepT.disabled = a.autoS; selWakeT.disabled = a.autoW;
+  writeTime(selSleepT, a.sleepT); writeTime(selWakeT, a.wakeT);
+  recWhy.innerHTML = rec ? recReason(rec) : "";
+  recWhy.hidden = !rec;
+
   freeWrap.hidden = !a.freeOn;
   if (save) { try { localStorage.setItem(STORE_KEY, JSON.stringify(a)); } catch (e) {} }
   const d = derive(a);
@@ -884,15 +998,17 @@ function apply(save) {
 
 (function init() {
   const a = readAnchor();
-  selSleepT.value = a.sleepT; selWakeT.value = a.wakeT;
-  selSleepF.value = a.sleepF; selWakeF.value = a.wakeF;
+  writeTime(selSleepT, a.sleepT); writeTime(selWakeT, a.wakeT);
+  writeTime(selSleepF, a.sleepF); writeTime(selWakeF, a.wakeF);
+  chkSleepAuto.checked = !!a.autoS;
+  chkWakeAuto.checked = !!a.autoW;
   chkFree.checked = !!a.freeOn;
-  // 存的值若不在选项里（以后改了步长/范围），回退到默认
-  if (!selSleepT.value) selSleepT.value = DEFAULTS.sleepT;
-  if (!selWakeT.value) selWakeT.value = DEFAULTS.wakeT;
-  if (!selSleepF.value) selSleepF.value = DEFAULTS.sleepF;
-  if (!selWakeF.value) selWakeF.value = DEFAULTS.wakeF;
-  [selSleepT, selWakeT, selSleepF, selWakeF, chkFree].forEach(function (el) {
+  [selSleepT, selWakeT, selSleepF, selWakeF].forEach(function (el) {
+    // input 事件让手动输入时即时重算；change 兜住原生选择器的确认动作
+    el.addEventListener("input", function () { apply(true); });
+    el.addEventListener("change", function () { apply(true); });
+  });
+  [chkSleepAuto, chkWakeAuto, chkFree].forEach(function (el) {
     el.addEventListener("change", function () { apply(true); });
   });
   apply(false);
