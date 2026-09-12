@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#f6f8fa" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)">
+<title>每日护肤流程 · 健康网站</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+:root {
+  --accent:      #bf3989;
+  --accent-soft: rgba(191,57,137,.12);
+  --amber:       #9a6700;
+  --amber-soft:  rgba(154,103,0,.12);
+  --red:         #cf222e;
+  --red-soft:    rgba(207,34,46,.1);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --accent:      #db61a2;
+    --accent-soft: rgba(219,97,162,.15);
+    --amber:       #d29922;
+    --amber-soft:  rgba(210,153,34,.15);
+    --red:         #f85149;
+    --red-soft:    rgba(248,81,73,.13);
+  }
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: -1;
+  background:
+    radial-gradient(ellipse 80% 40% at 12% 0%, var(--accent-soft) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 40% at 90% 95%, var(--accent-soft) 0%, transparent 55%),
+    var(--bg);
+}
+
+/* RULES —— 与 ulcer.html 的 .rulecard 同款 */
+.rulecard {
+  background: var(--card); border: 1px solid var(--border); border-left: 4px solid var(--red);
+  border-radius: var(--radius-md); box-shadow: var(--shadow-2); padding: 20px 22px;
+}
+.rulelist { display: flex; flex-direction: column; gap: 11px; }
+.ruleitem { display: flex; gap: 11px; font-size: var(--text-sm); color: var(--text-2); line-height: 1.65; }
+.ruleitem .num {
+  flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%;
+  background: var(--red-soft); color: var(--red); font-weight: 700; font-size: 12px;
+  display: flex; align-items: center; justify-content: center; margin-top: 1px;
+}
+
+/* 早 / 晚 切换 —— 复用 ulcer.html 的 ptabs 模式，这里只有两个 tab */
+.ptabs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.ptab {
+  text-align: center; padding: 14px 6px; border-radius: var(--radius-md);
+  font-size: var(--text-sm); font-weight: 600; background: var(--card);
+  border: 1px solid var(--border); color: var(--text-3);
+  cursor: pointer; user-select: none; transition: all .18s cubic-bezier(.16,1,.3,1);
+  box-shadow: var(--shadow-1); touch-action: manipulation; min-height: 44px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .ptab:hover { border-color: var(--accent); transform: translateY(-1px); box-shadow: var(--shadow-2); }
+  .ptab.on:hover { transform: none; }
+}
+.ptab:active { transform: scale(.96); }
+.ptab .pico { display: block; font-size: 21px; margin-bottom: 5px; }
+.ptab.on { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow: var(--shadow-2); }
+
+/* 流程内容 */
+.pcontent {
+  background: var(--card); border: 1px solid var(--border); border-left: 4px solid var(--accent);
+  border-radius: var(--radius-md); box-shadow: var(--shadow-2); padding: 22px 22px; margin-top: 14px;
+}
+.pc-title { font-size: var(--text-lg); font-weight: 700; color: var(--text-1); margin-bottom: 5px; }
+.pc-sub { font-size: var(--text-sm); color: var(--text-4); margin-bottom: 16px; line-height: 1.6; }
+.pc-chain {
+  background: var(--accent-soft); border-radius: var(--radius-sm); padding: 12px 15px;
+  font-size: var(--text-sm); color: var(--text-2); margin-bottom: 18px; line-height: 1.75;
+}
+.pc-chain strong { color: var(--accent); }
+
+/* 步骤 —— 编号 + 产品名 + 用法。中文窄列会逐字换行，所以编号固定宽、正文 min-width:0 撑满 */
+.steplist { display: flex; flex-direction: column; }
+.step {
+  display: flex; align-items: flex-start; gap: 13px;
+  padding: 13px 0; border-bottom: 1px solid var(--border-soft);
+}
+.step:last-child { border-bottom: none; }
+.step-n {
+  flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%;
+  background: var(--accent-soft); color: var(--accent);
+  font-size: var(--text-xs); font-weight: 700;
+  display: flex; align-items: center; justify-content: center; margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+.step-b { flex: 1; min-width: 0; }
+.step-n-row { display: flex; align-items: baseline; flex-wrap: wrap; gap: 7px; }
+.step-name { font-size: var(--text-sm); font-weight: 700; color: var(--text-1); line-height: 1.45; }
+.step-desc { font-size: var(--text-xs); color: var(--text-3); line-height: 1.65; margin-top: 3px; }
+.sbadge {
+  flex-shrink: 0; font-size: 11px; font-weight: 700;
+  padding: 2px 8px; border-radius: 6px; letter-spacing: .02em; line-height: 1.5;
+}
+.sbadge-key  { background: var(--accent-soft); color: var(--accent); }
+.sbadge-warn { background: var(--red-soft);    color: var(--red); }
+
+.pc-tip {
+  margin-top: 16px; background: var(--amber-soft); border-radius: var(--radius-sm); padding: 12px 14px;
+  font-size: var(--text-sm); color: var(--amber); line-height: 1.65;
+}
+
+/* 产品清单 —— 与 ulcer.html 的 .cabinet 同款 */
+.cabinet { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-2); overflow: hidden; }
+.cabrow { display: flex; align-items: flex-start; gap: 14px; padding: 15px 20px; border-bottom: 1px solid var(--border-soft); transition: background .15s ease; }
+@media (hover: hover) and (pointer: fine) {
+  .cabrow:hover { background: var(--border-soft); }
+}
+.cabrow:last-child { border-bottom: none; }
+.cabrow-icon { width: 34px; height: 34px; border-radius: 9px; background: var(--accent-soft); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.cabrow-icon.warn { background: var(--amber-soft); }
+.cabrow-b { flex: 1; min-width: 0; }
+.cabrow-t { font-size: var(--text-sm); font-weight: 600; color: var(--text-1); line-height: 1.45; }
+.cabrow-v { font-size: var(--text-xs); color: var(--text-4); margin-top: 2px; line-height: 1.55; }
+
+/* 返回首页的大链接 —— 与 ulcer.html 的 .tlink 同款 */
+.tlink {
+  display: block; text-align: center; margin-top: 12px; font-size: var(--text-sm); font-weight: 600;
+  color: var(--accent); text-decoration: none; padding: 14px; background: var(--accent-soft); border-radius: var(--radius-md);
+  transition: background .15s ease, transform .15s ease; touch-action: manipulation;
+}
+@media (hover: hover) and (pointer: fine) {
+  .tlink:hover { background: color-mix(in srgb, var(--accent-soft) 60%, var(--accent) 40%); }
+}
+.tlink:active { transform: scale(.98); background: color-mix(in srgb, var(--accent-soft) 60%, var(--accent) 40%); }
+
+/* 何时停用 —— 与 ulcer.html 的 .rfcard 同款 */
+.rfcard {
+  background: var(--card); border: 1px solid var(--border); border-left: 4px solid var(--red);
+  border-radius: var(--radius-md); box-shadow: var(--shadow-2); padding: 20px 22px;
+}
+.rflist { display: flex; flex-direction: column; gap: 11px; }
+.rfitem { font-size: var(--text-sm); color: var(--text-2); line-height: 1.65; padding-left: 18px; position: relative; }
+.rfitem::before { content: "•"; position: absolute; left: 0; color: var(--red); font-weight: 700; font-size: 18px; line-height: 1.2; }
+.rfitem strong { color: var(--red); font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <a class="backnav" href="index.html">← 返回健康网站首页</a>
+
+  <header class="fadeup" style="animation-delay:.02s">
+    <div class="eyebrow">🧴 私人护肤档案</div>
+    <h1>每日护肤流程</h1>
+    <p class="header-sub">早晚分流 · 产品清单 · 避坑要点（含裂可宁 + 防晒）</p>
+  </header>
+
+  <div class="slabel fadeup" style="animation-delay:.05s">⚠️ 全程铁律 <em>· 早晚都不能违反</em></div>
+  <div class="rulecard fadeup" style="animation-delay:.07s">
+    <div class="rulelist">
+      <div class="ruleitem"><span class="num">1</span>裂可宁禁止全脸大面积厚涂 —— 封闭性太强，和 VC 叠加容易闷出闭口痘，只用来点涂局部干皮裂口（嘴角、鼻翼、下巴干皮处、手）</div>
+      <div class="ruleitem"><span class="num">2</span>早上涂了 VC 就必须足量涂防晒 —— 这一步是 VC 提亮的关键，缺了它前面几步等于白做</div>
+      <div class="ruleitem"><span class="num">3</span>VC 要慢慢建耐受：前一周隔天早上用、半泵起步，耐受后再加到每天 1 泵</div>
+      <div class="ruleitem"><span class="num">4</span>这套流程不要再额外叠加酸类、A 醇类产品，避免屏障受损</div>
+      <div class="ruleitem"><span class="num">5</span>湿敷不能天天做 —— 单次最多 3 分钟、一周不超过 2 次，频繁湿敷反而削弱屏障，更容易发黄敏感</div>
+      <div class="ruleitem"><span class="num">6</span>白天涂过防晒，晚上必须先用卸妆产品再洁面，不能只洗一遍了事</div>
+    </div>
+  </div>
+
+  <div class="slabel fadeup" style="animation-delay:.09s">现在是早上还是晚上？ <em>· 选择会自动记住</em></div>
+  <div class="ptabs fadeup" id="ptabs" style="animation-delay:.11s"></div>
+  <div class="pcontent fadeup" id="pcontent" style="animation-delay:.13s"></div>
+
+  <div class="slabel fadeup" style="animation-delay:.16s">🧴 产品清单</div>
+  <div class="cabinet fadeup" style="animation-delay:.18s">
+    <div class="cabrow"><div class="cabrow-icon">🧼</div><div class="cabrow-b"><div class="cabrow-t">温和氨基酸洁面</div><div class="cabrow-v">早晚都用 · 早上直接洁面，晚上先卸妆再洁面</div></div></div>
+    <div class="cabrow"><div class="cabrow-icon">💧</div><div class="cabrow-b"><div class="cabrow-t">卸妆产品</div><div class="cabrow-v">仅晚上 · 白天涂了防晒就必须卸，不卸会闷痘</div></div></div>
+    <div class="cabrow"><div class="cabrow-icon">🫧</div><div class="cabrow-b"><div class="cabrow-t">OPOSI B5 积雪草爽肤水</div><div class="cabrow-v">早晚打底 · 轻拍上脸；泛红严重时才湿敷，最多 3 分钟</div></div></div>
+    <div class="cabrow"><div class="cabrow-icon warn">☀️</div><div class="cabrow-b"><div class="cabrow-t">春日来信 10% VC 精华</div><div class="cabrow-v">仅早上 · 1 泵，避开眼周薄皮；避光存放，开封尽量 2 个月内用完，变黄就别上脸</div></div></div>
+    <div class="cabrow"><div class="cabrow-icon">🧴</div><div class="cabrow-b"><div class="cabrow-t">TONDI 神经酰胺精华乳</div><div class="cabrow-v">早晚修护 · 早上薄涂缓冲 VC 刺激，晚上全脸涂修护褪红</div></div></div>
+    <div class="cabrow"><div class="cabrow-icon warn">⚠️</div><div class="cabrow-b"><div class="cabrow-t">裂可宁</div><div class="cabrow-v">早晚都用，但只点涂局部 · 偏厚重封闭，主打干裂保湿，禁止全脸</div></div></div>
+    <div class="cabrow"><div class="cabrow-icon">🌞</div><div class="cabrow-b"><div class="cabrow-t">防晒霜</div><div class="cabrow-v">仅早上 · 足量涂抹，是整套早间流程的收尾和关键</div></div></div>
+  </div>
+
+  <div class="slabel fadeup" style="animation-delay:.21s">🚨 出现这些情况就调整</div>
+  <div class="rfcard fadeup" style="animation-delay:.23s">
+    <div class="rflist">
+      <div class="rfitem">用 VC 后<strong>持续刺痛、泛红</strong> → 停用 VC，只留 B5 水 + TONDI 乳修护，等屏障稳定再从半泵重新建耐受</div>
+      <div class="rfitem">下巴、嘴角一带<strong>冒出闭口痘</strong> → 先查是不是裂可宁涂的面积太大，收回到只点涂裂口</div>
+      <div class="rfitem">VC 精华<strong>颜色变黄</strong> → 已经氧化，直接弃用，不要上脸</div>
+      <div class="rfitem">皮肤<strong>发黄、变敏感</strong> → 多半是湿敷太频繁，先停湿敷，只做基础的水 + 乳</div>
+    </div>
+  </div>
+
+  <a class="tlink fadeup" style="animation-delay:.25s" href="index.html">查看完整作息 · 饮食 · 喝水 · 运动时间表 →</a>
+
+  <footer class="fadeup" style="animation-delay:.28s">
+    <strong>重要提醒</strong><br>
+    本页流程基于个人与AI过往讨论整理的个人护肤记录，不是医生或药师的处方，不能替代专业诊疗。<br>
+    裂可宁属于药品类外用制剂，长期或大面积使用前请咨询医生或药师；皮肤出现持续破损、渗液、大面积红肿请及时就医。
+  </footer>
+
+</div>
+<script>
+const routines = [
+  {
+    id: "am", tabLabel: "早上", icon: "🌞",
+    title: "早间流程 · 含 VC + 防晒",
+    subtitle: "全套六步，重点是 VC 之后一定要用防晒收尾",
+    chain: "B5 水 → <strong>VC</strong> → TONDI 乳 → 局部裂可宁 → <strong>防晒</strong>",
+    steps: [
+      { name: "温和氨基酸洁面", desc: "早上皮脂不多，正常洗一遍即可，不用二次清洁" },
+      { name: "OPOSI B5 积雪草爽肤水", desc: "轻拍上脸打底，把后面几步的吸收环境先做好" },
+      { name: "春日来信 10% VC 精华", desc: "1 泵，避开眼周薄皮。前一周隔天用、半泵起步，耐受后再加量" },
+      { name: "TONDI 神经酰胺精华乳", desc: "全脸薄涂，修护屏障、缓冲 VC 带来的刺激" },
+      { name: "裂可宁", desc: "只点涂在起皮干裂的位置（嘴角、鼻翼、下巴干皮处、手），不要全脸", badge: { t: "仅局部", c: "warn" } },
+      { name: "防晒霜", desc: "足量涂抹。这一步是 VC 提亮的关键，漏掉等于前面几步白做", badge: { t: "关键", c: "key" } },
+    ],
+    tip: null
+  },
+  {
+    id: "pm", tabLabel: "晚上", icon: "🌙",
+    title: "晚间流程 · 不含 VC",
+    subtitle: "四步，重点是先卸妆再洁面，以及裂可宁改成厚敷",
+    chain: "卸妆 + 洁面 → B5 水 → TONDI 乳 → 局部裂可宁",
+    steps: [
+      { name: "卸妆 + 洁面", desc: "白天涂了防晒，晚上要先用卸妆产品卸干净，再用氨基酸洁面洗一遍" },
+      { name: "OPOSI B5 积雪草爽肤水", desc: "轻拍上脸。泛红严重时才湿敷，单次最多 3 分钟、一周不超过 2 次", badge: { t: "别天天湿敷", c: "warn" } },
+      { name: "TONDI 神经酰胺精华乳", desc: "全脸涂抹，夜间修护褪红" },
+      { name: "裂可宁", desc: "局部厚敷在干裂处，借夜间时间修护干皮。仍然只涂局部，不涂全脸", badge: { t: "仅局部", c: "warn" } },
+    ],
+    tip: "晚上不用 VC —— VC 白天配合防晒才有提亮意义，夜间叠加只会增加刺激和氧化风险"
+  },
+];
+
+const ptabs = document.getElementById("ptabs");
+const pcontent = document.getElementById("pcontent");
+const STORE_KEY = "skincareRoutine";
+
+function renderTabs(activeId) {
+  ptabs.innerHTML = routines.map(r => `
+    <div class="ptab${r.id === activeId ? " on" : ""}" data-id="${r.id}">
+      <span class="pico">${r.icon}</span>${r.tabLabel}
+    </div>`).join("");
+  ptabs.querySelectorAll(".ptab").forEach(el => {
+    el.addEventListener("click", () => {
+      localStorage.setItem(STORE_KEY, el.dataset.id);
+      renderTabs(el.dataset.id);
+      renderContent(el.dataset.id);
+    });
+  });
+}
+
+function renderContent(activeId) {
+  const r = routines.find(x => x.id === activeId);
+  const stepsHtml = r.steps.map((s, i) => `
+    <div class="step">
+      <div class="step-n">${i + 1}</div>
+      <div class="step-b">
+        <div class="step-n-row">
+          <span class="step-name">${s.name}</span>
+          ${s.badge ? `<span class="sbadge sbadge-${s.badge.c}">${s.badge.t}</span>` : ""}
+        </div>
+        <div class="step-desc">${s.desc}</div>
+      </div>
+    </div>`).join("");
+
+  pcontent.innerHTML = `
+    <div class="pc-title">${r.title}</div>
+    <div class="pc-sub">${r.subtitle}</div>
+    <div class="pc-chain"><strong>顺序：</strong>${r.chain}</div>
+    <div class="steplist">${stepsHtml}</div>
+    ${r.tip ? `<div class="pc-tip">${r.tip}</div>` : ""}
+  `;
+}
+
+// 默认按当前时间给一个合理的初始值：18:00 之后或 5:00 之前算晚上
+function defaultRoutine() {
+  const h = new Date().getHours();
+  return (h >= 18 || h < 5) ? "pm" : "am";
+}
+
+const saved = localStorage.getItem(STORE_KEY) || defaultRoutine();
+renderTabs(saved);
+renderContent(saved);
+</script>
+<script src="assets/pull-to-refresh.js"></script>
+</body>
+</html>

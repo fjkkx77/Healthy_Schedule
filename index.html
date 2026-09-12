@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#f6f8fa" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)">
-<title>健康时间表 2026</title>
+<title>健康网站</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/style.css">
 <style>
@@ -72,6 +72,14 @@ body::before {
   .entry-card-red:hover { box-shadow: 0 10px 26px rgba(207,34,46,.34); }
 }
 .entry-card-red:active { box-shadow: 0 4px 14px rgba(207,34,46,.28); }
+.entry-card-pink {
+  background: linear-gradient(135deg, #a5306f, #d1478f);
+  box-shadow: 0 6px 20px rgba(165,48,111,.28);
+}
+@media (hover: hover) and (pointer: fine) {
+  .entry-card-pink:hover { box-shadow: 0 10px 26px rgba(165,48,111,.34); }
+}
+.entry-card-pink:active { box-shadow: 0 4px 14px rgba(165,48,111,.28); }
 .entry-ico {
   width: 46px; height: 46px; border-radius: var(--radius-sm); flex-shrink: 0;
   background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 23px;
@@ -236,8 +244,8 @@ body::before {
 
   <header class="fadeup" style="animation-delay:.02s">
     <div class="eyebrow">2026 最新证据版</div>
-    <h1>最佳综合健康时间表</h1>
-    <p class="header-sub">作息 · 饮食 · 喝水 · 运动 · 四合一</p>
+    <h1>健康网站</h1>
+    <p class="header-sub">作息 · 饮食 · 喝水 · 运动 · 护肤 · 急救</p>
     <div class="pills">
       <span class="pill">AHA 2025</span>
       <span class="pill">BMJ Medicine 2026</span>
@@ -266,7 +274,16 @@ body::before {
     <span class="entry-chev">›</span>
   </a>
 
-  <div class="slabel fadeup" style="animation-delay:.06s">核心原则</div>
+  <a href="skincare.html" class="entry-card entry-card-pink fadeup" style="animation-delay:.07s">
+    <div class="entry-ico">🧴</div>
+    <div class="entry-mid">
+      <div class="entry-t">每日护肤流程</div>
+      <div class="entry-d">早晚分流 · 产品清单 · 避坑要点</div>
+    </div>
+    <span class="entry-chev">›</span>
+  </a>
+
+  <div class="slabel fadeup" style="animation-delay:.08s">核心原则</div>
   <div class="grid2 fadeup" style="animation-delay:.09s">
     <div class="pcard">
       <div class="picon" style="background:var(--blue-soft)">⏰</div>
