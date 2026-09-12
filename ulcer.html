@@ -45,6 +45,7 @@ body::before {
 .rulecard-h { font-size: var(--text-md); font-weight: 700; color: var(--red); margin-bottom: 12px; }
 .rulelist { display: flex; flex-direction: column; gap: 11px; }
 .ruleitem { display: flex; gap: 11px; font-size: var(--text-sm); color: var(--text-2); line-height: 1.65; }
+.ruleitem .rt { flex: 1; min-width: 0; }
 .ruleitem .num {
   flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%;
   background: var(--red-soft); color: var(--red); font-weight: 700; font-size: 12px;
@@ -186,12 +187,13 @@ body::before {
   <div class="slabel fadeup" style="animation-delay:.05s">⚠️ 全程铁律 <em>· 任何阶段都不能违反</em></div>
   <div class="rulecard fadeup" style="animation-delay:.07s">
     <div class="rulelist">
-      <div class="ruleitem"><span class="num">1</span>全程不叠加单独维生素B6 —— 复合维生素B已含足量B6，再叠加单独B6会导致神经损伤，且不可逆</div>
-      <div class="ruleitem"><span class="num">2</span>单独维生素B2仅在「中期剧痛」短期加服，日常和预防期都不吃</div>
-      <div class="ruleitem"><span class="num">3</span>维生素C仅在发作期短期服用，愈合后立刻停，长期吃会刺激肠胃</div>
-      <div class="ruleitem"><span class="num">4</span>所有内服药物必须饭后温水送服，不空腹吃</div>
-      <div class="ruleitem"><span class="num">5</span>外用药二选一 —— 蜂胶口腔膜和意可贴禁止同时贴</div>
-      <div class="ruleitem"><span class="num">6</span>意可贴（激素贴片）连续使用不超过5天，5天无好转立刻停用并就医</div>
+      <div class="ruleitem"><span class="num">1</span><div class="rt">全程不叠加单独维生素B6 —— 复合维生素B已含足量B6。长期额外补充可能引起周围神经病变（手脚麻木、刺痛、走路发飘）；监管机构审查显示<strong>低于 50mg/日也可能发生</strong>，且找不到公认的安全下限。<strong>及时停用多数可以恢复，但恢复不一定完全</strong>——所以一旦出现手脚麻木刺痛，立即停用并就医，不要拖</div></div>
+      <div class="ruleitem"><span class="num">2</span><div class="rt">单独维生素B2仅在「中期剧痛」短期加服，日常和预防期都不吃</div></div>
+      <div class="ruleitem"><span class="num">3</span><div class="rt">维生素C仅在发作期短期服用，愈合后立刻停，长期吃会刺激肠胃</div></div>
+      <div class="ruleitem"><span class="num">4</span><div class="rt">所有内服药物必须饭后温水送服，不空腹吃</div></div>
+      <div class="ruleitem"><span class="num">5</span><div class="rt">外用药二选一 —— 蜂胶口腔膜和意可贴禁止同时贴</div></div>
+      <div class="ruleitem"><span class="num">6</span><div class="rt">意可贴（激素贴片）连续使用不超过5天，5天无好转立刻停用并就医。<em>（说明书上限是「连用不得超过1周」，这里取更保守的自我约束）</em></div></div>
+      <div class="ruleitem"><span class="num">7</span><div class="rt"><strong>用意可贴前先确认自己不在禁忌人群里</strong>：说明书明确禁用——严重高血压、糖尿病、胃与十二指肠溃疡、骨质疏松症、有神经病史或癫痫病史、青光眼等患者。不确定就先问医生或药师，别先贴了再说</div></div>
     </div>
   </div>
 
@@ -208,7 +210,7 @@ body::before {
     <div class="cabrow"><div class="cabrow-icon warn">⚠️</div><div><div class="cabrow-t">单独维生素B2片</div><div class="cabrow-v">仅「中期剧痛」短期应急，不日常吃</div></div></div>
     <div class="cabrow"><div class="cabrow-icon warn">🚫</div><div><div class="cabrow-t">单独维生素B6片</div><div class="cabrow-v">不建议吃！复合B已含足量，长期叠加有神经损伤风险，闲置存放</div></div></div>
     <div class="cabrow"><div class="cabrow-icon">🧴</div><div><div class="cabrow-t">蜂胶口腔膜</div><div class="cabrow-v">外用 · 无激素 · 可全程用到愈合</div></div></div>
-    <div class="cabrow"><div class="cabrow-icon warn">🩹</div><div><div class="cabrow-t">醋酸地塞米松贴片（意可贴）</div><div class="cabrow-v">外用 · 含激素 · 剧痛期专用，连续≤5天</div></div></div>
+    <div class="cabrow"><div class="cabrow-icon warn">🩹</div><div><div class="cabrow-t">醋酸地塞米松贴片（意可贴）</div><div class="cabrow-v">外用 · 含激素 · 剧痛期专用，每日≤3片、连续≤5天<br><strong>⚠️ 禁用人群：严重高血压、糖尿病、胃十二指肠溃疡、骨质疏松、有神经病史或癫痫史、青光眼患者禁用</strong>——用前请对照说明书确认自己不在其中</div></div></div>
   </div>
 
   <div class="slabel fadeup" style="animation-delay:.21s">🌙 配套增效建议 <em>· 针对熬夜、压力大的根源</em></div>
@@ -288,7 +290,7 @@ const phases = [
         {time:"晚饭后", meds:[{n:"复合维生素B",d:"1片"},{n:"叶酸片(B9)",d:"1片"},{n:"维生素B12",d:"1片"},{n:"维生素C",d:"1片"}]},
       ]}
     ],
-    ext:{text:"剧痛优先选：醋酸地塞米松贴片（意可贴），每日不超过3片，连用不超过5天；若抵触激素可换蜂胶口腔膜", warn:"5天仍无好转，立即停用并去口腔科就诊"},
+    ext:{text:"剧痛优先选：醋酸地塞米松贴片（意可贴），每日不超过3片，连用不超过5天；若抵触激素可换蜂胶口腔膜", warn:"⚠️ 贴之前先确认不在禁忌人群里：严重高血压、糖尿病、胃十二指肠溃疡、骨质疏松、有神经病史或癫痫史、青光眼患者禁用。5天仍无好转，立即停用并去口腔科就诊"},
     tip:"⚠️ 单独B2仅此阶段短期加服，疼痛缓解立刻停用，不可长期吃"
   },
   {

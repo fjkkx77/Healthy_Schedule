@@ -79,6 +79,7 @@ body::before {
   background: var(--red-soft); color: var(--red); font-weight: 700; font-size: 12px;
   display: flex; align-items: center; justify-content: center; margin-top: 1px;
 }
+.ruleitem .rt { flex: 1; min-width: 0; }
 .ruleitem strong { color: var(--text-1); }
 
 /* FAST GRID */
@@ -321,11 +322,11 @@ body::before {
   <div class="rulecard fadeup" style="animation-delay:.10s">
     <div class="rulecard-h">立即拨打 120，不要犹豫、不要自行处理</div>
     <div class="rulelist">
-      <div class="ruleitem"><span class="num">1</span><strong>疑似心梗：</strong>立即停止活动，坐下或半卧位休息，拨打120；若不确定是否对阿司匹林过敏、无消化道出血史，可嚼服阿司匹林162~325mg；平时有医生开具的硝酸甘油可按医嘱含服，但不要借用别人的药；不要继续走动、开车或硬扛</div>
-      <div class="ruleitem"><span class="num">2</span><strong>疑似脑梗/卒中：</strong>立刻拨打120并记录发病时间，不要喂水喂药；若患者呕吐或意识不清但仍有呼吸，让其侧卧、头偏向一侧，保持气道通畅、清除口腔异物防止误吸，不要等症状"自己缓解"</div>
-      <div class="ruleitem"><span class="num">3</span><strong>突然倒地无反应：</strong>不呼吸或只有喘气样呼吸，立即呼救 + 胸外按压 + 找 AED，不要等"再看看"</div>
-      <div class="ruleitem"><span class="num">4</span><strong>黄金时间：</strong>心肺复苏黄金 4 分钟；脑卒中静脉溶栓黄金 4.5 小时——每延误 1 分钟，抢救成功率和预后都在下降</div>
-      <div class="ruleitem"><span class="num">5</span><strong>绝对别做：</strong>掐人中、硬灌水喂药、拍打患者、找硬币刮痧放血、自己开车硬扛去医院</div>
+      <div class="ruleitem"><span class="num">1</span><div class="rt"><strong>疑似心梗：</strong>立即停止活动，坐下或半卧位休息，拨打120；在确认无阿司匹林过敏、无活动性消化道出血的前提下，可<strong>嚼服阿司匹林 300mg</strong>（中国指南推荐量；国际指南区间为 162~325mg）。<strong>⚠️ 家里常备的多是 100mg 肠溶片 → 取 3 片嚼碎后服下</strong>：肠溶片平时确实不能掰开嚼，但急性心梗是例外——整片吞下去在胃里不溶解、起效极慢，必须嚼碎才能快速起效。平时有医生开具的硝酸甘油可按医嘱含服，但不要借用别人的药；不要继续走动、开车或硬扛</div></div>
+      <div class="ruleitem"><span class="num">2</span><div class="rt"><strong>疑似脑梗/卒中：</strong>立刻拨打120并记录发病时间，不要喂水喂药；若患者呕吐或意识不清但仍有呼吸，让其侧卧、头偏向一侧，保持气道通畅、清除口腔异物防止误吸，不要等症状"自己缓解"</div></div>
+      <div class="ruleitem"><span class="num">3</span><div class="rt"><strong>突然倒地无反应：</strong>不呼吸或只有喘气样呼吸，立即呼救 + 胸外按压 + 找 AED，不要等"再看看"</div></div>
+      <div class="ruleitem"><span class="num">4</span><div class="rt"><strong>黄金时间：</strong>心肺复苏黄金 4 分钟；脑卒中静脉溶栓黄金 4.5 小时——每延误 1 分钟，抢救成功率和预后都在下降</div></div>
+      <div class="ruleitem"><span class="num">5</span><div class="rt"><strong>绝对别做：</strong>掐人中、硬灌水喂药、拍打患者、找硬币刮痧放血、自己开车硬扛去医院</div></div>
     </div>
   </div>
 
