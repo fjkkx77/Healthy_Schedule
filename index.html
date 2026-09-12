@@ -109,6 +109,47 @@ body::before {
 .ptitle { font-size: var(--text-sm); font-weight: 700; margin-bottom: 3px; color: var(--text-1); }
 .pdesc  { font-size: var(--text-xs); color: var(--text-4); line-height: 1.55; }
 
+/* ANCHOR —— 时间表的锚点控件。被验证的是相对量，钟点由锚点推导 */
+.anchor {
+  background: var(--card); border: 1px solid var(--border); border-left: 4px solid var(--accent);
+  border-radius: var(--radius-md); box-shadow: var(--shadow-2); padding: 18px;
+}
+.anchor-h { font-size: var(--text-sm); font-weight: 700; color: var(--text-1); margin-bottom: 4px; }
+.anchor-d { font-size: var(--text-xs); color: var(--text-4); line-height: 1.65; margin-bottom: 14px; }
+.anchor-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(92px, 1fr)); gap: 10px; }
+.afield { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.afield label { font-size: 11px; font-weight: 700; color: var(--text-4); letter-spacing: .02em; }
+.afield select {
+  font-family: inherit; font-size: 16px;   /* 低于 16px 会触发 iOS 自动放大页面 */
+  font-weight: 600; color: var(--text-1);
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 10px 8px; min-height: 44px;
+  width: 100%; touch-action: manipulation;
+}
+.anchor-out {
+  margin-top: 15px; padding-top: 13px; border-top: 1px solid var(--border-soft);
+  font-size: var(--text-sm); color: var(--text-2); line-height: 1.7;
+}
+.anchor-out strong { color: var(--accent); font-variant-numeric: tabular-nums; }
+.anote { display: flex; gap: 8px; margin-top: 9px; font-size: var(--text-xs); line-height: 1.65; }
+.anote-i { flex-shrink: 0; }
+.anote-b { flex: 1; min-width: 0; }
+.anote.good .anote-b { color: var(--green); }
+.anote.warn .anote-b { color: var(--red); font-weight: 600; }
+.anote.info .anote-b { color: var(--text-4); }
+
+/* 证据分级徽标：这一格的数字到底有没有被验证过 */
+.evb { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 6px; letter-spacing: .02em; }
+.evb-1 { background: var(--green-soft);  color: var(--green); }
+.evb-2 { background: var(--teal-soft);   color: var(--teal); }
+.evb-3 { background: var(--border-soft); color: var(--text-4); }
+.evlegend {
+  display: flex; flex-wrap: wrap; gap: 8px 14px; margin: 12px 2px 0;
+  font-size: var(--text-xs); color: var(--text-4); line-height: 1.6;
+}
+.evlegend > div { display: flex; align-items: center; gap: 6px; }
+.trel { font-weight: 600; color: var(--text-4); }
+
 /* TIMELINE */
 .tl { display: flex; flex-direction: column; gap: 10px; }
 
@@ -165,6 +206,8 @@ body::before {
   width: 30px; height: 30px; border-radius: var(--radius-sm); flex-shrink: 0;
   display: flex; align-items: center; justify-content: center; font-size: 15px; margin-top: 1px;
 }
+/* .trow 是 flex，正文必须包在单一子元素里，否则里面的行内标签会各自变成 flex 项被推出视口 */
+.trow-b { flex: 1; min-width: 0; }
 .trow-cat { font-size: var(--text-xs); font-weight: 700; margin-bottom: 3px; }
 .trow-val { font-size: var(--text-sm); color: var(--text-2); line-height: 1.6; }
 
@@ -287,25 +330,51 @@ body::before {
   <div class="slabel fadeup" style="animation-delay:.08s">核心原则</div>
   <div class="grid2 fadeup" style="animation-delay:.09s">
     <div class="pcard">
-      <div class="picon" style="background:var(--blue-soft)">⏰</div>
-      <div><div class="ptitle">节律对齐</div><div class="pdesc">时机与「做什么」同等重要，规律性比绝对时长更关键</div></div>
+      <div class="picon" style="background:var(--blue-soft)">🎯</div>
+      <div><div class="ptitle">规律性 &gt; 钟点</div><div class="pdesc">UK Biobank 60,977 人：睡眠规律性比睡眠时长更能预测死亡风险，最规律的四档比最不规律一档全天死亡风险低 20–48%。<strong>每天固定，比固定在几点重要得多</strong></div></div>
     </div>
     <div class="pcard">
-      <div class="picon" style="background:var(--orange-soft)">🎯</div>
-      <div><div class="ptitle">一致性第一</div><div class="pdesc">每周 ±30 分钟偏差；周末勿「补觉」或熬夜</div></div>
+      <div class="picon" style="background:var(--orange-soft)">📐</div>
+      <div><div class="ptitle">相对量才是被验证的</div><div class="pdesc">睡够多久、间隔多久、窗口多长有证据；「几点吃午饭」没有。所以这张表由你的起床时间推导，不写死钟点</div></div>
     </div>
     <div class="pcard">
       <div class="picon" style="background:var(--green-soft)">🍽️</div>
-      <div><div class="ptitle">进食窗口</div><div class="pdesc">推荐 10–12 小时，8:00–18:00，早窗口优于晚</div></div>
+      <div><div class="ptitle">进食窗口</div><div class="pdesc">首餐到末餐控制在 <strong>10–12 小时</strong>，且早时段优于晚时段（BMJ Medicine 2026 网络 meta，41 项 RCT）</div></div>
     </div>
     <div class="pcard">
       <div class="picon" style="background:var(--red-soft)">👤</div>
-      <div><div class="ptitle">个性化调整</div><div class="pdesc">夜猫型可后移 30–60 分钟；慢性病须咨询医生</div></div>
+      <div><div class="ptitle">时型与个体差异</div><div class="pdesc">认知高峰随时型走（晨型人上午、夜型人傍晚）；夜型可整体后移，慢性病须咨询医生</div></div>
     </div>
   </div>
 
-  <div class="slabel fadeup" style="animation-delay:.12s">每日时间表 <em>· 点击展开详情</em></div>
-  <div class="tl fadeup" id="tl" style="animation-delay:.15s"></div>
+  <div class="slabel fadeup" style="animation-delay:.12s">⚓ 你的锚点 <em>· 改这里，下面整张表跟着算</em></div>
+  <div class="anchor fadeup" style="animation-delay:.13s">
+    <div class="anchor-h">这张表以「起床时间」推导，不是固定钟点</div>
+    <div class="anchor-d">因为被科学验证的是<strong>相对量</strong>（睡够多久、间隔多久、窗口多长），不是某个绝对钟点。填你自己的作息，下面每一格会重算，并按证据强弱标注哪些数字是真被验证过的。</div>
+    <div class="anchor-grid">
+      <div class="afield">
+        <label for="aWake">起床时间</label>
+        <select id="aWake"></select>
+      </div>
+      <div class="afield">
+        <label for="aSleep">睡眠时长</label>
+        <select id="aSleep"></select>
+      </div>
+      <div class="afield">
+        <label for="aWin">进食窗口</label>
+        <select id="aWin"></select>
+      </div>
+    </div>
+    <div class="anchor-out" id="aOut"></div>
+  </div>
+
+  <div class="slabel fadeup" style="animation-delay:.14s">每日时间表 <em>· 点击展开详情</em></div>
+  <div class="evlegend fadeup" style="animation-delay:.145s">
+    <div><span class="evb evb-1">直接证据</span> 这个数值本身被研究验证过</div>
+    <div><span class="evb evb-2">相对量有据</span> 间隔/时长有证据，钟点是推导的</div>
+    <div><span class="evb evb-3">示例排布</span> 没有证据说非得是这个点</div>
+  </div>
+  <div class="tl fadeup" id="tl" style="animation-delay:.16s"></div>
 
   <div class="slabel fadeup" style="animation-delay:.18s">💧 喝水要点</div>
   <div class="wgrid fadeup" style="animation-delay:.21s">
@@ -317,10 +386,10 @@ body::before {
 
   <div class="slabel fadeup" style="animation-delay:.23s">📅 每周建议</div>
   <div class="ioslist fadeup" style="animation-delay:.25s">
-    <div class="iosrow"><div class="iosrow-icon" style="background:var(--red-soft)">🏃</div><div><div class="iosrow-t">有氧运动</div><div class="iosrow-v">每周 ≥ 150 分钟中高强度</div><div class="iosrow-n">晨练对节律对齐略优；规律性优于绝对时长</div></div></div>
-    <div class="iosrow"><div class="iosrow-icon" style="background:var(--orange-soft)">💪</div><div><div class="iosrow-t">力量训练</div><div class="iosrow-v">每周 2 天</div><div class="iosrow-n">可分散在晨间或下午进行</div></div></div>
-    <div class="iosrow"><div class="iosrow-icon" style="background:var(--green-soft)">🍽️</div><div><div class="iosrow-t">进食窗口</div><div class="iosrow-v">8:00–18:00（10 小时 eTRE）</div><div class="iosrow-n">可放宽至 8:00–19:00；早窗口优于晚（2026 BMJ meta）</div></div></div>
-    <div class="iosrow"><div class="iosrow-icon" style="background:var(--blue-soft)">😴</div><div><div class="iosrow-t">睡眠</div><div class="iosrow-v">7–9 小时</div><div class="iosrow-n">周末偏差 ≤ 30 分钟，禁止「补觉式熬夜」</div></div></div>
+    <div class="iosrow"><div class="iosrow-icon" style="background:var(--red-soft)">🏃</div><div><div class="iosrow-t">有氧运动</div><div class="iosrow-v">每周 ≥ 150 分钟中等强度（或 ≥75 分钟高强度）</div><div class="iosrow-n"><strong>放在一天里的哪个时段都可以</strong>——UK Biobank 92,139 人的数据里，中午–下午与混合时段的死亡风险还略低于晨练。总量和能否坚持远比时段重要</div></div></div>
+    <div class="iosrow"><div class="iosrow-icon" style="background:var(--orange-soft)">💪</div><div><div class="iosrow-t">力量训练</div><div class="iosrow-v">每周 2 天</div><div class="iosrow-n">时段同样不挑；两次之间至少隔 1 天</div></div></div>
+    <div class="iosrow"><div class="iosrow-icon" style="background:var(--green-soft)">🍽️</div><div><div class="iosrow-t">进食窗口</div><div class="iosrow-v">首餐到末餐 <strong>10–12 小时</strong></div><div class="iosrow-n">早时段优于晚时段（BMJ Medicine 2026 网络 meta，41 项 RCT / 2287 人）。具体几点开窗由上面的锚点推导，不写死钟点</div></div></div>
+    <div class="iosrow"><div class="iosrow-icon" style="background:var(--blue-soft)">😴</div><div><div class="iosrow-t">睡眠</div><div class="iosrow-v">7–9 小时，就寝尽量落在 22:00–23:00</div><div class="iosrow-n"><strong>规律性比时长更能预测死亡风险</strong>（UK Biobank 60,977 人）：周末偏差也要 ≤30 分钟，「补觉式熬夜」抵不掉长期不规律</div></div></div>
     <div class="iosrow"><div class="iosrow-icon" style="background:var(--indigo-soft)">📈</div><div><div class="iosrow-t">效果监测</div><div class="iosrow-v">3–4 周后评估</div><div class="iosrow-n">睡眠质量（PSQI）、体重、血糖/血压、精力水平</div></div></div>
   </div>
 
@@ -344,164 +413,305 @@ body::before {
 
 </div>
 <script>
-const data = [
-  {
-    emoji:"☀️", ibg:"var(--orange-soft)",
-    time:"06:00 – 06:30", label:"清晨醒来 · 光照激活",
-    tags:["s","w"],
-    rows:[
-      {t:"ts",i:"😴",c:"作息",v:"自然醒或闹钟醒，立即暴露自然光或 10,000 lux 光疗灯 15–30 分钟"},
-      {t:"tw",i:"💧",c:"喝水",v:"立即喝 300–400 ml 室温/温水（可加柠檬），补充夜间液体丢失"},
-      {t:"td",i:"🍽️",c:"饮食",v:"暂不进食，让胃肠温和苏醒"},
-      {t:"tr",i:"🏃",c:"运动",v:"可做 5 分钟轻伸展或关节活动"},
+/* ============================================================
+   每日时间表：以「起床时间 T」为锚推导，不写死钟点。
+   为什么这么做：被验证的量是相对量（睡够多久 / 间隔多久 / 窗口多长），
+   不是绝对钟点。UK Biobank 60,977 人的睡眠规律性研究（Sleep 2024）显示，
+   预测死亡风险的是「每天波动多大」而不是「几点睡」——
+   若真存在人人最优的钟点，该研究应该发现"越接近该钟点越长寿"，
+   实际发现的是"波动越小越长寿"。
+   每格的 ev 字段标注该数值的证据强弱：1=直接证据 2=相对量有据 3=示例排布
+   ============================================================ */
+const STORE_KEY = "scheduleAnchor";
+const DEFAULTS = { wake: 360, sleep: 450, win: 660 };  // 06:00 / 7.5h / 11h
+
+function pad2(n) { return (n < 10 ? "0" : "") + n; }
+function fmt(m) { m = ((m % 1440) + 1440) % 1440; return pad2(Math.floor(m / 60)) + ":" + pad2(m % 60); }
+function hTxt(m) { return (Math.round(m / 6) / 10) + " 小时"; }
+function relTxt(start, T) {
+  const d = start - T;
+  if (d === 0) return "锚点 T";
+  return "T+" + (Math.round(d / 6) / 10) + "h";
+}
+
+function readAnchor() {
+  let a = null;
+  try { a = JSON.parse(localStorage.getItem(STORE_KEY) || "null"); } catch (e) { a = null; }
+  if (!a || typeof a.wake !== "number" || typeof a.sleep !== "number" || typeof a.win !== "number") {
+    a = Object.assign({}, DEFAULTS);
+  }
+  return a;
+}
+
+/* 由锚点推导全天各段。末餐结束 = 首餐 + 进食窗口，就寝 = 起床 − 睡眠时长（前一日） */
+function buildSchedule(a) {
+  const T = a.wake;
+  const firstMeal = T + 90;
+  const bed = T + 1440 - a.sleep;
+  // 一天只有 24 小时：首餐在 T+1.5h、末餐要距就寝 ≥3h，于是窗口上限 = 24 - 1.5 - 3 - 睡眠时长。
+  // 睡得越久，能留给进食窗口的余地越小——这是硬约束，不是偏好。
+  const maxWin = 1170 - a.sleep;
+  const effWin = Math.min(a.win, maxWin);   // 排表用的有效窗口
+  const clamped = effWin < a.win;           // 用户选的窗口排不下，已按上限绘制
+  const lastMealEnd = firstMeal + effWin;
+  const lastMealStart = lastMealEnd - 60;
+  const windDown = Math.max(bed - 120, lastMealEnd);
+  const out = [
+    { id: "wake",  s: T,              e: T + 30 },
+    { id: "morn",  s: T + 30,         e: firstMeal },
+    { id: "meal1", s: firstMeal,      e: firstMeal + 30 },
+    { id: "am",    s: firstMeal + 30, e: T + 360 },
+    { id: "lunch", s: T + 360,        e: T + 420 },
+    { id: "nap",   s: T + 420,        e: T + 440 },
+    { id: "pm",    s: T + 440,        e: lastMealStart },
+    { id: "meal2", s: lastMealStart,  e: lastMealEnd },
+    { id: "eve",   s: lastMealEnd,    e: windDown },
+    { id: "wind",  s: windDown,       e: bed },
+    { id: "sleep", s: bed,            e: T + 1440 },
+  ];
+  return {
+    blocks: out.filter(b => b.e > b.s),
+    firstMeal: firstMeal, lastMealEnd: lastMealEnd, bed: bed,
+    maxWin: maxWin, effWin: effWin, clamped: clamped
+  };
+}
+
+const CONTENT = {
+  wake: {
+    emoji: "☀️", ibg: "var(--orange-soft)", label: "起床 · 光照激活",
+    ev: 1, tags: ["s", "w"],
+    rows: [
+      { t: "ts", i: "😴", c: "作息", v: "醒后尽快接受明亮自然光 15–30 分钟（阴天或冬季可用 10,000 lux 光疗灯）" },
+      { t: "tw", i: "💧", c: "喝水", v: "300–400 ml 室温水，补充夜间液体丢失" },
+      { t: "td", i: "🍽️", c: "饮食", v: "暂不进食，让胃肠温和苏醒" },
+      { t: "tr", i: "🏃", c: "运动", v: "5 分钟轻伸展或关节活动" },
     ],
-    ev:"AHA 2025 声明：晨光是首要昼夜节律同步器，可前移生物钟、提升全天警觉性、降低心血管风险。AASM：规律醒睡时间比绝对时长更重要。"
+    ev_txt: "<strong>这一格真正被验证的不是「几点起」，而是「每天同一时间起、波动 ≤30 分钟」。</strong>UK Biobank 60,977 人、超 1000 万小时加速度计数据（Sleep 2024）：按睡眠规律性指数分五档，最规律的四档比最不规律一档全因死亡风险低 20–48%，心血管代谢死亡低 22–57%，且规律性比睡眠时长更能预测死亡。AHA 2025《昼夜节律与心血管代谢健康》科学声明：光照时机是可用的干预工具，效果取决于它相对你内部生物钟的时刻。<br><em>观察性队列，人群以英国中老年为主（平均 62.8 岁）。</em>"
   },
-  {
-    emoji:"🌅", ibg:"var(--orange-soft)",
-    time:"06:30 – 07:30", label:"晨间激活 · 轻运动",
-    tags:["r","w"],
-    rows:[
-      {t:"ts",i:"😴",c:"作息",v:"准备早餐，整理状态，享受清晨时光"},
-      {t:"tw",i:"💧",c:"喝水",v:"继续小口补充，上午累计约 600–700 ml"},
-      {t:"td",i:"🍽️",c:"饮食",v:"暂不进食"},
-      {t:"tr",i:"🏃",c:"运动",v:"20–45 分钟晨练：快走、瑜伽、拉伸或中强度有氧（心率 60–70% 最大值）"},
+  morn: {
+    emoji: "🌅", ibg: "var(--orange-soft)", label: "晨间时段 · 运动可选",
+    ev: 3, tags: ["r", "w"],
+    rows: [
+      { t: "ts", i: "😴", c: "作息", v: "整理状态，准备一天" },
+      { t: "tw", i: "💧", c: "喝水", v: "继续小口补充" },
+      { t: "td", i: "🍽️", c: "饮食", v: "暂不进食" },
+      { t: "tr", i: "🏃", c: "运动", v: "可放 20–45 分钟中等强度有氧。<strong>但放下午或晚上同样成立</strong>——见下方依据。注意：首餐在此之后，这里运动属空腹运动，低血糖倾向者先垫点东西" },
     ],
-    ev:"AHA 2025 + 多项 RCT：晨练可前移生物钟、提升代谢率和脂肪氧化、改善胰岛素敏感性、降低全天血压。WHO：每周 ≥150 分钟中强度有氧。"
+    ev_txt: "<strong>「晨练更优」是站不住的，现有最大规模的证据反而指向别的方向。</strong>UK Biobank 92,139 人（Nat Commun 2023）：与晨练组（05:00–11:00）相比，<strong>中午–下午组（11:00–17:00）和混合时段组</strong>的全因与心血管死亡风险更低；肥胖成人队列（Diabetes Care 2024）在控制总运动量后发现<strong>晚间</strong>运动全因死亡风险最低。多项研究的共同结论是：<strong>任何时段的中高强度运动都与更低死亡风险相关，总量和能否坚持远比时段重要。</strong>所以这一格放运动只是示例排布，你挪到任何时段都不损失获益。"
   },
-  {
-    emoji:"🥣", ibg:"var(--orange-soft)",
-    time:"07:30 – 08:00", label:"早餐 · 全天最重要一餐",
-    tags:["d","w"],
-    rows:[
-      {t:"ts",i:"😴",c:"作息",v:"专心进餐，不建议边工作边用餐"},
-      {t:"tw",i:"💧",c:"喝水",v:"餐时补充 200–300 ml"},
-      {t:"td",i:"🍽️",c:"饮食",v:"高蛋白 + 全谷 + 蔬果（燕麦 + 鸡蛋 + 浆果 + 坚果），占全天热量 30–35%，必须在 8:00 前完成"},
-      {t:"tr",i:"🏃",c:"运动",v:"—"},
+  meal1: {
+    emoji: "🥣", ibg: "var(--orange-soft)", label: "首餐 · 早吃优于晚吃",
+    ev: 2, tags: ["d", "w"],
+    rows: [
+      { t: "ts", i: "😴", c: "作息", v: "专心进餐，不建议边工作边吃" },
+      { t: "tw", i: "💧", c: "喝水", v: "餐时补充 200–300 ml" },
+      { t: "td", i: "🍽️", c: "饮食", v: "高蛋白 + 全谷 + 蔬果。<strong>这一餐标志着进食窗口开始计时</strong>" },
+      { t: "tr", i: "🏃", c: "运动", v: "—" },
     ],
-    ev:"NutriNet-Santé 队列（法国 10 万人前瞻观察，Nat Commun 2023）：首餐每延迟 1 小时，心血管病风险升 6%（HR 1.06, 95%CI 1.01–1.12）；同队列糖尿病分析（Int J Epidemiol 2023）：首餐晚于 9:00 比早于 8:00，2 型糖尿病风险升 59%（HR 1.59, 1.30–1.94）。BMJ Medicine 2026 网络 meta（41 项 RCT / 2287 人）：早时段限时进食（eTRE）持续优于晚时段。<br><em>注：队列研究只能说明相关，不能证明因果。</em>"
+    ev_txt: "<strong>要分清两个不同的命题，站内过去把它们混成了一句。</strong><br>① <strong>「早时段吃优于晚时段吃」——有 RCT 支撑</strong>：BMJ Medicine 2026 网络 meta（41 项 RCT / 2287 人）显示早时段限时进食持续优于晚时段。<br>② <strong>「必须吃早餐 / 早餐是最重要一餐」——RCT 不支持</strong>：BMJ 2019 的 RCT meta 显示不吃早餐组体重反而低 0.44 kg（95%CI 0.07–0.82），吃早餐组每日总能量摄入高 259.8 kcal；而 45 项观察性研究的 meta 方向相反（不吃早餐者超重风险高 44%）。两类证据打架时，能说因果的是 RCT。<br><em>公允地说：那些 RCT 存在偏倚风险、随访很短，所以也不能反过来断言「早餐有害」。</em><br><strong>结论：吃不吃是你的自由；吃的话早点吃。</strong>"
   },
-  {
-    emoji:"💻", ibg:"var(--blue-soft)",
-    time:"08:00 – 12:00", label:"上午工作 · 高效认知",
-    tags:["w","d"],
-    rows:[
-      {t:"ts",i:"😴",c:"作息",v:"上午认知效率较高，适合深度工作和复杂决策"},
-      {t:"tw",i:"💧",c:"喝水",v:"每 1–2 小时小口喝 100–150 ml，累计至中午约 700–800 ml"},
-      {t:"td",i:"🍽️",c:"饮食",v:"可选 10:00 轻零食（若饥饿；水果 + 蛋白质，非必须，须在进食窗口内）"},
-      {t:"tr",i:"🏃",c:"运动",v:"—（已晨练）"},
+  am: {
+    emoji: "💻", ibg: "var(--blue-soft)", label: "上午时段 · 认知随时型",
+    ev: 3, tags: ["w", "d"],
+    rows: [
+      { t: "ts", i: "😴", c: "作息", v: "把最需要专注的任务放在<strong>你自己</strong>的高峰时段，不一定是上午" },
+      { t: "tw", i: "💧", c: "喝水", v: "每 1–2 小时小口喝 100–150 ml" },
+      { t: "td", i: "🍽️", c: "饮食", v: "可选轻零食（在进食窗口内）" },
+      { t: "tr", i: "🏃", c: "运动", v: "—" },
     ],
-    ev:"Mayo Clinic：餐间均匀补水防脱水；2024 PMC：水摄入与认知能力正相关。稳定血糖有助于维持上午注意力和工作效率。"
+    ev_txt: "<strong>「上午认知效率最高」只对晨型人成立。</strong>这叫<strong>同步效应（synchrony effect）</strong>：认知表现的高峰出现在与自身时型匹配的时段——晨型人在上午，<strong>夜型人在傍晚或晚间</strong>；神经影像也对得上（额下皮层在各自最优时段激活更高）。系统综述里 64 项成人研究中有 29 项（45%）观察到该效应。<br><strong>建议：用一两周记录自己什么时候最清醒，按记录排任务，别照搬「上午做难题」。</strong>"
   },
-  {
-    emoji:"🥗", ibg:"var(--green-soft)",
-    time:"12:00 – 13:00", label:"午餐 · 代谢效率最佳",
-    tags:["d","w"],
-    rows:[
-      {t:"ts",i:"😴",c:"作息",v:"餐后可选 10–15 分钟轻散步，助消化和血糖控制"},
-      {t:"tw",i:"💧",c:"喝水",v:"餐时补充 200–300 ml"},
-      {t:"td",i:"🍽️",c:"饮食",v:"均衡午餐：蔬菜 + 全谷 + 优质蛋白，占全天热量 30–35%"},
-      {t:"tr",i:"🏃",c:"运动",v:"餐后轻散步 10–15 分钟（可选）"},
+  lunch: {
+    emoji: "🥗", ibg: "var(--green-soft)", label: "午餐",
+    ev: 3, tags: ["d", "w"],
+    rows: [
+      { t: "ts", i: "😴", c: "作息", v: "餐后可选 10–15 分钟轻散步，助消化与血糖控制" },
+      { t: "tw", i: "💧", c: "喝水", v: "餐时补充 200–300 ml" },
+      { t: "td", i: "🍽️", c: "饮食", v: "均衡：蔬菜 + 全谷 + 优质蛋白" },
+      { t: "tr", i: "🏃", c: "运动", v: "餐后轻散步 10–15 分钟（可选）" },
     ],
-    ev:"AHA + 2025 chrononutrition 综述：中午进食与生物钟代谢峰值匹配，胰岛素敏感性较高，相同热量摄入对代谢的负担最小。"
+    ev_txt: "有证据的部分是<strong>「同等热量，白天早些时候吃代谢负担更小」</strong>——AHA 2025 科学声明指出进食时机对代谢的影响独立于热量，越晚越不利。<br><strong>没有证据的部分是「必须 12:00 吃」</strong>——这个钟点是从你的锚点推出来的示例，前后挪一小时不影响任何已知结论。"
   },
-  {
-    emoji:"🛋️", ibg:"var(--indigo-soft)",
-    time:"13:00 – 13:20", label:"午间小憩 · Power Nap",
-    tags:["s"],
-    rows:[
-      {t:"ts",i:"😌",c:"作息",v:"找安静、暗光的角落闭眼平躺或半躺，设好闹钟，控制在 20 分钟以内，没条件小憩可跳过不强求"},
-      {t:"tw",i:"💧",c:"喝水",v:"睡前不必大量补水，避免醒来后跑厕所打断午睡"},
-      {t:"td",i:"🍽️",c:"饮食",v:"午餐后间隔 10–15 分钟再躺下，避免刚进食就平躺影响消化"},
-      {t:"tr",i:"🏃",c:"运动",v:"—"},
+  nap: {
+    emoji: "🛋️", ibg: "var(--indigo-soft)", label: "午间小憩 · Power Nap",
+    ev: 1, tags: ["s"],
+    rows: [
+      { t: "ts", i: "😌", c: "作息", v: "安静暗光处平躺或半躺，<strong>设好 20 分钟闹钟</strong>，没条件可跳过不强求" },
+      { t: "tw", i: "💧", c: "喝水", v: "躺下前不必大量补水，免得醒来跑厕所" },
+      { t: "td", i: "🍽️", c: "饮食", v: "餐后间隔 10–15 分钟再躺，避免刚吃完就平躺" },
+      { t: "tr", i: "🏃", c: "运动", v: "—" },
     ],
-    ev:"Mayo Clinic + National Sleep Foundation 共识：最佳午睡时长 10–20 分钟，能恢复精力又不进入深睡，避免醒后的睡眠惰性（sleep inertia）；超过 30 分钟但不足 90 分钟的整周期，反而更容易醒后昏沉疲惫。最佳窗口是 13:00–15:00（午后警觉性自然下降期），15:00 后午睡容易干扰夜间入睡节律。"
+    ev_txt: "<strong>这一格的「10–20 分钟」是硬证据，钟点才是推导的。</strong>Mayo Clinic + National Sleep Foundation 共识：最佳午睡时长 10–20 分钟，能恢复精力又不进入深睡，避免醒后的睡眠惰性（sleep inertia）；<strong>超过 30 分钟但不足一个完整周期（约 90 分钟）反而更容易醒后昏沉</strong>。窗口放在午后（约 13:00–15:00，对应午后警觉性自然低谷），15:00 之后午睡容易干扰夜间入睡。"
   },
-  {
-    emoji:"📋", ibg:"var(--blue-soft)",
-    time:"13:20 – 17:00", label:"下午工作 · 运动备选",
-    tags:["w","r"],
-    rows:[
-      {t:"ts",i:"😴",c:"作息",v:"下午体温峰值，反应速度和爆发力最高，适合需要体力的工作"},
-      {t:"tw",i:"💧",c:"喝水",v:"每小时 100–150 ml，全天喝水累计约 1200–1400 ml"},
-      {t:"td",i:"🍽️",c:"饮食",v:"无正餐；若需零食，选低糖高蛋白"},
-      {t:"tr",i:"🏃",c:"运动",v:"若未晨练：16:00–17:00 进行 30–60 分钟中高强度有氧 + 力量训练"},
+  pm: {
+    emoji: "📋", ibg: "var(--blue-soft)", label: "下午时段 · 运动同样合适",
+    ev: 2, tags: ["w", "r"],
+    rows: [
+      { t: "ts", i: "😴", c: "作息", v: "下午体温达峰，反应速度和爆发力较高，适合需要体力的任务" },
+      { t: "tw", i: "💧", c: "喝水", v: "每小时 100–150 ml" },
+      { t: "td", i: "🍽️", c: "饮食", v: "无正餐；若需零食选低糖高蛋白，且仍在进食窗口内" },
+      { t: "tr", i: "🏃", c: "运动", v: "30–60 分钟中高强度有氧 + 力量训练。<strong>在最大规模的队列里，这个时段的表现不差于晨练、甚至更好</strong>" },
     ],
-    ev:"AHA 2025：下午运动（13:00–16:00）对血糖控制和心血管获益显著；多项 2025 研究显示下午体温峰值时运动性能更高。晨练与下午练对健康均有益，选最易坚持的时段。"
+    ev_txt: "下午体温峰值时运动表现较高，有较一致的时间生物学证据支持。更重要的是：UK Biobank 92,139 人的数据里，<strong>中午–下午时段运动组的全因与心血管死亡风险低于晨练组</strong>（Nat Commun 2023）。<br>把运动放在早上还是下午，按你能坚持的来选——<strong>总量（每周 ≥150 分钟中等强度）才是被 WHO 写进推荐的那个量。</strong>"
   },
-  {
-    emoji:"🌿", ibg:"var(--green-soft)",
-    time:"17:00 – 19:00", label:"晚餐 · 最迟 19:00 结束",
-    tags:["d","w","r"],
-    rows:[
-      {t:"ts",i:"😴",c:"作息",v:"开始降低刺激性活动，逐渐进入放松模式"},
-      {t:"tw",i:"💧",c:"喝水",v:"餐时 200–300 ml；19:00 后渐减饮水量"},
-      {t:"td",i:"🍽️",c:"饮食",v:"较轻晚餐，以蔬果为主，占全天热量 25–30%。这是全天最后一次进食，至少睡前 3 小时完成（最迟 19:00–20:00）"},
-      {t:"tr",i:"🏃",c:"运动",v:"餐后 10–15 分钟轻散步，助消化 + 血糖控制"},
+  meal2: {
+    emoji: "🌿", ibg: "var(--green-soft)", label: "末餐 · 进食窗口关闭",
+    ev: 1, tags: ["d", "w", "r"],
+    rows: [
+      { t: "ts", i: "😴", c: "作息", v: "开始降低刺激性活动，逐渐进入放松模式" },
+      { t: "tw", i: "💧", c: "喝水", v: "餐时 200–300 ml；此后渐减饮水量" },
+      { t: "td", i: "🍽️", c: "饮食", v: "较轻的一餐。<strong>这是全天最后一次进食</strong>，之后进入禁食阶段" },
+      { t: "tr", i: "🏃", c: "运动", v: "餐后 10–15 分钟轻散步" },
     ],
-    ev:"NutriNet-Santé 队列（Nat Commun 2023）：末餐晚于 21:00 比早于 20:00，<strong>脑血管病（卒中）</strong>风险升 28%（HR 1.28, 95%CI 1.05–1.55）；夜间禁食时长每多 1 小时，脑血管病风险降 7%（HR 0.93, 0.87–0.99）。AHA 2025 科学声明《Role of Circadian Health in Cardiometabolic Health and Disease Risk》（Circulation）：进食时机对代谢的影响独立于热量，越晚越不利。<br><em>注：队列研究只能说明相关，不能证明因果。</em>"
+    ev_txt: "<strong>这一格被验证的是「别太晚」和「距就寝留足间隔」，不是某个具体钟点。</strong>NutriNet-Santé 队列（法国约 10 万人，Nat Commun 2023）：末餐晚于 21:00 比早于 20:00，<strong>脑血管病（卒中）风险升 28%</strong>（HR 1.28, 95%CI 1.05–1.55）；<strong>夜间禁食时长每多 1 小时，脑血管病风险降 7%</strong>（HR 0.93, 0.87–0.99）。<br><em>观察性队列，只能说明相关，不能证明因果。</em>"
   },
-  {
-    emoji:"🌙", ibg:"var(--blue-soft)",
-    time:"19:00 – 21:00", label:"晚间放松 · 禁食阶段",
-    tags:["s","w"],
-    rows:[
-      {t:"ts",i:"😴",c:"作息",v:"放松活动：阅读、轻音乐、冥想、家庭时光；避免剧烈运动和强刺激"},
-      {t:"tw",i:"💧",c:"喝水",v:"小口补足当日 1500–1700 ml 的缺口；可喝无糖草本茶；19:00 后渐减"},
-      {t:"td",i:"🍽️",c:"饮食",v:"严格禁食（仅无热量饮料）"},
-      {t:"tr",i:"🏃",c:"运动",v:"轻柔拉伸可接受，避免剧烈运动（影响入睡）"},
+  eve: {
+    emoji: "🌙", ibg: "var(--blue-soft)", label: "晚间放松 · 禁食阶段",
+    ev: 2, tags: ["s", "w"],
+    rows: [
+      { t: "ts", i: "😴", c: "作息", v: "阅读、轻音乐、冥想、家庭时光；避免强刺激" },
+      { t: "tw", i: "💧", c: "喝水", v: "小口补足当日缺口；可喝无糖草本茶，睡前渐减" },
+      { t: "td", i: "🍽️", c: "饮食", v: "严格禁食（仅无热量饮料）" },
+      { t: "tr", i: "🏃", c: "运动", v: "轻柔拉伸可以；剧烈运动放在更早的时段" },
     ],
-    ev:"Mayo Clinic：全天均匀分布饮水，避免睡前大量饮水干扰睡眠。AHA：夜宵干扰褪黑素节律和胰岛素代谢，增加夜间血糖负担。"
+    ev_txt: "这一段的长度由你的进食窗口和就寝时间共同决定，本身没有独立的钟点证据。它存在的意义是把<strong>「末餐 → 就寝」的间隔撑到 3 小时以上</strong>，并延长夜间禁食时长（见上一格的 HR 0.93）。"
   },
-  {
-    emoji:"🕯️", ibg:"var(--blue-soft)",
-    time:"21:00 – 22:30", label:"睡前准备 · 关闭刺激",
-    tags:["s"],
-    rows:[
-      {t:"ts",i:"😴",c:"作息",v:"调暗灯光，降低室温至 18–20℃；避免屏幕或开蓝光滤镜；放松仪式：阅读/冥想/腹式呼吸"},
-      {t:"tw",i:"💧",c:"喝水",v:"睡前 30 分钟内不超过 200 ml，防止夜尿"},
-      {t:"td",i:"🍽️",c:"饮食",v:"—（禁食）"},
-      {t:"tr",i:"🏃",c:"运动",v:"—（禁止剧烈运动）"},
+  wind: {
+    emoji: "🕯️", ibg: "var(--blue-soft)", label: "睡前准备 · 关闭刺激",
+    ev: 1, tags: ["s"],
+    rows: [
+      { t: "ts", i: "😴", c: "作息", v: "调暗灯光，室温降到 <strong>18–20℃</strong>；避免屏幕或开蓝光滤镜；固定的放松仪式（阅读/冥想/腹式呼吸）" },
+      { t: "tw", i: "💧", c: "喝水", v: "睡前 30 分钟内不超过 200 ml，防夜尿" },
+      { t: "td", i: "🍽️", c: "饮食", v: "—（禁食中）" },
+      { t: "tr", i: "🏃", c: "运动", v: "—（禁止剧烈运动）" },
     ],
-    ev:"AASM 2024 共识：睡前 2 小时避免咖啡因、剧烈运动、强光等刺激物；规律就寝时间比绝对时长更关键。室温 18–20℃ 有助于核心体温下降，促进深度睡眠。"
+    ev_txt: "<strong>「睡前 2 小时」这个量本身有共识支撑。</strong>AASM：睡前 2 小时避免咖啡因、剧烈运动、强光等刺激物。室温 18–20℃ 与 Sleep Foundation 推荐的 65–68°F（18.3–20℃）一致，有助核心体温下降、促进深睡。"
   },
-  {
-    emoji:"😴", ibg:"var(--indigo-soft)",
-    time:"22:30 – 06:30", label:"睡眠 · 全天恢复核心",
-    tags:["s"],
-    rows:[
-      {t:"ts",i:"😴",c:"作息",v:"目标 7–9 小时，保持完整睡眠周期（每周期约 90 分钟）"},
-      {t:"tw",i:"💧",c:"喝水",v:"—（睡眠中无需饮水）"},
-      {t:"td",i:"🍽️",c:"饮食",v:"—（禁食，禁食窗口持续至次日早餐）"},
-      {t:"tr",i:"🏃",c:"运动",v:"—"},
+  sleep: {
+    emoji: "😴", ibg: "var(--indigo-soft)", label: "睡眠 · 全天恢复核心",
+    ev: 1, tags: ["s"],
+    rows: [
+      { t: "ts", i: "😴", c: "作息", v: "目标 7–9 小时；<strong>比时长更重要的是每天同一时间，周末偏差也 ≤30 分钟</strong>" },
+      { t: "tw", i: "💧", c: "喝水", v: "—" },
+      { t: "td", i: "🍽️", c: "饮食", v: "—（禁食持续到次日首餐）" },
+      { t: "tr", i: "🏃", c: "运动", v: "—" },
     ],
-    ev:"AASM + AHA：7+ 小时睡眠 + 规律性显著降低心代谢风险，改善血压、血糖、体重。一致的睡眠时间胜过「周末补觉」。2025 研究：一致睡眠 + 早进食共同改善心率变异性（HRV）。"
+    ev_txt: "<strong>这是全表证据最硬的一格，也是唯一有直接「钟点」证据的一格。</strong><br>① <strong>就寝时刻</strong>：UK Biobank 用加速度计客观记录 103,712 人、平均随访 5.7 年、3,172 例心血管事件（Eur Heart J Digital Health 2021）——<strong>入睡时间落在 22:00–22:59 这一档的 CVD 发病率最低</strong>。<em>该关联主要集中在女性、在女性中更显著。</em><br>② <strong>时长</strong>：AASM / AHA 推荐 7–9 小时。<br>③ <strong>规律性</strong>：比时长更能预测死亡风险（Sleep 2024，n=60,977）。<strong>「周末补觉」抵不掉长期的不规律。</strong>"
   },
-];
-const bmap = { s:{l:"作息",c:"bdg-s"}, d:{l:"饮食",c:"bdg-d"}, w:{l:"喝水",c:"bdg-w"}, r:{l:"运动",c:"bdg-r"} };
+};
+
+const BMAP = { s: { l: "作息", c: "bdg-s" }, d: { l: "饮食", c: "bdg-d" }, w: { l: "喝水", c: "bdg-w" }, r: { l: "运动", c: "bdg-r" } };
+const EVMAP = { 1: { l: "直接证据", c: "evb-1" }, 2: { l: "相对量有据", c: "evb-2" }, 3: { l: "示例排布", c: "evb-3" } };
+
 const tl = document.getElementById("tl");
-data.forEach((d,i)=>{
-  const card = document.createElement("div");
-  card.className = "tcard" + (i===0?" open":"");
-  const badges = d.tags.map(t=>`<span class="bdg ${bmap[t].c}">${bmap[t].l}</span>`).join("");
-  const rows = d.rows.map(r=>`<div class="trow ${r.t}"><div class="trow-icon">${r.i}</div><div><div class="trow-cat">${r.c}</div><div class="trow-val">${r.v}</div></div></div>`).join("");
-  card.innerHTML = `
-    <div class="thead">
-      <div class="ticon" style="background:${d.ibg}">${d.emoji}</div>
-      <div class="tmid">
-        <div class="ttime">${d.time}</div>
-        <div class="tlabel">${d.label}</div>
-        <div class="tbadges">${badges}</div>
-      </div>
-      <span class="tchev">▼</span>
-    </div>
-    <div class="tbody">
-      <div class="trows">${rows}</div>
-      <div class="ebox"><strong>科学依据：</strong>${d.ev}</div>
-    </div>`;
-  card.querySelector(".thead").addEventListener("click",()=>card.classList.toggle("open"));
-  tl.appendChild(card);
-});
+const aOut = document.getElementById("aOut");
+const selWake = document.getElementById("aWake");
+const selSleep = document.getElementById("aSleep");
+const selWin = document.getElementById("aWin");
+
+/* 选项：起床 04:00–11:30 每 15 分钟；睡眠 6–10h 每 0.5h；窗口 8–14h 每 1h */
+(function fillOptions() {
+  let h = "";
+  for (let m = 240; m <= 690; m += 15) h += '<option value="' + m + '">' + fmt(m) + "</option>";
+  selWake.innerHTML = h;
+  h = "";
+  for (let m = 360; m <= 600; m += 30) h += '<option value="' + m + '">' + (m / 60) + " 小时</option>";
+  selSleep.innerHTML = h;
+  h = "";
+  for (let m = 480; m <= 840; m += 60) h += '<option value="' + m + '">' + (m / 60) + " 小时</option>";
+  selWin.innerHTML = h;
+})();
+
+function renderAnchorOut(a, sch) {
+  const gap = sch.bed - sch.lastMealEnd;
+  const bedClock = ((sch.bed % 1440) + 1440) % 1440;
+  const notes = [];
+
+  if (sch.clamped) {
+    notes.push({ k: "warn", i: "⚠️", t: "一天排不下：<strong>" + hTxt(a.sleep) + "睡眠 + " + hTxt(a.win) +
+      "进食窗口</strong>会把末餐挤进睡前 3 小时以内。按你选的睡眠时长，窗口最多 <strong>" + hTxt(sch.maxWin) +
+      "</strong>，<strong>下表已按这个上限绘制</strong>。想要更长的进食窗口，就得缩短睡眠或提早起床。" });
+  } else {
+    notes.push({ k: "good", i: "✓", t: "末餐距就寝 " + hTxt(gap) + "，达到「≥3 小时」这个常用界限。" });
+  }
+
+  if (bedClock >= 1320 && bedClock <= 1379) {
+    notes.push({ k: "good", i: "✓", t: "就寝落在 <strong>22:00–23:00</strong>——UK Biobank 103,712 人的加速度计数据里，这一档的心血管病发病率最低（Eur Heart J Digital Health 2021）。" });
+  } else {
+    notes.push({ k: "info", i: "ℹ️", t: "同一份队列里，入睡时间落在 22:00–23:00 这一档的心血管病发病率最低。你目前推算出来的是 " + fmt(sch.bed) + "。这是观察性证据、且主要体现在女性身上，不必强行迁就——<strong>规律性仍然比钟点更重要</strong>。" });
+  }
+
+  if (a.sleep < 420 || a.sleep > 540) {
+    notes.push({ k: "warn", i: "⚠️", t: "睡眠时长 " + hTxt(a.sleep) + " 在 AASM / AHA 推荐的 <strong>7–9 小时</strong>区间之外。" });
+  }
+
+  if (sch.effWin > 720 || sch.effWin < 600) {
+    notes.push({ k: "info", i: "ℹ️", t: "实际排出的进食窗口 " + hTxt(sch.effWin) +
+      " 落在 10–12 小时这个有证据支持的范围之外（BMJ Medicine 2026 网络 meta，41 项 RCT）。" });
+  }
+
+  aOut.innerHTML =
+    "起床 <strong>" + fmt(a.wake) + "</strong>　→　首餐 <strong>" + fmt(sch.firstMeal) +
+    "</strong>　→　末餐结束 <strong>" + fmt(sch.lastMealEnd) +
+    "</strong>　→　就寝 <strong>" + fmt(sch.bed) + "</strong>" +
+    notes.map(function (n) {
+      return '<div class="anote ' + n.k + '"><span class="anote-i">' + n.i + '</span><span class="anote-b">' + n.t + "</span></div>";
+    }).join("");
+}
+
+function renderTimeline(a, sch) {
+  const openIds = {};
+  tl.querySelectorAll(".tcard.open").forEach(function (el) { openIds[el.dataset.id] = true; });
+  const firstRender = tl.children.length === 0;
+
+  tl.innerHTML = "";
+  sch.blocks.forEach(function (b, i) {
+    const d = CONTENT[b.id];
+    if (!d) return;
+    const card = document.createElement("div");
+    card.className = "tcard" + ((firstRender ? i === 0 : openIds[b.id]) ? " open" : "");
+    card.dataset.id = b.id;
+    const badges = d.tags.map(function (t) { return '<span class="bdg ' + BMAP[t].c + '">' + BMAP[t].l + "</span>"; }).join("") +
+      '<span class="evb ' + EVMAP[d.ev].c + '">' + EVMAP[d.ev].l + "</span>";
+    const rows = d.rows.map(function (r) {
+      return '<div class="trow ' + r.t + '"><div class="trow-icon">' + r.i +
+        '</div><div class="trow-b"><div class="trow-cat">' + r.c + '</div><div class="trow-val">' + r.v + "</div></div></div>";
+    }).join("");
+    card.innerHTML =
+      '<div class="thead">' +
+        '<div class="ticon" style="background:' + d.ibg + '">' + d.emoji + "</div>" +
+        '<div class="tmid">' +
+          '<div class="ttime">' + fmt(b.s) + " – " + fmt(b.e) + '　<span class="trel">' + relTxt(b.s, a.wake) + "</span></div>" +
+          '<div class="tlabel">' + d.label + "</div>" +
+          '<div class="tbadges">' + badges + "</div>" +
+        "</div>" +
+        '<span class="tchev">▼</span>' +
+      "</div>" +
+      '<div class="tbody"><div class="trows">' + rows + '</div>' +
+      '<div class="ebox"><strong>依据：</strong>' + d.ev_txt + "</div></div>";
+    card.querySelector(".thead").addEventListener("click", function () { card.classList.toggle("open"); });
+    tl.appendChild(card);
+  });
+}
+
+function apply(save) {
+  const a = { wake: +selWake.value, sleep: +selSleep.value, win: +selWin.value };
+  if (save) { try { localStorage.setItem(STORE_KEY, JSON.stringify(a)); } catch (e) {} }
+  const sch = buildSchedule(a);
+  renderAnchorOut(a, sch);
+  renderTimeline(a, sch);
+}
+
+(function init() {
+  const a = readAnchor();
+  selWake.value = a.wake; selSleep.value = a.sleep; selWin.value = a.win;
+  // 存的值若不在选项里（比如以后改了步长），回退到默认
+  if (!selWake.value) selWake.value = DEFAULTS.wake;
+  if (!selSleep.value) selSleep.value = DEFAULTS.sleep;
+  if (!selWin.value) selWin.value = DEFAULTS.win;
+  [selWake, selSleep, selWin].forEach(function (s) { s.addEventListener("change", function () { apply(true); }); });
+  apply(false);
+})();
 </script>
 <script src="assets/pull-to-refresh.js"></script>
 </body>
