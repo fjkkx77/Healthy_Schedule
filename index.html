@@ -80,6 +80,14 @@ body::before {
   .entry-card-pink:hover { box-shadow: 0 10px 26px rgba(165,48,111,.34); }
 }
 .entry-card-pink:active { box-shadow: 0 4px 14px rgba(165,48,111,.28); }
+.entry-card-purple {
+  background: linear-gradient(135deg, #6f42c1, #8957e5);
+  box-shadow: 0 6px 20px rgba(111,66,193,.3);
+}
+@media (hover: hover) and (pointer: fine) {
+  .entry-card-purple:hover { box-shadow: 0 10px 26px rgba(111,66,193,.36); }
+}
+.entry-card-purple:active { box-shadow: 0 4px 14px rgba(111,66,193,.3); }
 .entry-ico {
   width: 46px; height: 46px; border-radius: var(--radius-sm); flex-shrink: 0;
   background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 23px;
@@ -370,6 +378,15 @@ body::before {
     <div class="entry-mid">
       <div class="entry-t">心梗 · 脑梗 · 猝死急救</div>
       <div class="entry-d">识别信号 · CPR急救 · 分人群预防方案</div>
+    </div>
+    <span class="entry-chev">›</span>
+  </a>
+
+  <a href="plan.html" class="entry-card entry-card-purple fadeup" style="animation-delay:.045s">
+    <div class="entry-ico">🎓</div>
+    <div class="entry-mid">
+      <div class="entry-t">我的专属方案</div>
+      <div class="entry-d">按真实课表每天自动排 · 睡眠逐步提前</div>
     </div>
     <span class="entry-chev">›</span>
   </a>
