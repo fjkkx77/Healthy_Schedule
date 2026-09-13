@@ -127,6 +127,16 @@ body::before {
   border-radius: var(--radius-sm); padding: 10px 8px; min-height: 44px;
   width: 100%; touch-action: manipulation;
 }
+/* iOS Safari 的时间控件是 inline-flex，会无视 width:100%，
+   而 grid 子项默认 min-width:auto，于是控件内部 UI 的宽度成了下限，撑出格子压到隔壁。
+   2026-09-13 真机截图里两个框重叠就是这个。Chrome 渲染方式不同，headless 测不出来。 */
+.afield input[type="time"] {
+  -webkit-appearance: none; appearance: none;
+  display: block; min-width: 0; max-width: 100%; box-sizing: border-box;
+  line-height: 1.25; overflow: hidden; text-align: left;
+}
+.afield input[type="time"]::-webkit-date-and-time-value { text-align: left; }
+.anchor-grid > .afield { min-width: 0; overflow: hidden; }
 /* 自动推荐时输入框只读展示：保持可读（不用 opacity 压暗，小字对比度会不达标） */
 .afield input[type="time"]:disabled {
   background: var(--accent-soft); color: var(--accent);
@@ -385,7 +395,7 @@ body::before {
     </div>
     <div class="pcard">
       <div class="picon" style="background:var(--green-soft)">🍽️</div>
-      <div><div class="ptitle">进食窗口</div><div class="pdesc">首餐到末餐控制在 <strong>10–12 小时</strong>，且早时段优于晚时段（BMJ Medicine 2026 网络 meta，41 项 RCT）</div></div>
+      <div><div class="ptitle">进食窗口</div><div class="pdesc"><strong>早时段优于晚时段</strong>这一点证据一致（BMJ Medicine 2026 网络 meta，41 项 RCT）；而<strong>窗口开多长，各研究结果并不一致</strong>，一天两顿、窗口较短也不算问题</div></div>
     </div>
     <div class="pcard">
       <div class="picon" style="background:var(--red-soft)">👤</div>
@@ -450,7 +460,7 @@ body::before {
   <div class="ioslist fadeup" style="animation-delay:.25s">
     <div class="iosrow"><div class="iosrow-icon" style="background:var(--red-soft)">🏃</div><div><div class="iosrow-t">有氧运动</div><div class="iosrow-v">每周 ≥ 150 分钟中等强度（或 ≥75 分钟高强度）</div><div class="iosrow-n"><strong>放在一天里的哪个时段都可以</strong>——UK Biobank 92,139 人的数据里，中午–下午与混合时段的死亡风险还略低于晨练。总量和能否坚持远比时段重要</div></div></div>
     <div class="iosrow"><div class="iosrow-icon" style="background:var(--orange-soft)">💪</div><div><div class="iosrow-t">力量训练</div><div class="iosrow-v">每周 2 天</div><div class="iosrow-n">时段同样不挑；两次之间至少隔 1 天</div></div></div>
-    <div class="iosrow"><div class="iosrow-icon" style="background:var(--green-soft)">🍽️</div><div><div class="iosrow-t">进食窗口</div><div class="iosrow-v">首餐到末餐 <strong>10–12 小时</strong></div><div class="iosrow-n">早时段优于晚时段（BMJ Medicine 2026 网络 meta，41 项 RCT / 2287 人）。具体几点开窗由上面的锚点推导，不写死钟点</div></div></div>
+    <div class="iosrow"><div class="iosrow-icon" style="background:var(--green-soft)">🍽️</div><div><div class="iosrow-t">进食窗口</div><div class="iosrow-v">重点是<strong>别太晚</strong>，不是开多长</div><div class="iosrow-n">BMJ Medicine 2026 网络 meta（41 项 RCT / 2287 人）：早时段限时进食持续优于晚时段，但窗口长短的效果不一致。末餐距就寝 ≥3 小时、尽量不晚于 21:00</div></div></div>
     <div class="iosrow"><div class="iosrow-icon" style="background:var(--blue-soft)">😴</div><div><div class="iosrow-t">睡眠</div><div class="iosrow-v">7–9 小时，就寝尽量落在 22:00–23:00</div><div class="iosrow-n"><strong>规律性比时长更能预测死亡风险</strong>（UK Biobank 60,977 人）：周末偏差也要 ≤30 分钟，「补觉式熬夜」抵不掉长期不规律</div></div></div>
     <div class="iosrow"><div class="iosrow-icon" style="background:var(--indigo-soft)">📈</div><div><div class="iosrow-t">效果监测</div><div class="iosrow-v">3–4 周后评估</div><div class="iosrow-n">睡眠质量（PSQI）、体重、血糖/血压、精力水平</div></div></div>
   </div>
@@ -490,7 +500,7 @@ body::before {
        → 体温最低点 Tmin≈W−2.5h → 晨光窗口（相位反应曲线的前移侧）
        → 咖啡因截止 = S−6h   → Drake 2013 RCT
        → 剧烈运动截止 = S−1h → Stutz 2019 meta
-       → 进食窗口            → 10–12h 内取最大，且末餐距就寝 ≥3h
+       → 进食窗口            → 最长 12h，且末餐距就寝 ≥3h（窗口长短证据不一致，只做上限不做下限警告）
    ============================================================ */
 const STORE_KEY = "scheduleAnchorV3";
 // 首次进来两个时间都交给推荐引擎，让用户先看到"凭什么这么推"
@@ -599,7 +609,7 @@ function derive(a) {
   const Tmin = W - 150;                   // 核心体温最低点 ≈ 起床前 2.5 小时
   const firstMeal = W + 90;
 
-  // 进食窗口：10–12h 里取最大，同时保证末餐距就寝 ≥3 小时
+  // 进食窗口：最长 12h，同时保证末餐距就寝 ≥3 小时（窗口长短的证据不一致，不对短窗口报警）
   let lastMealEnd = Math.min(firstMeal + 720, bed - 180);
   lastMealEnd = Math.max(lastMealEnd, W + 500);   // 不早于午睡结束，保证时段顺序
   const effWin = lastMealEnd - firstMeal;
@@ -901,11 +911,11 @@ function renderAnchorOut(a, d) {
     notes.push({ k: "warn", i: "⚠️", t: "睡眠时长 <strong>" + hTxt(d.tib) + "</strong> 在 AASM / AHA 推荐的 7–9 小时之外。这是全表里最该优先解决的一项——它排在周期对齐前面。" });
   }
   if (d.effWin < 600) {
-    notes.push({ k: "warn", i: "⚠️", t: "算下来进食窗口只有 <strong>" + hTxt(d.effWin) + "</strong>，短于 10–12 小时这个有证据支持的范围。原因是你的清醒时长扣掉「首餐延后 1.5 小时」和「末餐距就寝 3 小时」后剩得不多了。" });
+    notes.push({ k: "info", i: "ℹ️", t: "算下来进食窗口是 <strong>" + hTxt(d.effWin) + "</strong>，比常见的 10–12 小时短。<strong>这不算问题</strong>：现有 RCT 里窗口长短的效果并不一致，一致的只有「早吃优于晚吃」。末餐距就寝 " + hTxt(d.bed - d.lastMealEnd) + "。" });
   } else if (d.effWin > 720) {
     notes.push({ k: "info", i: "ℹ️", t: "进食窗口已按上限 12 小时收口。" });
   } else {
-    notes.push({ k: "good", i: "✓", t: "进食窗口 <strong>" + hTxt(d.effWin) + "</strong>，落在 10–12 小时区间内，且末餐距就寝 " + hTxt(d.bed - d.lastMealEnd) + "（≥3 小时）。" });
+    notes.push({ k: "good", i: "✓", t: "进食窗口 <strong>" + hTxt(d.effWin) + "</strong>，末餐距就寝 " + hTxt(d.bed - d.lastMealEnd) + "（≥3 小时）。" });
   }
   if (d.free && d.free.jetlag >= 120) {
     notes.push({ k: "warn", i: "⚠️", t: "社会时差达 <strong>" + (Math.round(d.free.jetlag / 6) / 10) + " 小时</strong>，相当于每周给自己倒一次时差。" });
