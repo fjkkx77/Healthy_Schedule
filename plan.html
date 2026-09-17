@@ -519,10 +519,10 @@ function buildDay(S, p, date) {
     }
   }
 
-  // 晚餐：最后一节课下课后，18:00 起，20:00 前吃完，且距入睡 ≥3 小时
+  // 晚餐：最后一节课下课后，18:00 起，20:00 前吃完，且距入睡 ≥4 小时（Diabetes Care 2022 RCT / AJG 2005 的「好」组都是 4h）
   const lastEnd = busy.length ? Math.max.apply(null, busy.map(function (b) { return b[1]; })) : 0;
   const dinS = Math.max(18 * 60, lastEnd + 20);
-  const dinE = Math.min(dinS + 90, 20 * 60, bedAbs - 180);
+  const dinE = Math.min(dinS + 90, 20 * 60, bedAbs - 240);
   items.push({ k: "meal", t: dinS, t2: Math.max(dinE, dinS + 30), tag: "晚餐", title: "晚餐 · 可以吃得多",
     note: fmt(Math.max(dinE, dinS + 30)) + " 前吃完。份量不是问题，时间才是：末餐晚于 21:00 卒中风险 +28%" });
 
