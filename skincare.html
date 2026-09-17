@@ -49,6 +49,7 @@ body::before {
   background: var(--red-soft); color: var(--red); font-weight: 700; font-size: 12px;
   display: flex; align-items: center; justify-content: center; margin-top: 1px;
 }
+.ruleitem .rt { flex: 1; min-width: 0; }
 
 /* 早 / 晚 切换 —— 复用 ulcer.html 的 ptabs 模式，这里只有两个 tab */
 .ptabs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -110,6 +111,31 @@ body::before {
   font-size: var(--text-sm); color: var(--amber); line-height: 1.65;
 }
 
+/* 同一时段的另一种情况（没涂防晒的早上 / 熬夜泛红的晚上）—— 虚线框，和主流程区分开 */
+.pvar {
+  margin-top: 14px; border: 1px dashed var(--border); border-radius: var(--radius-sm); padding: 12px 14px;
+}
+.pvar-t { font-size: var(--text-sm); font-weight: 700; color: var(--text-1); line-height: 1.5; }
+.pvar-c { font-size: var(--text-sm); color: var(--text-2); line-height: 1.75; margin-top: 4px; }
+.pvar-c strong { color: var(--accent); }
+.pvar-d { font-size: var(--text-xs); color: var(--text-3); line-height: 1.65; margin-top: 4px; }
+
+/* 以后想加 A 醇 —— 默认收起，现在不用 */
+.fold {
+  background: var(--card); border: 1px solid var(--border); border-left: 4px solid var(--amber);
+  border-radius: var(--radius-md); box-shadow: var(--shadow-2);
+}
+.fold summary {
+  list-style: none; cursor: pointer; padding: 16px 22px; min-height: 44px;
+  font-size: var(--text-sm); font-weight: 700; color: var(--text-1); line-height: 1.5;
+  display: flex; align-items: center; gap: 10px; touch-action: manipulation;
+}
+.fold summary::-webkit-details-marker { display: none; }
+.fold summary .ft { flex: 1; min-width: 0; }
+.fold summary::after { content: "›"; flex-shrink: 0; color: var(--text-4); font-size: 20px; transition: transform .18s ease; }
+.fold[open] summary::after { transform: rotate(90deg); }
+.fold-b { padding: 0 22px 18px; }
+
 /* 产品清单 —— 与 ulcer.html 的 .cabinet 同款 */
 .cabinet { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-2); overflow: hidden; }
 .cabrow { display: flex; align-items: flex-start; gap: 14px; padding: 15px 20px; border-bottom: 1px solid var(--border-soft); transition: background .15s ease; }
@@ -153,18 +179,19 @@ body::before {
   <header class="fadeup" style="animation-delay:.02s">
     <div class="eyebrow">🧴 私人护肤档案</div>
     <h1>每日护肤流程</h1>
-    <p class="header-sub">早晚分流 · 产品清单 · 避坑要点（含裂可宁 + 防晒）</p>
+    <p class="header-sub">早 C + 防晒 · 晚间补水修护 · 两瓶水分工</p>
   </header>
 
   <div class="slabel fadeup" style="animation-delay:.05s">⚠️ 全程铁律 <em>· 早晚都不能违反</em></div>
   <div class="rulecard fadeup" style="animation-delay:.07s">
     <div class="rulelist">
-      <div class="ruleitem"><span class="num">1</span>裂可宁禁止全脸大面积厚涂 —— 封闭性太强，和 VC 叠加容易闷出闭口痘，只用来点涂局部干皮裂口（嘴角、鼻翼、下巴干皮处、手）</div>
-      <div class="ruleitem"><span class="num">2</span>早上涂了 VC 就必须足量涂防晒 —— 这一步是 VC 提亮的关键，缺了它前面几步等于白做</div>
-      <div class="ruleitem"><span class="num">3</span>VC 要慢慢建耐受：前一周隔天早上用、半泵起步，耐受后再加到每天 1 泵</div>
-      <div class="ruleitem"><span class="num">4</span>这套流程不要再额外叠加酸类、A 醇类产品，避免屏障受损</div>
-      <div class="ruleitem"><span class="num">5</span>湿敷不能天天做 —— 单次最多 3 分钟、一周不超过 2 次，频繁湿敷反而削弱屏障，更容易发黄敏感</div>
-      <div class="ruleitem"><span class="num">6</span>白天涂过防晒，晚上必须先用卸妆产品再洁面，不能只洗一遍了事</div>
+      <div class="ruleitem"><span class="num">1</span><span class="rt">裂可宁不再上脸 —— 封闭性太强，上脸容易闷出闭口，早上还会让防晒搓泥、成膜不均；脸上的锁水交给 C 乳，裂可宁留着擦手脚干裂</span></div>
+      <div class="ruleitem"><span class="num">2</span><span class="rt">涂了 VC 就要涂防晒 —— VC 本身不会让人变黑，但它挡不住紫外线；不打算涂防晒的日子，早上就跳过 VC，或者把 VC 挪到晚上用</span></div>
+      <div class="ruleitem"><span class="num">3</span><span class="rt">防晒永远是早上最后一步 —— 前面的乳液等 1–2 分钟吸收再涂，涂完再等几分钟成膜后出门，顺序反了会破坏防晒膜</span></div>
+      <div class="ruleitem"><span class="num">4</span><span class="rt">VC 要慢慢建耐受：前一周隔天早上用、半泵起步，耐受后再加到每天 1 泵</span></div>
+      <div class="ruleitem"><span class="num">5</span><span class="rt">湿敷不能天天做 —— 单次 3 分钟左右、一周不超过 2 次，敷完马上接乳液锁水；频繁湿敷反而削弱屏障</span></div>
+      <div class="ruleitem"><span class="num">6</span><span class="rt">现阶段不用 A 醇、不叠加酸类 —— 走「早 C + 防晒」的稳妥路线；以后想加 A 醇，先看页面下方的注意事项</span></div>
+      <div class="ruleitem"><span class="num">7</span><span class="rt">防晒说明上写了需要卸妆（如防水型）的，晚上先卸妆再洁面</span></div>
     </div>
   </div>
 
@@ -174,28 +201,46 @@ body::before {
 
   <div class="slabel fadeup" style="animation-delay:.16s">🧴 产品清单</div>
   <div class="cabinet fadeup" style="animation-delay:.18s">
-    <div class="cabrow"><div class="cabrow-icon">🧼</div><div class="cabrow-b"><div class="cabrow-t">温和氨基酸洁面</div><div class="cabrow-v">早晚都用 · 早上直接洁面，晚上先卸妆再洁面</div></div></div>
-    <div class="cabrow"><div class="cabrow-icon">💧</div><div class="cabrow-b"><div class="cabrow-t">卸妆产品</div><div class="cabrow-v">仅晚上 · 白天涂了防晒就必须卸，不卸会闷痘</div></div></div>
-    <div class="cabrow"><div class="cabrow-icon">🫧</div><div class="cabrow-b"><div class="cabrow-t">OPOSI B5 积雪草爽肤水</div><div class="cabrow-v">早晚打底 · 轻拍上脸；泛红严重时才湿敷，最多 3 分钟</div></div></div>
-    <div class="cabrow"><div class="cabrow-icon warn">☀️</div><div class="cabrow-b"><div class="cabrow-t">春日来信 10% VC 精华</div><div class="cabrow-v">仅早上 · 1 泵，避开眼周薄皮；避光存放，开封尽量 2 个月内用完，变黄就别上脸</div></div></div>
-    <div class="cabrow"><div class="cabrow-icon">🧴</div><div class="cabrow-b"><div class="cabrow-t">TONDI 神经酰胺精华乳</div><div class="cabrow-v">早晚修护 · 早上薄涂缓冲 VC 刺激，晚上全脸涂修护褪红</div></div></div>
-    <div class="cabrow"><div class="cabrow-icon warn">⚠️</div><div class="cabrow-b"><div class="cabrow-t">裂可宁</div><div class="cabrow-v">早晚都用，但只点涂局部 · 偏厚重封闭，主打干裂保湿，禁止全脸</div></div></div>
-    <div class="cabrow"><div class="cabrow-icon">🌞</div><div class="cabrow-b"><div class="cabrow-t">防晒霜</div><div class="cabrow-v">仅早上 · 足量涂抹，是整套早间流程的收尾和关键</div></div></div>
+    <div class="cabrow"><div class="cabrow-icon">🧼</div><div class="cabrow-b"><div class="cabrow-t">温和氨基酸洁面</div><div class="cabrow-v">早晚都用 · 流程第一步</div></div></div>
+    <div class="cabrow"><div class="cabrow-icon">💧</div><div class="cabrow-b"><div class="cabrow-t">依漾 B5 精华水（500ml）</div><div class="cabrow-v">日常早晚的主力水 · 补水打底，洗完脸轻拍上脸；大容量，放心用</div></div></div>
+    <div class="cabrow"><div class="cabrow-icon">🫧</div><div class="cabrow-b"><div class="cabrow-t">OPOSI B5 积雪草爽肤水</div><div class="cabrow-v">不天天用，当「灭火水」· 熬夜脸发黄、长痘泛红、晒后发热时拍或湿敷 3 分钟左右</div></div></div>
+    <div class="cabrow"><div class="cabrow-icon warn">☀️</div><div class="cabrow-b"><div class="cabrow-t">春日来信 10% VC 精华</div><div class="cabrow-v">早上用（当天必须涂防晒）· 1 泵，避开眼周薄皮；避光存放，开封尽量 2 个月内用完，变黄就别上脸</div></div></div>
+    <div class="cabrow"><div class="cabrow-icon">🧴</div><div class="cabrow-b"><div class="cabrow-t">TONDI 神经酰胺精华乳</div><div class="cabrow-v">早晚修护 · 全脸薄涂，巩固屏障、舒缓泛红</div></div></div>
+    <div class="cabrow"><div class="cabrow-icon">🫙</div><div class="cabrow-b"><div class="cabrow-t">适乐肤 C 乳</div><div class="cabrow-v">晚上必用、早上按需 · 最后一步锁水，替代原来裂可宁的位置；晚上 1 泵，早上半泵</div></div></div>
+    <div class="cabrow"><div class="cabrow-icon">🌞</div><div class="cabrow-b"><div class="cabrow-t">防晒霜</div><div class="cabrow-v">仅早上 · 足量涂抹，早间流程的收尾；用了 VC 的日子不能省</div></div></div>
+    <div class="cabrow"><div class="cabrow-icon warn">✋</div><div class="cabrow-b"><div class="cabrow-t">裂可宁</div><div class="cabrow-v">已移出脸部护肤 · 留着擦手、脚的干裂</div></div></div>
   </div>
 
   <div class="slabel fadeup" style="animation-delay:.21s">🚨 出现这些情况就调整</div>
   <div class="rfcard fadeup" style="animation-delay:.23s">
     <div class="rflist">
-      <div class="rfitem">用 VC 后<strong>持续刺痛、泛红</strong> → 停用 VC，只留 B5 水 + TONDI 乳修护，等屏障稳定再从半泵重新建耐受</div>
-      <div class="rfitem">下巴、嘴角一带<strong>冒出闭口痘</strong> → 先查是不是裂可宁涂的面积太大，收回到只点涂裂口</div>
+      <div class="rfitem">用 VC 后<strong>持续刺痛、泛红</strong> → 停用 VC，只留 B5 水 + TONDI 乳 + C 乳修护，等屏障稳定再从半泵重新建耐受</div>
+      <div class="rfitem"><strong>冒出闭口痘、脸发闷</strong> → 先减早上 C 乳的量（半泵或不加），夏天、偏油时早上只用 TONDI 乳；确认没把裂可宁涂到脸上</div>
+      <div class="rfitem">涂防晒时<strong>搓泥</strong> → 前面的乳液减量，等 1–2 分钟吸收、摸着不黏了再涂防晒，按压上脸别来回搓</div>
       <div class="rfitem">VC 精华<strong>颜色变黄</strong> → 已经氧化、<strong>有效成分基本失效</strong>（抗坏血酸的氧化受 pH、氧气和金属离子催化，最稳定的 pH 区间是 2.5–3.0）。主要问题是白涂，不必恐慌，但没必要继续用，换新的</div>
       <div class="rfitem">皮肤<strong>发黄、变敏感</strong> → 多半是湿敷太频繁，先停湿敷，只做基础的水 + 乳</div>
+      <div class="rfitem">最近<strong>暗沉、发黄、长痘</strong>，而以前不护肤也挺好 → 先看作息和饮食：熬夜、不规律、少运动、奶茶甜食多，这些比多涂一瓶精华影响大，作息安排见首页时间表</div>
     </div>
   </div>
 
-  <a class="tlink fadeup" style="animation-delay:.25s" href="index.html">查看完整作息 · 饮食 · 喝水 · 运动时间表 →</a>
+  <div class="slabel fadeup" style="animation-delay:.24s">🧪 以后想加 A 醇 <em>· 现在不用，先收起来</em></div>
+  <details class="fold fadeup" style="animation-delay:.25s">
+    <summary><span class="ft">展开看加 A 醇之前要知道的 6 件事</span></summary>
+    <div class="fold-b">
+      <div class="rflist">
+        <div class="rfitem"><strong>只在晚上用</strong>：A 醇见光容易分解，也会让皮肤对日晒更敏感</div>
+        <div class="rfitem"><strong>第二天必须防晒</strong>：用了 A 醇就不能「看心情涂防晒」，要么涂足防晒，要么宅家；准备暴晒（出游、海边）的前一晚停用</div>
+        <div class="rfitem"><strong>低浓度、隔天起步</strong>：比如一周一、三、五晚上用，耐受后再加频率；新手可选 A 醇 + A 酯复配的「双 A 醇」，相对温和</div>
+        <div class="rfitem"><strong>放在哪一步</strong>：洁面 → 依漾水 → <strong>A 醇</strong> → TONDI 乳 → C 乳；刚开始刺痛可以先涂一层 TONDI 乳再上 A 醇（乳 – A 醇 – 乳）</div>
+        <div class="rfitem"><strong>用 A 醇的当晚不要全脸湿敷</strong>，正常轻拍水就行</div>
+        <div class="rfitem"><strong>持续泛红、脱皮、刺痛就停</strong>，回到不含 A 醇的流程；备孕、怀孕、哺乳期不要用</div>
+      </div>
+    </div>
+  </details>
 
-  <footer class="fadeup" style="animation-delay:.28s">
+  <a class="tlink fadeup" style="animation-delay:.27s" href="index.html">查看完整作息 · 饮食 · 喝水 · 运动时间表 →</a>
+
+  <footer class="fadeup" style="animation-delay:.30s">
     <strong>重要提醒</strong><br>
     本页流程基于个人与AI过往讨论整理的个人护肤记录，不是医生或药师的处方，不能替代专业诊疗。<br>
     市面常见的「裂可宁」为化妆品（妆字号）而非药品，不具备治疗皮肤病的作用；<br>
@@ -207,31 +252,45 @@ body::before {
 const routines = [
   {
     id: "am", tabLabel: "早上", icon: "🌞",
-    title: "早间流程 · 含 VC + 防晒",
-    subtitle: "全套六步，重点是 VC 之后一定要用防晒收尾",
-    chain: "B5 水 → <strong>VC</strong> → TONDI 乳 → 局部裂可宁 → <strong>防晒</strong>",
+    title: "早间流程 · 抗氧化 + 防御",
+    subtitle: "六步，C 乳看肤感决定加不加；防晒永远最后一步",
+    chain: "洁面 → 依漾水 → <strong>VC</strong> → TONDI 乳 →（C 乳）→ <strong>防晒</strong>",
     steps: [
       { name: "温和氨基酸洁面", desc: "早上皮脂不多，正常洗一遍即可，不用二次清洁" },
-      { name: "OPOSI B5 积雪草爽肤水", desc: "轻拍上脸打底，把后面几步的吸收环境先做好" },
-      { name: "春日来信 10% VC 精华", desc: "1 泵，避开眼周薄皮。前一周隔天用、半泵起步，耐受后再加量" },
-      { name: "TONDI 神经酰胺精华乳", desc: "全脸薄涂，修护屏障、缓冲 VC 带来的刺激" },
-      { name: "裂可宁", desc: "只点涂在起皮干裂的位置（嘴角、鼻翼、下巴干皮处、手），不要全脸", badge: { t: "仅局部", c: "warn" } },
-      { name: "防晒霜", desc: "足量涂抹。这一步是 VC 提亮的关键，漏掉等于前面几步白做", badge: { t: "关键", c: "key" } },
+      { name: "依漾 B5 精华水", desc: "轻拍上脸补水打底，后面的 VC 和乳液会更服帖" },
+      { name: "春日来信 10% VC 精华", desc: "1 泵，避开眼周薄皮。前一周隔天用、半泵起步，耐受后再加量", badge: { t: "当天要防晒", c: "warn" } },
+      { name: "TONDI 神经酰胺精华乳", desc: "全脸薄涂，巩固屏障" },
+      { name: "适乐肤 C 乳", desc: "偏干、秋冬、觉得紧绷就加半泵；偏油、夏天、已经够润就跳过。涂完等 1–2 分钟吸收、摸着不黏再往下", badge: { t: "按需", c: "key" } },
+      { name: "防晒霜", desc: "足量，按压上脸别来回搓。涂完等几分钟成膜再出门", badge: { t: "关键", c: "key" } },
+    ],
+    variants: [
+      {
+        title: "今天不打算涂防晒？",
+        chain: "洁面 → 依漾水 → TONDI 乳 / C 乳（选一个够润的）",
+        desc: "跳过 VC —— 没有防晒挡着，VC 很快被紫外线消耗掉，涂了意义不大；想用可以挪到晚上 C 乳之前。要出门就打伞、戴帽子做硬防晒。"
+      }
     ],
     tip: null
   },
   {
     id: "pm", tabLabel: "晚上", icon: "🌙",
-    title: "晚间流程 · 不含 VC",
-    subtitle: "四步，重点是先卸妆再洁面，以及裂可宁改成厚敷",
-    chain: "卸妆 + 洁面 → B5 水 → TONDI 乳 → 局部裂可宁",
+    title: "晚间流程 · 补水修护",
+    subtitle: "四步，没有活性成分，重点是 C 乳锁水收尾",
+    chain: "洁面 → 依漾水 → TONDI 乳 → <strong>C 乳</strong>",
     steps: [
-      { name: "卸妆 + 洁面", desc: "白天涂了防晒，晚上要先用卸妆产品卸干净，再用氨基酸洁面洗一遍" },
-      { name: "OPOSI B5 积雪草爽肤水", desc: "轻拍上脸。泛红严重时才湿敷，单次最多 3 分钟、一周不超过 2 次", badge: { t: "别天天湿敷", c: "warn" } },
-      { name: "TONDI 神经酰胺精华乳", desc: "全脸涂抹，夜间修护褪红" },
-      { name: "裂可宁", desc: "局部厚敷在干裂处，借夜间时间修护干皮。仍然只涂局部，不涂全脸", badge: { t: "仅局部", c: "warn" } },
+      { name: "温和氨基酸洁面", desc: "白天用的防晒如果说明写了需要卸妆，先卸妆再洗" },
+      { name: "依漾 B5 精华水", desc: "日常轻拍上脸补水即可，不用湿敷" },
+      { name: "TONDI 神经酰胺精华乳", desc: "全脸涂抹，夜间修护、舒缓泛红" },
+      { name: "适乐肤 C 乳", desc: "1 泵薄涂，锁住前面的水分，替代原来裂可宁的位置", badge: { t: "必用", c: "key" } },
     ],
-    tip: "晚上不用 VC —— VC 白天配合防晒才有提亮意义，夜间叠加只会增加刺激和氧化风险"
+    variants: [
+      {
+        title: "熬夜了 / 脸发黄 / 长痘泛红的晚上",
+        chain: "洁面 → <strong>积雪草水湿敷 3 分钟</strong> → TONDI 乳 → C 乳",
+        desc: "把依漾水换成 OPOSI B5 积雪草水，化妆棉吸饱后湿敷。一周不超过 2 次，敷完马上接乳液锁水。"
+      }
+    ],
+    tip: null
   },
 ];
 
@@ -272,6 +331,12 @@ function renderContent(activeId) {
     <div class="pc-sub">${r.subtitle}</div>
     <div class="pc-chain"><strong>顺序：</strong>${r.chain}</div>
     <div class="steplist">${stepsHtml}</div>
+    ${(r.variants || []).map(v => `
+    <div class="pvar">
+      <div class="pvar-t">${v.title}</div>
+      <div class="pvar-c">${v.chain}</div>
+      <div class="pvar-d">${v.desc}</div>
+    </div>`).join("")}
     ${r.tip ? `<div class="pc-tip">${r.tip}</div>` : ""}
   `;
 }
