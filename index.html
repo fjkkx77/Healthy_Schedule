@@ -495,9 +495,9 @@ body::before {
   <footer class="fadeup" style="animation-delay:.31s">
     <strong>重要提醒</strong><br>
     本表格基于当前最佳证据整理，不是「一刀切」处方。<br>
-    <strong>最后逐条核对日期：2026-09-12</strong>　数值标准以中国官方发布为准，国际值仅作对照。<br>
+    <strong>最后逐条核对日期：2026-09-12</strong>（首餐、末餐两格 2026-09-17 复查补充）　数值标准以中国官方发布为准，国际值仅作对照。<br>
     建议在开始执行前咨询医师或注册营养师进行个性化微调。<br><br>
-    来源：中国营养学会 DRIs 2023 · AHA · BMJ Medicine · Nature Communications · Mayo Clinic · AASM · Johns Hopkins
+    来源：中国营养学会 DRIs 2023 · AHA · BMJ Medicine · Nature Communications · Diabetes Care · Int J Epidemiol · Eur J Clin Nutr · Sleep Health · Mayo Clinic · AASM · Johns Hopkins
   </footer>
 
 </div>
@@ -518,6 +518,7 @@ body::before {
        → 咖啡因截止 = S−6h   → Drake 2013 RCT
        → 剧烈运动截止 = S−1h → Stutz 2019 meta
        → 进食窗口            → 最长 12h，且末餐距就寝 ≥3h（窗口长短证据不一致，只做上限不做下限警告）
+       → 末餐钟点晚于 21:00  → 只提醒不强制（钟点证据全是观察性，且和晚睡混在一起）
    ============================================================ */
 const STORE_KEY = "scheduleAnchorV3";
 // 首次进来两个时间都交给推荐引擎，让用户先看到"凭什么这么推"
@@ -608,6 +609,10 @@ function relTxt(start, T) {
   return "T+" + (Math.round(d / 6) / 10) + "h";
 }
 function span(a, b) { let d = b - a; if (d <= 0) d += 1440; return d; }
+// 钟点（0–1439）。凌晨 0:00–4:59 算作「前一天的深夜」，用于判断末餐是否晚于 21:00 / 过了午夜
+function clockOf(m) { return ((m % 1440) + 1440) % 1440; }
+function isAfter21(m) { const c = clockOf(m); return c > 1260 || c < 300; }
+function isAfterMidnight(m) { return clockOf(m) < 300; }
 
 function readAnchor() {
   let a = null;
@@ -624,6 +629,9 @@ function derive(a) {
   const tib = span(S, W);                 // 卧床（≈睡眠）时长
   const bed = W + 1440 - tib;             // 今晚就寝的绝对时刻（锚在起床之后）
   const Tmin = W - 150;                   // 核心体温最低点 ≈ 起床前 2.5 小时
+  // 首餐 = 起床 + 90 分钟：这是示例值，没有研究给出「起床后多久吃」的最优数。
+  // 查到的证据只划出两个方向：别一醒就吃（多数人醒时黑素还没退，Sleep Health 2024），
+  // 钟点上也别太晚（NutriNet-Santé IJE 2023 / NHANES EJCN 2026）。详见 meal1 的 ev_txt。
   const firstMeal = W + 90;
 
   // 进食窗口：最长 12h，同时保证末餐距就寝 ≥3 小时（窗口长短的证据不一致，不对短窗口报警）
@@ -765,7 +773,9 @@ function keyMoments(d) {
     { icon: "🕯️", bg: "var(--blue-soft)", t: "关刺激 · 调暗灯光", v: fmt(d.bed - 120),
       n: "就寝前 2 小时避免咖啡因、剧烈运动和强光（AASM）。此刻起把室温往 18–20℃ 调。注意：这个时间点<strong>在 Tmin 之前</strong>，强光会把生物钟往后推。" },
     { icon: "🍽️", bg: "var(--orange-soft)", t: "末餐截止", v: fmt(d.lastMealEnd),
-      n: "距就寝 " + hTxt(d.bed - d.lastMealEnd) + "。末餐晚于 21:00 比早于 20:00，脑血管病风险升 28%（HR 1.28）；夜间禁食每多 1 小时，风险降 7%（HR 0.93）。" },
+      n: "距就寝 " + hTxt(d.bed - d.lastMealEnd) + "。" +
+        (isAfter21(d.lastMealEnd) ? "<strong>⚠️ 晚于 21:00</strong>——" : "") +
+        "末餐晚于 21:00 比早于 20:00，脑血管病风险升 28%（HR 1.28，观察性）。随机交叉试验里睡前 1 小时进食比睡前 4 小时，餐后血糖面积高 8.3%。" },
     { icon: "🌙", bg: "var(--indigo-soft)", t: "就寝", v: fmt(d.bed),
       n: "由你填的入睡时间直接得到。" +
         (((d.bed % 1440) + 1440) % 1440 >= 1320 && ((d.bed % 1440) + 1440) % 1440 <= 1379
@@ -797,14 +807,18 @@ const CONTENT = {
     ev_txt: "<strong>「晨练更优」站不住，现有最大规模的证据反而指向别处。</strong>UK Biobank 92,139 人（Nat Commun 2023）：与晨练组（05:00–11:00）相比，<strong>中午–下午组和混合时段组</strong>的全因与心血管死亡风险更低；肥胖成人队列（Diabetes Care 2024）在控制总运动量后发现<strong>晚间</strong>最低。共同结论是<strong>任何时段都有益，总量和能否坚持远比时段重要</strong>。唯一的时间约束来自睡眠：系统综述（23 项研究）显示只有<strong>结束于睡前 1 小时内的剧烈运动</strong>可能影响入睡。"
   },
   meal1: {
-    emoji: "🥣", ibg: "var(--orange-soft)", label: "首餐 · 早吃优于晚吃", ev: 2, tags: ["d", "w"],
+    emoji: "🥣", ibg: "var(--orange-soft)", label: "首餐 · 早吃优于晚吃", ev: 3, tags: ["d", "w"],
     rows: [
       { t: "ts", i: "😴", c: "作息", v: "专心进餐，不建议边工作边吃" },
       { t: "tw", i: "💧", c: "喝水", v: "餐时补充 200–300 ml" },
       { t: "td", i: "🍽️", c: "饮食", v: function (d) { return "高蛋白 + 全谷 + 蔬果。<strong>进食窗口从这一刻开始计时，到 " + fmt(d.lastMealEnd) + " 关闭，共 " + hTxt(d.effWin) + "</strong>。"; } },
       { t: "tr", i: "🏃", c: "运动", v: "—" },
     ],
-    ev_txt: "<strong>要分清两个不同的命题。</strong><br>① <strong>「早时段吃优于晚时段吃」——有 RCT 支撑</strong>：BMJ Medicine 2026 网络 meta（41 项 RCT / 2287 人）显示早时段限时进食持续优于晚时段。<br>② <strong>「必须吃早餐 / 早餐是最重要一餐」——RCT 不支持</strong>：BMJ 2019 的 RCT meta 显示不吃早餐组体重反而低 0.44 kg（95%CI 0.07–0.82），吃早餐组每日总能量摄入高 259.8 kcal；45 项观察性研究的 meta 方向相反。两类证据打架时，能说因果的是 RCT。<br><em>那些 RCT 存在偏倚风险、随访很短，也不能反过来断言「早餐有害」。</em><br><strong>结论：吃不吃是你的自由；吃的话早点吃。</strong>"
+    ev_txt: "<strong>先说清楚：「起床后 1.5 小时吃首餐」是示例值，没有任何研究给出这个数。</strong>2026-09-17 重新检索，能找到的证据只划出两个方向，给不出最优间隔：<br>" +
+      "· <strong>别一醒就吃</strong>：62 名健康成人里 <strong>74.4% 醒来时黑素还没退</strong>（生物学上的夜晚还没结束；Sleep Health 2024）；而黑素高的时候进食，餐后血糖更高（18 人模拟早班交叉试验，Nutrients 2020，<em>该试验同时缩短了睡眠，两个因素分不开</em>）。睡得越少、起得越早，这条越相关。<br>" +
+      "· <strong>「醒后多久吃」唯一的直接数据是一个权衡</strong>：肥胖成人限时进食 RCT 的二次分析（Nutrients 2026）里，醒后到首餐每多 1 小时，夜间血糖更低、波动更小，<strong>但低血糖（&lt;70 mg/dL）时间也更多</strong>。观察性、人群是肥胖者，没有最优点。<br>" +
+      "· <strong>钟点上也别太晚</strong>：NutriNet-Santé 103,312 人（IJE 2023）首餐晚于 9 点比早于 8 点，2 型糖尿病 HR 1.59（1.30–1.94），每晚 1 小时 HR 1.14；美国 NHANES 31,044 名 40 岁以上成人（EJCN 2026）以 7–8 点为参照，8–10 点 / 10–12 点 / 12 点后全因死亡 HR 1.10 / 1.19 / 1.29。<em>都是观察性，而且首餐晚常常意味着起得晚或身体不好——老年人队列（Commun Med 2025）就发现晚吃早餐更像健康变差的信号，不一定是原因。</em><br><br>" +
+      "<strong>再分清两个不同的命题。</strong><br>① <strong>「早时段吃优于晚时段吃」——有 RCT 支撑</strong>：BMJ Medicine 2026 网络 meta（41 项 RCT / 2287 人）显示早时段限时进食持续优于晚时段。<br>② <strong>「必须吃早餐 / 早餐是最重要一餐」——RCT 不支持</strong>：BMJ 2019 的 RCT meta 显示不吃早餐组体重反而低 0.44 kg（95%CI 0.07–0.82），吃早餐组每日总能量摄入高 259.8 kcal；45 项观察性研究的 meta 方向相反。两类证据打架时，能说因果的是 RCT。<br><em>那些 RCT 存在偏倚风险、随访很短，也不能反过来断言「早餐有害」。</em><br><strong>结论：吃不吃是你的自由；吃的话早点吃。</strong>"
   },
   am: {
     emoji: "💻", ibg: "var(--blue-soft)", label: "上午时段 · 认知随时型", ev: 3, tags: ["w", "d"],
@@ -851,14 +865,27 @@ const CONTENT = {
     ev_txt: "下午体温峰值时运动表现较高，有较一致的时间生物学证据。更重要的是：UK Biobank 92,139 人的数据里，<strong>中午–下午时段运动组的全因与心血管死亡风险低于晨练组</strong>（Nat Commun 2023）。<br>放早上还是下午按你能坚持的来选——<strong>总量（每周 ≥150 分钟中等强度）才是 WHO 写进推荐的那个量。</strong>"
   },
   meal2: {
-    emoji: "🌿", ibg: "var(--green-soft)", label: "末餐 · 进食窗口关闭", ev: 1, tags: ["d", "w", "r"],
+    emoji: "🌿", ibg: "var(--green-soft)", label: "末餐 · 进食窗口关闭", ev: 2, tags: ["d", "w", "r"],
     rows: [
       { t: "ts", i: "😴", c: "作息", v: "开始降低刺激性活动，逐渐进入放松模式" },
       { t: "tw", i: "💧", c: "喝水", v: "餐时 200–300 ml；此后渐减饮水量" },
       { t: "td", i: "🍽️", c: "饮食", v: function (d) { return "较轻的一餐，<strong>这是全天最后一次进食</strong>。距就寝 " + hTxt(d.bed - d.lastMealEnd) + "，之后进入夜间禁食。"; } },
       { t: "tr", i: "🏃", c: "运动", v: "餐后 10–15 分钟轻散步" },
     ],
-    ev_txt: "<strong>这一格被验证的是「别太晚」和「距就寝留足间隔」，不是某个具体钟点。</strong>NutriNet-Santé 队列（法国约 10 万人，Nat Commun 2023）：末餐晚于 21:00 比早于 20:00，<strong>脑血管病（卒中）风险升 28%</strong>（HR 1.28, 95%CI 1.05–1.55）；<strong>夜间禁食时长每多 1 小时，脑血管病风险降 7%</strong>（HR 0.93, 0.87–0.99）。<br><em>观察性队列，只能说明相关，不能证明因果。</em>"
+    ev_txt: function (d) {
+      return "<strong>这一格按两条规则算：离就寝至少 3 小时、首餐到末餐最长 12 小时，取更早的那个。</strong>" +
+        (isAfter21(d.lastMealEnd) ? "<br>⚠️ <strong>按你现在的作息，末餐结束在 " + fmt(d.lastMealEnd) + "，晚于 21:00</strong>——规则只管「离睡觉多远」，不管钟点，所以晚睡的人会被排到很晚。页面顶部有提示。" : "") +
+        "<br><br><strong>① 离就寝要远——有随机试验支撑</strong><br>" +
+        "· 西班牙 845 人随机交叉试验（Diabetes Care 2022）：同一个人分别在<strong>睡前 4 小时</strong>和<strong>睡前 1 小时</strong>喝葡萄糖，睡前 1 小时那次黑素高 3.5 倍、<strong>血糖面积高 8.3%、胰岛素低 6.7%</strong>。机制是入睡前约 2 小时黑素开始升高，会抑制胰岛素分泌。<br>" +
+        "· 肥胖成人 RCT 二次分析（Nutrients 2026）：末餐到入睡每多 1 小时，夜间 1–5 点平均血糖更低。<br>" +
+        "· 日本病例对照（Am J Gastroenterol 2005，147 名反流病人 vs 294 名对照）：晚饭到睡觉<strong>不足 3 小时比 4 小时以上，胃食管反流 OR 7.45</strong>。该文自己也写明「睡前 3 小时别吃」这条常见建议此前缺乏临床证据。<br>" +
+        "<em>注意：研究里「好」的那一组是 4 小时，3 小时是这里取的下限，不是被证明足够的量。</em><br><br>" +
+        "<strong>② 钟点别太晚——只有观察性证据</strong><br>" +
+        "· NutriNet-Santé（法国约 10 万人，Nat Commun 2023）：末餐晚于 21:00 比早于 20:00，<strong>脑血管病风险升 28%</strong>（HR 1.28, 95%CI 1.05–1.55）；夜间禁食每多 1 小时，脑血管病风险降 7%（HR 0.93, 0.87–0.99）。<br>" +
+        "· 同一队列看 2 型糖尿病（IJE 2023）：末餐晚于 21:00 单独看 HR 1.28，<strong>但同时考虑首餐时间后这个关联就消失了</strong>。<br>" +
+        "· 美国 NHANES（EJCN 2026）：以 19–20 点结束为参照，<strong>午夜后进食</strong>全因死亡 HR 1.27，<strong>但 19 点前就结束的 HR 也有 1.13</strong>——「越早越好」在这份数据里不成立。<br>" +
+        "<em>钟点研究都分不清「吃得晚」和「睡得晚 / 身体差」，所以这里没有把 21:00 做成硬上限，只在超过时提醒。</em>";
+    }
   },
   eve: {
     emoji: "🌙", ibg: "var(--blue-soft)", label: "晚间放松 · 禁食阶段", ev: 2, tags: ["s", "w"],
@@ -932,7 +959,23 @@ function renderAnchorOut(a, d) {
   } else if (d.effWin > 720) {
     notes.push({ k: "info", i: "ℹ️", t: "进食窗口已按上限 12 小时收口。" });
   } else {
-    notes.push({ k: "good", i: "✓", t: "进食窗口 <strong>" + hTxt(d.effWin) + "</strong>，末餐距就寝 " + hTxt(d.bed - d.lastMealEnd) + "（≥3 小时）。" });
+    // 末餐晚于 21:00 时下面会出红色提醒，这里就别再打绿勾，免得一绿一红自相矛盾
+    const late = isAfter21(d.lastMealEnd);
+    notes.push({ k: late ? "info" : "good", i: late ? "ℹ️" : "✓", t: "进食窗口 <strong>" + hTxt(d.effWin) + "</strong>，末餐距就寝 " + hTxt(d.bed - d.lastMealEnd) + "（≥3 小时）。" });
+  }
+  if (isAfter21(d.lastMealEnd)) {
+    notes.push({ k: "warn", i: "⚠️", t: "按你的作息，末餐要到 <strong>" + fmt(d.lastMealEnd) + "</strong> 才结束，" +
+      (isAfterMidnight(d.lastMealEnd) ? "<strong>已经过了午夜</strong>" : "<strong>晚于 21:00</strong>") +
+      "。观察性队列里这与更高风险相关（" +
+      (isAfterMidnight(d.lastMealEnd)
+        ? "美国 NHANES 31,044 人：午夜后进食比 19–20 点结束，全因死亡 HR 1.27"
+        : "法国 NutriNet-Santé 约 10 万人：21 点后比 20 点前，脑血管病 HR 1.28") +
+      "）。<strong>但钟点和晚睡是绑在一起的</strong>，研究分不清是「吃得晚」还是「睡得晚」在起作用。两个都站得住的做法：<br>" +
+      "① 能早就把末餐往前挪到 21:00 前——这样离就寝更远，和「距睡前越远越好」的 RCT 方向也一致；<br>" +
+      "② 长期看把整套作息往前移，而不是只压缩吃饭时间。" });
+  }
+  if (clockOf(d.firstMeal) > 540 && clockOf(d.firstMeal) < 1080) {
+    notes.push({ k: "info", i: "ℹ️", t: "首餐示例落在 <strong>" + fmt(d.firstMeal) + "</strong>，晚于 9:00。队列研究里首餐晚于 9 点与 2 型糖尿病风险更高相关（HR 1.59，观察性），<strong>但它和起床晚绑在一起</strong>，分不清是谁在起作用。详见「首餐」格的依据。" });
   }
   if (d.free && d.free.jetlag >= 120) {
     notes.push({ k: "warn", i: "⚠️", t: "社会时差达 <strong>" + (Math.round(d.free.jetlag / 6) / 10) + " 小时</strong>，相当于每周给自己倒一次时差。" });
@@ -990,7 +1033,7 @@ function renderTimeline(d, blocks) {
         '<span class="tchev">▼</span>' +
       "</div>" +
       '<div class="tbody"><div class="trows">' + rows + '</div>' +
-      '<div class="ebox"><strong>依据：</strong>' + c0.ev_txt + "</div></div>";
+      '<div class="ebox"><strong>依据：</strong>' + ((typeof c0.ev_txt === "function") ? c0.ev_txt(d) : c0.ev_txt) + "</div></div>";
     card.querySelector(".thead").addEventListener("click", function () { card.classList.toggle("open"); });
     tl.appendChild(card);
   });
