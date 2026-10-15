@@ -129,7 +129,7 @@
     // 三个页面都是整页滚动（body 没有 overflow:hidden），滚动容器就是 window
     var scrollTop = options.scrollTop || function () { return window.scrollY || document.documentElement.scrollTop || 0; };
     var doRefresh = options.doRefresh || revalidateThenReload;
-    var tipTimer = null;
+    var tipTimer = null, unlockTimer = null;
 
     function showTip(msg) {
       tip.textContent = msg; tip.hidden = false;
@@ -155,6 +155,11 @@
     function trigger(threshold) {
       indicator.classList.add('ptr-animate', 'ptr-loading');
       indicator.style.transform = 'translateY(' + threshold + 'px)';
+      // 兜底：重新加载被取消或一直卡着时，10 秒后解锁，别让页面永远滑不动
+      clearTimeout(unlockTimer);
+      unlockTimer = setTimeout(function () {
+        if (gesture.isRefreshing()) { gesture.cancelRefresh(); settle(); }
+      }, 10000);
       indicator.style.opacity = '1';
       try { sessionStorage.setItem('ptr-fired', String(Date.now())); } catch (e) {}   // 给自动化验收用的标记
       // 留一下 spinner 再动手，否则松手瞬间白屏，看起来像卡死
@@ -180,6 +185,9 @@
     }, { passive: true });
     // 必须 passive:false，否则 preventDefault 无效，页面会跟着一起动
     document.addEventListener('touchmove', function (e) {
+      // 刷新中锁住滚动：iOS Safari 发起重新加载后、新页面画出来之前会冻结绘制，
+      // 这时还能滑，滑出来的区域是一片空白（配方 v1.8）
+      if (gesture.isRefreshing()) { e.preventDefault(); return; }
       if (gesture.move(e.touches[0].clientX, e.touches[0].clientY)) e.preventDefault();
     }, { passive: false });
     document.addEventListener('touchend', function () { gesture.end(); }, { passive: true });
