@@ -76,12 +76,15 @@
     };
   }
 
-  /* ---------- 刷新：先把同源 css/js 的缓存校验一遍，再 reload ----------
+  /* ---------- 刷新：先把这一页本身 + 同源 css/js 都拿一遍，全部拿到才 reload ----------
      GitHub Pages 给所有文件都是 Cache-Control: max-age=600。实测 location.reload()
      只会回源校验 HTML 本身，assets/ 下的 css/js 在 10 分钟内直接用缓存——
      刚发版时下拉刷新会拿到"新 HTML + 旧样式/旧脚本"。
      先用 fetch(cache:'no-cache') 把它们各问一遍服务器（没变就是 304，很便宜），
-     缓存里就是新的了，随后的 reload 自然用上新版。最多等 2.5 秒，超时照样刷新。 */
+     缓存里就是新的了，随后的 reload 自然用上新版。
+     **6 秒内全部完整拿到才刷新，拿不到就不刷新**（下拉刷新配方 v2.0）：以前「最多等 2.5 秒、超时照样刷新」，
+     网络一卡，iOS 发起重新加载后冻住旧页面，新页面又只下载到一半、脚本跑不起来，箭头卡在半路、页面变空白
+     （2026-10-19 日程卡片用户截图，本地拿「故意不回数据」的服务器复现过）。 */
   function sameOriginAssets() {
     var nodes = document.querySelectorAll('link[rel="stylesheet"][href], script[src]');
     var urls = [];
@@ -94,14 +97,22 @@
     }
     return urls;
   }
-  function revalidateThenReload() {
-    var done = false;
-    function go() { if (!done) { done = true; location.reload(); } }
+  function safeReload(go, fail) {
     if (typeof fetch !== 'function' || typeof Promise !== 'function') { go(); return; }
-    setTimeout(go, 2500);
-    Promise.all(sameOriginAssets().map(function (u) {
-      return fetch(u, { cache: 'no-cache' }).catch(function () {});
-    })).then(go, go);
+    var urls = [location.href.split('#')[0]].concat(sameOriginAssets());
+    var ac = typeof AbortController === 'function' ? new AbortController() : null;
+    var settled = false, timer = null;
+    function finish(good) {
+      if (settled) return;
+      settled = true; clearTimeout(timer);
+      if (good) go(); else { if (ac) ac.abort(); fail(); }
+    }
+    timer = setTimeout(function () { finish(false); }, 6000);
+    Promise.all(urls.map(function (u) {
+      // 正文也要读完才算拿到（响应头先到、正文卡住也是卡住）
+      return fetch(u, { cache: 'no-cache', signal: ac ? ac.signal : undefined })
+        .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.arrayBuffer(); });
+    })).then(function () { finish(true); }, function () { finish(false); });
   }
 
   /* ---------- DOM 装配 ---------- */
@@ -128,8 +139,13 @@
     var isBlocked = options.isBlocked || function () { return false; };
     // 三个页面都是整页滚动（body 没有 overflow:hidden），滚动容器就是 window
     var scrollTop = options.scrollTop || function () { return window.scrollY || document.documentElement.scrollTop || 0; };
-    var doRefresh = options.doRefresh || revalidateThenReload;
     var tipTimer = null, unlockTimer = null;
+    var reloading = false;   // 真正发起了整页重新加载（刷新态里先检查网络的那几秒不算）
+    function reloadNow() { reloading = true; location.reload(); }
+    function giveUp() { reloading = false; gesture.cancelRefresh(); settle(); }
+    var doRefresh = options.doRefresh || function () {
+      safeReload(reloadNow, function () { showTip('网络不好，这次没刷新。稍后再拉一次。'); giveUp(); });
+    };
 
     function showTip(msg) {
       tip.textContent = msg; tip.hidden = false;
@@ -158,7 +174,7 @@
       // 兜底：重新加载被取消或一直卡着时，10 秒后解锁，别让页面永远滑不动
       clearTimeout(unlockTimer);
       unlockTimer = setTimeout(function () {
-        if (gesture.isRefreshing()) { gesture.cancelRefresh(); settle(); }
+        if (gesture.isRefreshing()) giveUp();
       }, 10000);
       indicator.style.opacity = '1';
       try { sessionStorage.setItem('ptr-fired', String(Date.now())); } catch (e) {}   // 给自动化验收用的标记
@@ -169,7 +185,7 @@
           showTip('当前没有网络，先不刷新了。等有网了再拉一次。');
           gesture.cancelRefresh(); settle(); return;
         }
-        doRefresh();
+        doRefresh(giveUp, showTip, reloadNow);
       }, 260);
     }
 
@@ -185,9 +201,9 @@
     }, { passive: true });
     // 必须 passive:false，否则 preventDefault 无效，页面会跟着一起动
     document.addEventListener('touchmove', function (e) {
-      // 刷新中锁住滚动：iOS Safari 发起重新加载后、新页面画出来之前会冻结绘制，
-      // 这时还能滑，滑出来的区域是一片空白（配方 v1.8）
-      if (gesture.isRefreshing()) { e.preventDefault(); return; }
+      // 整页重新加载中锁住滚动：iOS Safari 发起重新加载后、新页面画出来之前会冻结绘制，
+      // 这时还能滑，滑出来的区域是一片空白（配方 v1.8）。前面检查网络那几秒页面是活的，照常能滑（v2.0）
+      if (reloading) { e.preventDefault(); return; }
       if (gesture.move(e.touches[0].clientX, e.touches[0].clientY)) e.preventDefault();
     }, { passive: false });
     document.addEventListener('touchend', function () { gesture.end(); }, { passive: true });
