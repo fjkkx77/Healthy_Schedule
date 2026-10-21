@@ -147,21 +147,30 @@
     var scrollTop = options.scrollTop || function () { return window.scrollY || document.documentElement.scrollTop || 0; };
     var tipTimer = null, unlockTimer = null;
     var reloading = false;   // 真正发起了整页重新加载（刷新态里先检查网络的那几秒不算）
+    // 第几次下拉：兜底解锁 / 作罢之后，上一次还没回来的检查一律作废。不然锁屏回来时检查被重新计时、跟 10 秒兜底错开，
+    // 转圈先收了、过几秒页面又突然刷新或冒出「网络不好」，甚至作用到下一次下拉上（审查指出）
+    var attempt = 0;
+    // 检查那几秒里用户动过表单（真实的输入 / 勾选）：整页重新加载会把它冲掉，就不刷了（审查指出）
+    var edited = false;
+    function onEdit(e) { if (e.isTrusted && gesture.isRefreshing() && !reloading) edited = true; }
+    document.addEventListener('input', onEdit, true);
+    document.addEventListener('change', onEdit, true);
     // 兜底：重新加载被取消或一直卡着时，10 秒后解锁，别让页面永远滑不动
     function armUnlock() {
       clearTimeout(unlockTimer);
       unlockTimer = setTimeout(function () { if (gesture.isRefreshing()) giveUp(); }, 10000);
     }
     function reloadNow() {
-      // 检查网络那几秒页面是能用的：这期间要是有了「刷新会毁掉手里工作」的界面（isBlocked），就作罢
-      if (isBlocked()) { giveUp(); return; }
+      // 检查网络那几秒页面是能用的：这期间要是有了「刷新会毁掉手里工作」的界面（isBlocked），或者动过表单，就作罢
+      if (isBlocked() || edited) { giveUp(); return; }
       reloading = true;
       // 兜底从真正开始重新加载算起：检查网络可能已经用掉 6 秒，不重算的话重新加载只剩 3~4 秒就被解锁，iOS 冻住的旧页面又能滑出空白
       armUnlock();
       location.reload();
     }
-    function giveUp() { reloading = false; clearTimeout(unlockTimer); gesture.cancelRefresh(); settle(); }
-    var doRefresh = options.doRefresh || function () {
+    function giveUp() { attempt++; reloading = false; clearTimeout(unlockTimer); gesture.cancelRefresh(); settle(); }
+    // 用传进来的三个回调（已经套上「这一次作废了就什么都不做」），别直接用外面的同名函数
+    var doRefresh = options.doRefresh || function (giveUp, showTip, reloadNow) {
       safeReload(reloadNow, function () { showTip('网络不好，这次没刷新。稍后再拉一次。'); giveUp(); });
     };
 
@@ -192,14 +201,17 @@
       armUnlock();
       indicator.style.opacity = '1';
       try { sessionStorage.setItem('ptr-fired', String(Date.now())); } catch (e) {}   // 给自动化验收用的标记
+      var my = ++attempt; edited = false;
+      function live(fn) { return function () { if (my === attempt) return fn.apply(null, arguments); }; }
       // 留一下 spinner 再动手，否则松手瞬间白屏，看起来像卡死
       setTimeout(function () {
+        if (my !== attempt) return;
         // 没有 Service Worker，断网时 reload 会变成浏览器错误页 = 把网站弄没了
         if (navigator.onLine === false) {
           showTip('当前没有网络，先不刷新了。等有网了再拉一次。');
           giveUp(); return;
         }
-        doRefresh(giveUp, showTip, reloadNow);
+        doRefresh(live(giveUp), live(showTip), live(reloadNow));
       }, 260);
     }
 
