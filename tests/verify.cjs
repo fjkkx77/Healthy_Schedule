@@ -1,0 +1,162 @@
+// 健康网站回归测试：node tests/verify.cjs
+// 两类检查：
+//   1. 内容：医学/用药说法不许退回到核查前的错误写法（每条对应 2026-10-24 审查报告里的编号）
+//   2. 逻辑：在假 DOM 里真跑首页 / 溃疡页的页面脚本，核推导引擎和服药方案的数字
+// 改医学内容前先读 PROJECT_STATUS.md 的「事实核对表」。
+const fs = require('fs');
+const path = require('path');
+const vm = require('vm');
+
+// HS_ROOT 可以指到别的副本（比如修改前的版本），用来确认测试在旧版上真的会红
+const ROOT = process.env.HS_ROOT || path.join(__dirname, '..');
+const read = f => fs.readFileSync(path.join(ROOT, f), 'utf8');
+let fail = 0, pass = 0;
+function ok(cond, msg) { if (cond) pass++; else { fail++; console.log('✗ ' + msg); } }
+
+const PAGES = ['index.html', 'ulcer.html', 'cardio.html', 'skincare.html', 'plan.html'];
+const SRC = Object.fromEntries(PAGES.concat(['assets/cardio.js', 'assets/style.css']).map(f => [f, read(f)]));
+const ALL = Object.values(SRC).join('\n');
+
+/* ---------- 1. 内容 ---------- */
+// P1-1：普通人 CPR 不摸脉搏；流程里要有打 120 和取 AED
+const cpr = SRC['assets/cardio.js'].split('const cprSteps')[1].split('];')[0];
+ok(!/颈动脉|摸脉搏判断|判断是否有搏动/.test(cpr.replace(/不要去摸脉搏/g, '')), 'P1-1 CPR 步骤里不能让普通人摸颈动脉/脉搏');
+ok(/120/.test(cpr.split('第二步')[0]) && /AED/.test(cpr.split('第二步')[0]), 'P1-1 CPR 第一步要有「打 120」和「取 AED」');
+// P1-2：TIA（症状几分钟就好了）也要立即打 120
+const urg = SRC['cardio.html'].split('class="urgstack')[1];
+const red = urg.split('urg-h">当天')[0];
+ok(/几分钟/.test(red) && /好了/.test(red), 'P1-2 「立刻拨打 120」档要包含症状几分钟就好了的情形');
+ok(!/当天尽快就医[\s\S]*短暂性单侧麻木无力或短暂说不清/.test(urg), 'P1-2 TIA 不能只在「当天就医」档');
+// P1-3：意可贴禁忌按说明书全文
+const ul = SRC['ulcer.html'];
+ok(!/神经病史/.test(ul), 'P1-3 说明书写的是「精神病史」，不是「神经病史」');
+for (const k of ['精神病史', '活动性结核', '早期妊娠', '角膜溃疡', '心或肾功能不全', '非感染性']) ok(ul.includes(k), 'P1-3 意可贴禁忌/适应症缺「' + k + '」');
+// 疑似 P1-4：不从谷歌加载字体（国内连不上时会阻塞首屏）
+ok(!/fonts\.googleapis|fonts\.gstatic/.test(ALL), 'P1-4 不能同步加载谷歌字体');
+ok(!/'Noto Sans SC'/.test(SRC['assets/style.css']), 'P1-4 字体栈不再依赖 Noto Sans SC 网络字体');
+// P2-3 蜂胶膜：3 天无缓解就医、过敏
+ok(/3 天/.test(ul) && /过敏/.test(ul) && !/可全程(用|贴)到愈合/.test(ul), 'P2-3 蜂胶膜要写「3 天无缓解就医」和过敏提醒');
+// P2-2 补锌
+ok(!/抵消熬夜带来的免疫损伤/.test(ul) && /缺锌/.test(ul), 'P2-2 补锌要改成「确诊缺锌再补」');
+// P2-4 疗效说法与「先查血」
+ok(!/阻断溃疡成型/.test(ul) && /查血|血常规/.test(ul), 'P2-4 不能写「阻断溃疡成型」，要有「反复发作先查血」');
+// P2-5 B6 理由
+ok(!/已含足量\s*B6/.test(ul) && /0\.2\s*mg/.test(ul), 'P2-5 「复合维生素 B 已含足量 B6」不成立，要写每片 0.2mg');
+// P2-6 就医清单
+ok(/生殖器/.test(ul) && /出血/.test(ul), 'P2-6 何时就医要补出血/越来越痛、生殖器或皮肤溃疡');
+// P2-7 食盐 5g
+const cj = SRC['assets/cardio.js'];
+ok(!/6\s*g/.test(cj.replace(/2016/g, '')) && (cj.match(/5\s*g/g) || []).length >= 2, 'P2-7 食盐上限应为 5g（两处）');
+// P2-8 补钾警示
+ok(/补钾[\s\S]{0,80}(肾|普利|沙坦)|(肾|普利|沙坦)[\s\S]{0,80}补钾/.test(cj), 'P2-8 老人补钾要写肾病/降压药警示');
+// P2-9 规则卡
+const rule = SRC['cardio.html'].split('class="rulecard-h"')[1].split('</div>\n  </div>')[0];
+ok(/24 小时/.test(rule), 'P2-9 规则卡的 4.5 小时要带「24 小时」注释');
+ok(!/拍打患者/.test(rule), 'P2-9 规则卡「别拍打患者」和 CPR「拍打双肩」打架');
+// P2-10 睡眠中国口径
+ok(/20–24℃/.test(SRC['index.html']) && /7–8 小时/.test(SRC['index.html']) && /6–7 小时/.test(SRC['index.html']), 'P2-10 首页要用中国 2025 睡眠核心信息的时长和室温');
+ok(!/21:30~22:00入睡/.test(cj), 'P2-10 老年人作息改用中国官方 22–23 点入睡');
+// P2-13 深色辅助文字对比度
+ok(!/--text-4:\s*#6e7681/.test(SRC['assets/style.css']), 'P2-13 深色 --text-4 #6e7681 只有 3.77:1');
+// P3 若干
+ok(!/Johns Hopkins/.test(SRC['index.html']), 'P3-6 没有对应内容的机构徽章');
+ok(!/临床运动处方实践专家共识/.test(SRC['cardio.html']), 'P3-6 检索不到的共识不能列为依据');
+ok(!/降低血液粘稠度/.test(cj), 'P3-7 「温水降低血液粘稠度」无依据');
+ok(!/1500~2000ml/.test(cj), 'P3-8 饮水量口径要和首页中国值一致');
+ok(!/3,577|6,064/.test(SRC['index.html']), 'P3-10 检索不到的 J Sleep Res 2010 引用');
+ok(!/深夜凌晨是交感神经和迷走神经/.test(SRC['cardio.html']), 'P3-17 心血管事件高峰在清晨，不是深夜凌晨');
+ok(!/≈2\/5/.test(cj), 'P3-18 「≈2/5」与 48% 注释不自洽');
+ok(!/40岁以上加做颈动脉B超/.test(cj), 'P3-20 颈动脉超声只针对高危人群');
+ok(!/每次20~40分钟（散步/.test(cj), 'P3-21 老年人运动下限不能低于 WHO 150 分钟');
+ok(/tel:120/.test(SRC['cardio.html']), 'O-1 急救页要有一键拨打 120');
+ok(/apple-touch-icon/.test(SRC['index.html']), 'O-8 主屏幕图标');
+for (const p of PAGES) ok(/最后核对/.test(SRC[p]), 'O-4 ' + p + ' 要写最后核对日期');
+
+/* ---------- 2. 逻辑：在假 DOM 里跑页面脚本 ---------- */
+function fakeEl() {
+  const el = { value: '', checked: false, hidden: false, disabled: false, innerHTML: '', textContent: '', className: '', dataset: {}, style: {},
+    children: [], classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } },
+    addEventListener() {}, appendChild(c) { el.children.push(c); }, querySelector() { return fakeEl(); }, querySelectorAll() { return []; },
+    closest() { return fakeEl(); } };
+  return el;
+}
+function runPage(file, storage) {
+  const html = SRC[file];
+  const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => m[1]).join('\n');
+  const els = {};
+  const store = storage || {};
+  const ctx = {
+    document: { getElementById: id => (els[id] = els[id] || fakeEl()), createElement: () => fakeEl(), querySelectorAll: () => [], querySelector: () => fakeEl() },
+    localStorage: { getItem: k => (k in store ? store[k] : null), setItem: (k, v) => { store[k] = String(v); }, removeItem: k => { delete store[k]; } },
+    location: { href: 'https://x/', search: '' }, history: { replaceState() {} }, URL, URLSearchParams,
+    setInterval() {}, setTimeout, clearTimeout, console, Date, Math, JSON
+  };
+  vm.createContext(ctx);
+  vm.runInContext(scripts, ctx);
+  return { ctx, els };
+}
+
+// 首页推导引擎
+const idx = runPage('index.html').ctx;
+const D = (S, W, free) => idx.derive(Object.assign({ sleepT: S, wakeT: W, freeOn: false }, free || {}));
+// P2-14 社会时差跨零点
+const jl1 = D(1380, 420, { freeOn: true, sleepF: 60, wakeF: 600 }).free.jetlag;
+ok(Math.round(jl1) === 150, 'P2-14 23:00–07:00 对 01:00–10:00 的社会时差应为 150 分钟，实际 ' + Math.round(jl1));
+const jl2 = D(30, 450, { freeOn: true, sleepF: 1410, wakeF: 450 }).free.jetlag;
+ok(Math.round(jl2) === 30, 'P2-14 00:30–07:30 对 23:30–07:30 的社会时差应为 30 分钟，实际 ' + Math.round(jl2));
+// 现实作息（睡 5–11 小时）不许时段重叠、不许末餐排到就寝之后
+let bad = 0;
+for (let W = 0; W < 1440; W += 15) for (let dur = 300; dur <= 660; dur += 15) {
+  const S = ((W - dur) % 1440 + 1440) % 1440;
+  const d = D(S, W); const b = idx.buildSchedule(d);
+  for (let i = 1; i < b.length; i++) if (b[i].s < b[i - 1].e) bad++;
+  if (d.lastMealEnd > d.bed) bad++;
+  if (b.some(x => !(x.e > x.s))) bad++;
+}
+ok(bad === 0, '推导引擎：现实作息下出现 ' + bad + ' 处重叠/末餐在就寝后');
+// P2-10 推荐时长按中国 7–8 小时
+const rec = idx.recommend({ autoS: true, autoW: false, wakeT: 420 });
+ok(rec.dur >= 420 && rec.dur <= 480, 'P2-10 推荐睡眠时长应在 7–8 小时，实际 ' + rec.dur);
+// P3-16 咖啡因截止：就寝前 8 小时以上
+ok(/d\.bed - 480/.test(SRC['index.html']) && !/d\.bed - 360/.test(SRC['index.html']), 'P3-16 首页咖啡因截止应为就寝前 8 小时');
+ok(/bedAbs - 480/.test(SRC['plan.html']), 'P3-16 专属方案咖啡因截止应为就寝前 8 小时');
+// P3-1 专属方案：按节次排的实训也算实训周
+ok(/type === "practical"/.test(SRC['plan.html']), 'P3-1 实训周判断要认 type: "practical"');
+// P3-12 课表读取失败的提示不出英文原文
+ok(!/SCHED\.err \+/.test(SRC['plan.html']), 'P3-12 课表读取失败的提示要换成中文原因');
+
+// 溃疡页服药方案
+const ulc = runPage('ulcer.html', { ulcerPhase: 'early' }).ctx;
+const phases = vm.runInContext('phases', ulc);
+for (const p of phases) for (const s of p.schedules) {
+  const folate = s.blocks.reduce((n, b) => n + b.meds.filter(m => /叶酸/.test(m.n)).length, 0);
+  ok(folate <= 2, 'P2-1 「' + p.title + ' / ' + (s.tag || '默认') + '」叶酸一天 ' + folate + ' 片，超过 2 片（0.4mg 片按 UL 1mg 算）');
+  const vc = s.blocks.reduce((n, b) => n + b.meds.filter(m => /维生素C/.test(m.n)).length, 0);
+  ok(vc <= 3, 'P3-19 「' + p.title + '」维 C 一天 ' + vc + ' 片');
+}
+// P2-12 / P3-3：存储一碰就抛错、或存了对不上的旧值，页面也得渲染出来
+for (const [file, key] of [['ulcer.html', 'ulcerPhase'], ['skincare.html', 'skincareRoutine']]) {
+  let r;
+  try { r = runPage(file, { [key]: 'not-a-valid-id' }); ok(r.els.pcontent && r.els.pcontent.innerHTML.length > 50, 'P3-3 ' + file + ' 存了非法旧值时内容为空'); }
+  catch (e) { ok(false, 'P3-3 ' + file + ' 存了非法旧值时报错：' + e.message); }
+  try {
+    const throwing = new Proxy({}, { has() { throw new Error('SecurityError'); }, get() { throw new Error('SecurityError'); } });
+    const html = SRC[file]; const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => m[1]).join('\n');
+    const els = {};
+    const ctx = { document: { getElementById: id => (els[id] = els[id] || fakeEl()) }, console, Date, Math, JSON };
+    Object.defineProperty(ctx, 'localStorage', { get() { throw new Error('SecurityError'); } });
+    vm.createContext(ctx); vm.runInContext(scripts, ctx);
+    ok(els.pcontent && els.pcontent.innerHTML.length > 50, 'P2-12 ' + file + ' 存储不可用时内容为空');
+    void throwing;
+  } catch (e) { ok(false, 'P2-12 ' + file + ' 存储不可用时报错：' + e.message); }
+}
+{
+  const els = {};
+  const ctx = { document: { getElementById: id => (els[id] = els[id] || fakeEl()), querySelectorAll: () => [] }, console, Date, Math, JSON };
+  Object.defineProperty(ctx, 'localStorage', { get() { throw new Error('SecurityError'); } });
+  try { vm.createContext(ctx); vm.runInContext(SRC['assets/cardio.js'], ctx); ok(els.mythGrid && els.mythGrid.innerHTML.length > 50 && els.pcontent.innerHTML.length > 50, 'P2-12 急救页存储不可用时下半部分为空'); }
+  catch (e) { ok(false, 'P2-12 急救页存储不可用时报错：' + e.message); }
+}
+
+console.log((fail ? '✗ ' : '✓ ') + pass + ' 条通过，' + fail + ' 条失败');
+process.exit(fail ? 1 : 0);
