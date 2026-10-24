@@ -333,7 +333,7 @@ function renderTabs(activeId) {
     </div>`).join("");
   ptabs.querySelectorAll(".ptab").forEach(el => {
     el.addEventListener("click", () => {
-      writeSaved(STORE_KEY, el.dataset.id);
+      if (typeof writeSaved === "function") writeSaved(STORE_KEY, el.dataset.id);
       renderTabs(el.dataset.id);
       renderContent(el.dataset.id);
     });
@@ -371,7 +371,8 @@ function renderContent(activeId) {
   `;
 }
 
-const saved = readSaved(STORE_KEY, phases.map(p => p.id), "early");
+// readSaved 在 assets/storage.js 里；那个文件没加载到（弱网）也照常显示默认阶段
+const saved = typeof readSaved === "function" ? readSaved(STORE_KEY, phases.map(p => p.id), "early") : "early";
 renderTabs(saved);
 renderContent(saved);
 </script>

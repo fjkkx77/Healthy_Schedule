@@ -311,7 +311,7 @@ function renderTabs(activeId) {
     </div>`).join("");
   ptabs.querySelectorAll(".ptab").forEach(el => {
     el.addEventListener("click", () => {
-      writeSaved(STORE_KEY, el.dataset.id);
+      if (typeof writeSaved === "function") writeSaved(STORE_KEY, el.dataset.id);
       renderTabs(el.dataset.id);
       renderContent(el.dataset.id);
     });
@@ -353,7 +353,8 @@ function defaultRoutine() {
   return (h >= 18 || h < 5) ? "pm" : "am";
 }
 
-const saved = readSaved(STORE_KEY, routines.map(r => r.id), defaultRoutine());
+// readSaved 在 assets/storage.js 里；那个文件没加载到（弱网）也照常按时间显示
+const saved = typeof readSaved === "function" ? readSaved(STORE_KEY, routines.map(r => r.id), defaultRoutine()) : defaultRoutine();
 renderTabs(saved);
 renderContent(saved);
 </script>

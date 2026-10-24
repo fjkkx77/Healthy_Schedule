@@ -9,7 +9,8 @@ const vm = require('vm');
 
 // HS_ROOT 可以指到别的副本（比如修改前的版本），用来确认测试在旧版上真的会红
 const ROOT = process.env.HS_ROOT || path.join(__dirname, '..');
-const read = f => fs.readFileSync(path.join(ROOT, f), 'utf8');
+// 旧版本里可能还没有某个文件（比如 storage.js），当空文件处理，让检查照常跑完并报红
+const read = f => (fs.existsSync(path.join(ROOT, f)) ? fs.readFileSync(path.join(ROOT, f), 'utf8') : '');
 let fail = 0, pass = 0;
 function ok(cond, msg) { if (cond) pass++; else { fail++; console.log('✗ ' + msg); } }
 
@@ -117,8 +118,8 @@ for (let W = 0; W < 1440; W += 15) for (let dur = 300; dur <= 660; dur += 15) {
 }
 ok(bad === 0, '推导引擎：现实作息下出现 ' + bad + ' 处重叠/末餐在就寝后');
 // P2-10 推荐时长按中国 7–8 小时睡眠（卧床再放宽 30 分钟入睡时间）
-// 起床 06:00–07:30 都应能落进 22–23 点；08:00 起床要睡 9 小时以上才行，本来就排不进（页面会说明）
-for (const W of [360, 390, 420, 450]) {
+// 起床 06:00–07:00 都应能落进 22:00–22:59；更晚起床要卧床超过 8.5 小时才行，本来就排不进（页面会说明）
+for (const W of [360, 390, 420]) {
   const rec = idx.recommend({ autoS: true, autoW: false, wakeT: W });
   ok(rec.dur >= 420 && rec.dur <= 510, 'P2-10 起床 ' + W + ' 推荐卧床应在 7–8.5 小时，实际 ' + rec.dur);
   ok(rec.inWin, 'CR-1 起床 ' + W + ' 时应能推荐出 22–23 点入睡，实际入睡 ' + rec.sleepT);
@@ -129,24 +130,41 @@ for (const W of [360, 390, 420, 450]) {
   const d = ix.derive({ sleepT: 1350, wakeT: 420, freeOn: false });
   ok(ix.derivedCards(d)[0].b.indexOf('推荐区间内') >= 0, 'CR-2 22:30–07:00 应在推荐区间内');
 }
-// CR-6 被挤压时不再叠加「窗口过短」警告
-ok(/effWin < 360 && !d\.squeezed/.test(SRC['index.html']), 'CR-6 被挤压时不该再叠「窗口过短」');
+ok(!/BED_HI = 1380/.test(SRC['index.html']), 'CR2-2 23:00 不属于 UK Biobank 的 22:00–22:59 那一档');
+// CR-6 / CR2-1 被挤压时只出一条警告，不能一边说「这不算问题」一边警告
+{
+  const r = runPage('index.html'); const ix = r.ctx;
+  const d = ix.derive({ sleepT: 600, wakeT: 1080, freeOn: false });   // 10:00 睡、18:00 起：会被挤压
+  ok(d.squeezed, 'CR2-1 测试前提：这组作息应被挤压');
+  ix.renderAnchorOut({}, d);
+  const out = r.els.aOut.innerHTML;
+  ok(!/这不算问题/.test(out) && !/进食窗口只有/.test(out) && /排不开两顿饭/.test(out), 'CR2-1 被挤压时只该出「排不开两顿饭」，实际：' + out.replace(/<[^>]+>/g, '').slice(0, 120));
+}
 // P3-16 咖啡因截止：就寝前 9 小时（一杯咖啡 ≥8.8 小时）
 ok(/d\.bed - 540/.test(SRC['index.html']) && !/d\.bed - (360|480)/.test(SRC['index.html']), 'P3-16 首页咖啡因截止应为就寝前 9 小时');
 ok(/bedAbs - 540/.test(SRC['plan.html']), 'P3-16 专属方案咖啡因截止应为就寝前 9 小时');
-// CR-3 / CR-4 课表读取失败的说法
-{
-  const fn = SRC['plan.html'].match(/function errText\(e\) \{[\s\S]*?\n\}/)[0];
-  const errText = vm.runInNewContext('(' + fn.replace('function errText', 'function') + ')');
-  ok(errText('Load failed') === '网络不通', 'CR-3 iOS Safari 的 Load failed 应说成网络不通');
-  ok(errText('课程数据格式变了：{"a":1}') === '课程数据格式变了：{"a":1}', 'CR-4 中文原因不该再加前缀');
-  ok(/6 秒/.test(errText('signal is aborted without reason')), 'P3-12 超时说成 6 秒没连上');
+// P3-12 / CR-3 / CR-4 / CR2-5 课表读取失败：真跑 loadSchedule，网络失败和数据读不懂分开说
+async function planLoadCases() {
+  const src = SRC['plan.html'];
+  const code = src.slice(src.indexOf('const SNAPSHOT_AT'), src.indexOf('/* ---------- 日期工具'));
+  const run = async fetchImpl => {
+    const ctx = { fetch: fetchImpl, AbortController, setTimeout, clearTimeout, Error, String, JSON, Function, Array, RegExp };
+    vm.createContext(ctx); vm.runInContext(code + '\nthis.__load = loadSchedule;', ctx);
+    return ctx.__load();
+  };
+  const r1 = await run(() => Promise.reject(new TypeError('Load failed')));             // iOS Safari 断网
+  ok(r1.err === '网络不通' && !r1.live, 'CR-3 iOS Safari 断网应说「网络不通」，实际：' + r1.err);
+  const r2 = await run(() => Promise.reject(Object.assign(new Error('signal is aborted without reason'), { name: 'AbortError' })));
+  ok(/6 秒/.test(r2.err), 'P3-12 超时应说「6 秒没连上」，实际：' + r2.err);
+  const r3 = await run(() => Promise.resolve({ ok: true, text: () => Promise.resolve('<html>没有课表 fetch network</html>') }));
+  ok(/^课表数据读不懂/.test(r3.err) && !/网络不通/.test(r3.err), 'CR2-5 数据读不懂不该被说成网络问题，实际：' + r3.err);
+  const r4 = await run(() => Promise.resolve({ ok: false, status: 404 }));
+  ok(r4.err === '课表网站返回 404 错误', 'HTTP 错误码，实际：' + r4.err);
+  ok(!/[A-Za-z]{6,}/.test(r1.err + r2.err + r4.err), 'P3-12 提示里不出英文原文');
 }
 ok(!/function readSaved/.test(SRC['assets/cardio.js'] + SRC['ulcer.html'] + SRC['skincare.html']), 'CR-7 存储兜底只保留 assets/storage.js 一份');
 // P3-1 专属方案：按节次排的实训也算实训周
 ok(/type === "practical"/.test(SRC['plan.html']), 'P3-1 实训周判断要认 type: "practical"');
-// P3-12 课表读取失败的提示不出英文原文
-ok(!/SCHED\.err \+/.test(SRC['plan.html']), 'P3-12 课表读取失败的提示要换成中文原因');
 
 // 溃疡页服药方案
 const ulc = runPage('ulcer.html', { ulcerPhase: 'early' }).ctx;
@@ -181,5 +199,22 @@ for (const [file, key] of [['ulcer.html', 'ulcerPhase'], ['skincare.html', 'skin
   catch (e) { ok(false, 'P2-12 急救页存储不可用时报错：' + e.message); }
 }
 
-console.log((fail ? '✗ ' : '✓ ') + pass + ' 条通过，' + fail + ' 条失败');
-process.exit(fail ? 1 : 0);
+// CR2-4 共享的 storage.js 没加载到（弱网）时，三页也不能空白
+for (const file of ['ulcer.html', 'skincare.html']) {
+  const html = SRC[file]; const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => m[1]).join('\n');
+  const els = {};
+  const ctx = { document: { getElementById: id => (els[id] = els[id] || fakeEl()) }, localStorage: { getItem() { return null; }, setItem() {} }, console, Date, Math, JSON };
+  try { vm.createContext(ctx); vm.runInContext(scripts, ctx); ok(els.pcontent.innerHTML.length > 50, 'CR2-4 ' + file + ' 没有 storage.js 时内容为空'); }
+  catch (e) { ok(false, 'CR2-4 ' + file + ' 没有 storage.js 时报错：' + e.message); }
+}
+{
+  const els = {};
+  const ctx = { document: { getElementById: id => (els[id] = els[id] || fakeEl()), querySelectorAll: () => [] }, localStorage: { getItem() { return null; }, setItem() {} }, console, Date, Math, JSON };
+  try { vm.createContext(ctx); vm.runInContext(SRC['assets/cardio.js'], ctx); ok(els.pcontent.innerHTML.length > 50, 'CR2-4 急救页没有 storage.js 时分人群方案为空'); }
+  catch (e) { ok(false, 'CR2-4 急救页没有 storage.js 时报错：' + e.message); }
+}
+
+planLoadCases().then(() => {
+  console.log((fail ? '✗ ' : '✓ ') + pass + ' 条通过，' + fail + ' 条失败');
+  process.exit(fail ? 1 : 0);
+});

@@ -223,7 +223,7 @@ function renderGroupTabs(activeId) {
     </div>`).join("");
   ptabs.querySelectorAll(".ptab").forEach(el => {
     el.addEventListener("click", () => {
-      writeSaved(STORE_KEY, el.dataset.id);
+      if (typeof writeSaved === "function") writeSaved(STORE_KEY, el.dataset.id);
       renderGroupTabs(el.dataset.id);
       renderGroupContent(el.dataset.id);
     });
@@ -244,7 +244,8 @@ function renderGroupContent(activeId) {
   `;
 }
 
-const savedGroup = readSaved(STORE_KEY, groups.map(g => g.id), "student");
+// readSaved 在 assets/storage.js 里；那个文件没加载到（弱网）也照常显示默认人群
+const savedGroup = typeof readSaved === "function" ? readSaved(STORE_KEY, groups.map(g => g.id), "student") : "student";
 renderGroupTabs(savedGroup);
 renderGroupContent(savedGroup);
 

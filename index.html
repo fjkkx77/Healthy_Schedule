@@ -516,7 +516,7 @@ body::before {
 
    推导链（每条都有出处，见各自的 src 字段）：
      入睡 S + 起床 W
-       → 卧床时长 tib        → 与中国 2025 睡眠核心信息的 7–8h 比对
+       → 卧床时长 tib        → 与「睡 7–8h（中国 2025）+ ≤30 分钟入睡」= 卧床 7–8.5h 比对
        → 睡眠中点 MSF        → 时型（MCTQ 分档）→ 认知高峰时段
        → 体温最低点 Tmin≈W−2.5h → 晨光窗口（相位反应曲线的前移侧）
        → 咖啡因截止 = S−9h   → Drake 2013 RCT（6h 仍有影响）+ Sleep Med Rev 2023 meta（一杯咖啡 ≥8.8h）
@@ -539,7 +539,7 @@ const DEFAULTS = { sleepT: 1350, wakeT: 360, autoS: true, autoW: true, freeOn: f
    ③ 在 7–8 小时内，没有证据说明哪个具体时长最优
    所以时长的取舍只能靠"平局打破"，规则写在 tie-break 注释里，界面上也照实说。
 */
-const BED_LO = 1320, BED_HI = 1380;      // 22:00–23:00（中国 2025 睡眠核心信息「晚上 10–11 点入睡」，两端都算）
+const BED_LO = 1320, BED_HI = 1379;      // 22:00–22:59：UK Biobank 风险最低的那一档（23:00 属于下一档）；中国 2025「10–11 点入睡」与之一致
 // 中国 2025 推荐的 7–8 小时是「睡着」的时长；页面能算的是卧床时长（含入睡时间）。
 // 同一份文件说良好睡眠「入睡在 30 分钟以内」，所以卧床上限放宽 30 分钟：7–8.5 小时。
 const DUR_MIN = 420, DUR_MAX = 510;
@@ -583,7 +583,7 @@ function recommend(a) {
 
 function recReason(r) {
   if (!r) return "";
-  const tie = "在 <strong>7–8 小时</strong>（中国《睡眠健康核心信息》2025）里<strong>没有证据说明哪个具体时长最优</strong>，所以这里取 <strong>" +
+  const tie = "在卧床 <strong>7–8.5 小时</strong>（中国《睡眠健康核心信息》2025 推荐睡 7–8 小时，另留不超过 30 分钟入睡）里<strong>没有证据说明哪个具体时长最优</strong>，所以这里取 <strong>" +
     hTxt(DUR_TIE) + "</strong> 属于<strong>平局打破</strong>：它既在推荐区间内，又恰好是 5 个 90 分钟周期。不是「7.5 比 8 更好」。";
   const winSrc = "依据：UK Biobank 用加速度计客观记录 103,712 人、随访 5.7 年（Eur Heart J Digital Health 2021），入睡落在 <strong>22:00–23:00</strong> 这一档的心血管病发病率最低。<em>观察性证据，且主要体现在女性身上。</em>中国《睡眠健康核心信息及释义》（2025）推荐成年人晚上 10–11 点入睡，与这一档一致。";
 
@@ -594,12 +594,12 @@ function recReason(r) {
   }
   if (r.mode === "fromWake") {
     const head = "<div class='recwhy-h'>🤖 入睡时间由我推荐</div>你填了起床 <strong>" + fmt(r.wakeT) +
-      "</strong>，我在 7–8 小时里挑了 <strong>" + hTxt(r.dur) + "</strong>，反推入睡 <strong>" + fmt(r.sleepT) + "</strong>。<br>";
+      "</strong>，我在卧床 7–8.5 小时里挑了 <strong>" + hTxt(r.dur) + "</strong>，反推入睡 <strong>" + fmt(r.sleepT) + "</strong>。<br>";
     if (r.inWin) {
       return head + "选它是因为<strong>这样算出的就寝正好落进 22:00–23:00</strong>" +
         (r.cyc ? "，并且同时是 90 分钟的整数倍。" : "。") + "<br>" + winSrc;
     }
-    return head + "⚠️ <strong>按你这个起床时间，7–8 小时内没有任何时长能让就寝落进 22:00–23:00</strong>" +
+    return head + "⚠️ <strong>按你这个起床时间，卧床 7–8.5 小时内没有任何时长能让就寝落进 22:00–23:00</strong>" +
       "（要落进去得睡 " + hTxt(((r.wakeT - BED_HI) % 1440 + 1440) % 1440) + "–" +
       hTxt(((r.wakeT - BED_LO) % 1440 + 1440) % 1440) + "，已超出推荐区间）。所以这里退而求其次，只保证时长合理。<br>" + tie;
   }
@@ -996,7 +996,9 @@ function renderAnchorOut(a, d) {
   } else if (d.tib > DUR_MAX) {
     notes.push({ k: "info", i: "ℹ️", t: "卧床 <strong>" + hTxt(d.tib) + "</strong>，超过「睡 7–8 小时 + 30 分钟入睡」。偶尔多睡没关系；如果天天如此还白天犯困，可以留意睡眠质量。" });
   }
-  if (d.effWin < 360 && !d.squeezed) {
+  if (d.squeezed) {
+    // 被挤压时下面单独有一条「排不开两顿饭」的警告，窗口长短的提示都不出，免得一边安慰一边警告
+  } else if (d.effWin < 360) {
     notes.push({ k: "warn", i: "⚠️", t: "算下来进食窗口只有 <strong>" + hTxt(d.effWin) + "</strong>，比限时进食随机试验里常见的窗口都短。<strong>这不是目标</strong>，多半是醒着的时间太晚、太颠倒造成的，先调作息；末餐距就寝 " + hTxt(d.bed - d.lastMealEnd) + "。" });
   } else if (d.effWin < 600) {
     notes.push({ k: "info", i: "ℹ️", t: "算下来进食窗口是 <strong>" + hTxt(d.effWin) + "</strong>，比常见的 10–12 小时短。<strong>这不算问题</strong>：现有 RCT 里窗口长短的效果并不一致，一致的只有「早吃优于晚吃」。末餐距就寝 " + hTxt(d.bed - d.lastMealEnd) + "。" });

@@ -354,14 +354,20 @@ function parseSchedule(html) {
 async function loadSchedule() {
   const ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
   const timer = ctrl ? setTimeout(function () { ctrl.abort(); }, 6000) : null;
+  let html;
   try {
     const res = await fetch(SCHEDULE_URL, { cache: "no-cache", signal: ctrl ? ctrl.signal : undefined });
-    if (!res.ok) throw new Error("HTTP " + res.status);
-    const data = parseSchedule(await res.text());
-    return { data: data, live: true, at: new Date() };
+    if (!res.ok) return { data: SNAPSHOT, live: false, err: "课表网站返回 " + res.status + " 错误" };
+    html = await res.text();
   } catch (e) {
-    return { data: SNAPSHOT, live: false, err: String(e && e.message || e) };
+    // 网络这一步失败：超时（abort）单独说，其余（Chrome 的 Failed to fetch、iOS Safari 的 Load failed 等）都算网络不通
+    return { data: SNAPSHOT, live: false, err: /abort/i.test(String(e && e.name) + String(e && e.message)) ? "6 秒没连上，可能是网络慢或断网" : "网络不通" };
   } finally { if (timer) clearTimeout(timer); }
+  try {
+    return { data: parseSchedule(html), live: true, at: new Date() };
+  } catch (e) {
+    return { data: SNAPSHOT, live: false, err: "课表数据读不懂：" + String(e && e.message || e) };
+  }
 }
 
 /* ---------- 日期工具 ---------- */
@@ -596,7 +602,7 @@ function render() {
   $("srcLine").className = "srcline" + (SCHED.live ? "" : " is-warn");
   $("srcLine").innerHTML = SCHED.live
     ? "课表：实时读取自课表网站（" + pad2(SCHED.at.getHours()) + ":" + pad2(SCHED.at.getMinutes()) + " 读取），你那边改课表、加调休这里自动跟上"
-    : "⚠️ 没读到课表网站（" + errText(SCHED.err) + "），暂用 " + SNAPSHOT_AT + " 的快照。之后的调课可能没反映出来";
+    : "⚠️ 没读到课表网站（" + SCHED.err + "），暂用 " + SNAPSHOT_AT + " 的快照。之后的调课可能没反映出来";
 
   // 今晚睡眠目标卡
   const bp = day.bp;
@@ -656,14 +662,6 @@ function render() {
   const url = new URL(location.href);
   if (isToday(VIEW)) url.searchParams.delete("date"); else url.searchParams.set("date", ymd(VIEW));
   history.replaceState(null, "", url.pathname + url.search);
-}
-// 把浏览器的英文报错换成能看懂的原因
-function errText(e) {
-  if (/abort/i.test(e)) return "6 秒没连上，可能是网络慢或断网";
-  if (/^HTTP /.test(e)) return "课表网站返回 " + e.slice(5) + " 错误";
-  if (/load failed|fetch|network/i.test(e)) return "网络不通";   // iOS Safari 断网报 "Load failed"
-  if (/[\u4e00-\u9fa5]/.test(e)) return e;                          // parseSchedule 自己抛的中文原因
-  return "课表数据读不懂（" + e + "）";
 }
 function ymdShort(d) { return (d.getMonth() + 1) + "/" + d.getDate() + "（" + WD[weekday(d)] + "）"; }
 
