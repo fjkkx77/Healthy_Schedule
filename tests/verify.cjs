@@ -125,6 +125,14 @@ for (const W of [360, 390, 420]) {
   ok(rec.inWin, 'CR-1 起床 ' + W + ' 时应能推荐出 22–23 点入睡，实际入睡 ' + rec.sleepT);
 }
 // CR-2 正常的 22:30–07:00（卧床 8.5 小时）不该报「最该优先解决」
+// CR3-1 起床 07:30 排不进窗口时，说明文字不能自相矛盾（「需要 8.5 小时」又说「超出 8.5 小时上限」）
+{
+  const rec = idx.recommend({ autoS: true, autoW: false, wakeT: 450 });
+  const txt = idx.recReason(rec).replace(/<[^>]+>/g, '');
+  ok(!rec.inWin && /8 小时 31 分/.test(txt) && /超过推荐上限 8 小时 30 分/.test(txt), 'CR3-1 07:30 起床的说明应写精确区间，实际：' + txt.slice(0, 160));
+}
+ok(!/22:00–23:00/.test(SRC['index.html']), 'CR3-2 窗口是 22:00–22:59，文字不能写 22:00–23:00');
+ok(/escHtml\(SCHED\.err\)/.test(SRC['plan.html']), 'CR3-3 课表报错插进页面前要转义');
 {
   const r1 = runPage('index.html'); const ix = r1.ctx;
   const d = ix.derive({ sleepT: 1350, wakeT: 420, freeOn: false });
@@ -214,7 +222,7 @@ for (const file of ['ulcer.html', 'skincare.html']) {
   catch (e) { ok(false, 'CR2-4 急救页没有 storage.js 时报错：' + e.message); }
 }
 
-planLoadCases().then(() => {
+planLoadCases().catch(e => { ok(false, '专属方案课表读取测试自身出错（页面结构可能改了）：' + e.message); }).then(() => {
   console.log((fail ? '✗ ' : '✓ ') + pass + ' 条通过，' + fail + ' 条失败');
   process.exit(fail ? 1 : 0);
 });

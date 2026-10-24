@@ -602,7 +602,7 @@ function render() {
   $("srcLine").className = "srcline" + (SCHED.live ? "" : " is-warn");
   $("srcLine").innerHTML = SCHED.live
     ? "课表：实时读取自课表网站（" + pad2(SCHED.at.getHours()) + ":" + pad2(SCHED.at.getMinutes()) + " 读取），你那边改课表、加调休这里自动跟上"
-    : "⚠️ 没读到课表网站（" + SCHED.err + "），暂用 " + SNAPSHOT_AT + " 的快照。之后的调课可能没反映出来";
+    : "⚠️ 没读到课表网站（" + escHtml(SCHED.err) + "），暂用 " + SNAPSHOT_AT + " 的快照。之后的调课可能没反映出来";
 
   // 今晚睡眠目标卡
   const bp = day.bp;
@@ -663,6 +663,8 @@ function render() {
   if (isToday(VIEW)) url.searchParams.delete("date"); else url.searchParams.set("date", ymd(VIEW));
   history.replaceState(null, "", url.pathname + url.search);
 }
+// 报错里可能带课表网站的原始数据（课程名等），插进页面前转义
+function escHtml(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
 function ymdShort(d) { return (d.getMonth() + 1) + "/" + d.getDate() + "（" + WD[weekday(d)] + "）"; }
 
 /* ---------- 参数面板 ---------- */

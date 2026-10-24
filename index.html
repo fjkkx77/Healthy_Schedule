@@ -481,7 +481,7 @@ body::before {
     <div class="iosrow"><div class="iosrow-icon" style="background:var(--red-soft)">🏃</div><div><div class="iosrow-t">有氧运动</div><div class="iosrow-v">每周 ≥ 150 分钟中等强度（或 ≥75 分钟高强度）</div><div class="iosrow-n"><strong>放在一天里的哪个时段都可以</strong>——UK Biobank 92,139 人的数据里，中午–下午与混合时段的死亡风险还略低于晨练。总量和能否坚持远比时段重要</div></div></div>
     <div class="iosrow"><div class="iosrow-icon" style="background:var(--orange-soft)">💪</div><div><div class="iosrow-t">力量训练</div><div class="iosrow-v">每周 2 天</div><div class="iosrow-n">时段同样不挑；两次之间至少隔 1 天</div></div></div>
     <div class="iosrow"><div class="iosrow-icon" style="background:var(--green-soft)">🍽️</div><div><div class="iosrow-t">进食窗口</div><div class="iosrow-v">重点是<strong>别太晚</strong>，不是开多长</div><div class="iosrow-n">BMJ Medicine 2026 网络 meta（41 项 RCT / 2287 人）：早时段限时进食持续优于晚时段，但窗口长短的效果不一致。末餐距就寝 ≥4 小时、不晚于 21:00</div></div></div>
-    <div class="iosrow"><div class="iosrow-icon" style="background:var(--blue-soft)">😴</div><div><div class="iosrow-t">睡眠</div><div class="iosrow-v">成人 7–8 小时，就寝尽量落在 22:00–23:00</div><div class="iosrow-n">中国《睡眠健康核心信息及释义》（全国爱卫办 2025）：成年人 7–8 小时、推荐晚上 10–11 点入睡（美国 AASM 为「7 小时及以上」、AHA 为 7–9 小时）。<strong>规律性比时长更能预测死亡风险</strong>（UK Biobank 60,977 人）：周末也尽量别和平时差太多，「补觉式熬夜」抵不掉长期不规律</div></div></div>
+    <div class="iosrow"><div class="iosrow-icon" style="background:var(--blue-soft)">😴</div><div><div class="iosrow-t">睡眠</div><div class="iosrow-v">成人 7–8 小时，就寝尽量落在 22:00–22:59</div><div class="iosrow-n">中国《睡眠健康核心信息及释义》（全国爱卫办 2025）：成年人 7–8 小时、推荐晚上 10–11 点入睡（美国 AASM 为「7 小时及以上」、AHA 为 7–9 小时）。<strong>规律性比时长更能预测死亡风险</strong>（UK Biobank 60,977 人）：周末也尽量别和平时差太多，「补觉式熬夜」抵不掉长期不规律</div></div></div>
     <div class="iosrow"><div class="iosrow-icon" style="background:var(--indigo-soft)">📈</div><div><div class="iosrow-t">效果监测</div><div class="iosrow-v">3–4 周后评估</div><div class="iosrow-n">睡眠质量（PSQI）、体重、血糖/血压、精力水平</div></div></div>
   </div>
 
@@ -543,6 +543,7 @@ const BED_LO = 1320, BED_HI = 1379;      // 22:00–22:59：UK Biobank 风险最
 // 中国 2025 推荐的 7–8 小时是「睡着」的时长；页面能算的是卧床时长（含入睡时间）。
 // 同一份文件说良好睡眠「入睡在 30 分钟以内」，所以卧床上限放宽 30 分钟：7–8.5 小时。
 const DUR_MIN = 420, DUR_MAX = 510;
+const DUR_RANGE_TXT = "卧床 " + (DUR_MIN / 60) + "–" + (DUR_MAX / 60) + " 小时";   // 文案里的区间都用它，改常量不会漏改文字
 const DUR_TIE = 450;                     // 平局时取 7.5h：在区间内，且恰好 5 个 90 分钟周期
 
 function recommend(a) {
@@ -583,35 +584,37 @@ function recommend(a) {
 
 function recReason(r) {
   if (!r) return "";
-  const tie = "在卧床 <strong>7–8.5 小时</strong>（中国《睡眠健康核心信息》2025 推荐睡 7–8 小时，另留不超过 30 分钟入睡）里<strong>没有证据说明哪个具体时长最优</strong>，所以这里取 <strong>" +
+  const tie = "在<strong>" + DUR_RANGE_TXT + "</strong>（中国《睡眠健康核心信息》2025 推荐睡 7–8 小时，另留不超过 30 分钟入睡）里<strong>没有证据说明哪个具体时长最优</strong>，所以这里取 <strong>" +
     hTxt(DUR_TIE) + "</strong> 属于<strong>平局打破</strong>：它既在推荐区间内，又恰好是 5 个 90 分钟周期。不是「7.5 比 8 更好」。";
-  const winSrc = "依据：UK Biobank 用加速度计客观记录 103,712 人、随访 5.7 年（Eur Heart J Digital Health 2021），入睡落在 <strong>22:00–23:00</strong> 这一档的心血管病发病率最低。<em>观察性证据，且主要体现在女性身上。</em>中国《睡眠健康核心信息及释义》（2025）推荐成年人晚上 10–11 点入睡，与这一档一致。";
+  const winSrc = "依据：UK Biobank 用加速度计客观记录 103,712 人、随访 5.7 年（Eur Heart J Digital Health 2021），入睡落在 <strong>22:00–22:59</strong> 这一档的心血管病发病率最低。<em>观察性证据，且主要体现在女性身上。</em>中国《睡眠健康核心信息及释义》（2025）推荐成年人晚上 10–11 点入睡，与这一档一致。";
 
   if (r.mode === "both") {
     return "<div class='recwhy-h'>🤖 两个时间都由我推荐</div>" +
-      "锚点取<strong>全表唯一有直接「钟点」证据的那一条</strong>：入睡 <strong>22:30</strong>（22:00–23:00 这一档的中点）。" +
+      "锚点取<strong>全表唯一有直接「钟点」证据的那一条</strong>：入睡 <strong>22:30</strong>（22:00–22:59 这一档的中点）。" +
       "再往后推 " + hTxt(DUR_TIE) + " 得到起床 <strong>" + fmt((1350 + DUR_TIE) % 1440) + "</strong>。<br>" + tie + "<br>" + winSrc;
   }
   if (r.mode === "fromWake") {
     const head = "<div class='recwhy-h'>🤖 入睡时间由我推荐</div>你填了起床 <strong>" + fmt(r.wakeT) +
-      "</strong>，我在卧床 7–8.5 小时里挑了 <strong>" + hTxt(r.dur) + "</strong>，反推入睡 <strong>" + fmt(r.sleepT) + "</strong>。<br>";
+      "</strong>，我在" + DUR_RANGE_TXT + "里挑了 <strong>" + hTxt(r.dur) + "</strong>，反推入睡 <strong>" + fmt(r.sleepT) + "</strong>。<br>";
     if (r.inWin) {
-      return head + "选它是因为<strong>这样算出的就寝正好落进 22:00–23:00</strong>" +
+      return head + "选它是因为<strong>这样算出的就寝正好落进 22:00–22:59</strong>" +
         (r.cyc ? "，并且同时是 90 分钟的整数倍。" : "。") + "<br>" + winSrc;
     }
-    return head + "⚠️ <strong>按你这个起床时间，卧床 7–8.5 小时内没有任何时长能让就寝落进 22:00–23:00</strong>" +
-      "（要落进去得睡 " + hTxt(((r.wakeT - BED_HI) % 1440 + 1440) % 1440) + "–" +
-      hTxt(((r.wakeT - BED_LO) % 1440 + 1440) % 1440) + "，已超出推荐区间）。所以这里退而求其次，只保证时长合理。<br>" + tie;
+    return head + "⚠️ <strong>按你这个起床时间，" + DUR_RANGE_TXT + "内没有任何时长能让就寝落进 22:00–22:59</strong>" +
+      "（要落进去得卧床 " + hmTxt(((r.wakeT - BED_HI) % 1440 + 1440) % 1440) + "–" +
+      hmTxt(((r.wakeT - BED_LO) % 1440 + 1440) % 1440) + "，超过推荐上限 " + hmTxt(DUR_MAX) + "）。所以这里退而求其次，只保证时长合理。<br>" + tie;
   }
   return "<div class='recwhy-h'>🤖 起床时间由我推荐</div>你填了入睡 <strong>" + fmt(r.sleepT) +
     "</strong>，就寝时刻已经定了，我能挑的只有时长 → 起床 <strong>" + fmt(r.wakeT) + "</strong>。<br>" + tie +
-    (r.inWin ? "<br>顺带一提：你的入睡时间正好落在 22:00–23:00 这一档。<br>" + winSrc
+    (r.inWin ? "<br>顺带一提：你的入睡时间正好落在 22:00–22:59 这一档。<br>" + winSrc
              : "<br>另：" + winSrc + " 你目前是 " + fmt(r.sleepT) + "，<strong>但规律性仍比钟点更重要</strong>，不必硬迁就。");
 }
 
 function pad2(n) { return (n < 10 ? "0" : "") + n; }
 function fmt(m) { m = ((m % 1440) + 1440) % 1440; return pad2(Math.floor(m / 60)) + ":" + pad2(m % 60); }
 function hTxt(m) { return (Math.round(m / 6) / 10) + " 小时"; }
+// 精确到分钟的时长（区间边界用它，避免四舍五入后「8.5 小时」既是上限又「超出上限」）
+function hmTxt(m) { m = Math.round(m); const h = Math.floor(m / 60), mi = m % 60; return h + " 小时" + (mi ? " " + mi + " 分" : ""); }
 function relTxt(start, T) {
   const d = start - T;
   if (d === 0) return "锚点 T";
@@ -812,9 +815,9 @@ function keyMoments(d) {
         "取「距就寝 ≥4 小时」「不晚于 21:00」「首餐后 ≤12 小时」三者最早。随机交叉试验里睡前 1 小时进食比睡前 4 小时，餐后血糖面积高 8.3%；末餐晚于 21:00 比早于 20:00，脑血管病风险升 28%（观察性）。" },
     { icon: "🌙", bg: "var(--indigo-soft)", t: "就寝", v: fmt(d.bed),
       n: "由你填的入睡时间直接得到。" +
-        (((d.bed % 1440) + 1440) % 1440 >= 1320 && ((d.bed % 1440) + 1440) % 1440 <= 1379
-          ? "<strong>落在 22:00–23:00</strong>——UK Biobank 103,712 人的加速度计数据里，这一档的心血管病发病率最低。"
-          : "同一份队列里 22:00–23:00 这一档心血管病发病率最低；不过那是观察性证据且主要体现在女性身上，<strong>规律性仍比钟点更重要</strong>。") },
+        (((d.bed % 1440) + 1440) % 1440 >= BED_LO && ((d.bed % 1440) + 1440) % 1440 <= BED_HI
+          ? "<strong>落在 22:00–22:59</strong>——UK Biobank 103,712 人的加速度计数据里，这一档的心血管病发病率最低。"
+          : "同一份队列里 22:00–22:59 这一档心血管病发病率最低；不过那是观察性证据且主要体现在女性身上，<strong>规律性仍比钟点更重要</strong>。") },
   ];
 }
 
@@ -1002,9 +1005,7 @@ function renderAnchorOut(a, d) {
     notes.push({ k: "warn", i: "⚠️", t: "算下来进食窗口只有 <strong>" + hTxt(d.effWin) + "</strong>，比限时进食随机试验里常见的窗口都短。<strong>这不是目标</strong>，多半是醒着的时间太晚、太颠倒造成的，先调作息；末餐距就寝 " + hTxt(d.bed - d.lastMealEnd) + "。" });
   } else if (d.effWin < 600) {
     notes.push({ k: "info", i: "ℹ️", t: "算下来进食窗口是 <strong>" + hTxt(d.effWin) + "</strong>，比常见的 10–12 小时短。<strong>这不算问题</strong>：现有 RCT 里窗口长短的效果并不一致，一致的只有「早吃优于晚吃」。末餐距就寝 " + hTxt(d.bed - d.lastMealEnd) + "。" });
-  } else if (d.effWin > 720) {
-    notes.push({ k: "info", i: "ℹ️", t: "进食窗口已按上限 12 小时收口。" });
-  } else if (!d.squeezed) {
+  } else {
     notes.push({ k: "good", i: "✓", t: "进食窗口 <strong>" + hTxt(d.effWin) + "</strong>，末餐 " + fmt(d.lastMealEnd) + " 结束，距就寝 " + hTxt(d.bed - d.lastMealEnd) + "（≥4 小时，且不晚于 21:00）。" });
   }
   if (d.squeezed) {
