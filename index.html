@@ -498,7 +498,7 @@ body::before {
   <footer class="fadeup" style="animation-delay:.31s">
     <strong>重要提醒</strong><br>
     本表格基于当前最佳证据整理，不是「一刀切」处方。<br>
-    <strong>最后核对：2026-10-25</strong>（2026-09-12 首次逐条核对；首餐、午餐、午睡、末餐四格 09-17 复查；10-25 睡眠时长与室温改为中国 2025 官方值、咖啡因截止改为 8 小时）　数值标准以中国官方发布为准，国际值仅作对照。<br>
+    <strong>最后核对：2026-10-25</strong>（2026-09-12 首次逐条核对；首餐、午餐、午睡、末餐四格 09-17 复查；10-25 睡眠时长与室温改为中国 2025 官方值、咖啡因截止改为 9 小时）　数值标准以中国官方发布为准，国际值仅作对照。<br>
     建议在开始执行前咨询医师或注册营养师进行个性化微调。<br><br>
     来源：全国爱卫办《睡眠健康核心信息及释义》2025 · 中国营养学会 DRIs 2023 · AHA · BMJ Medicine · Nature Communications · Diabetes Care · PNAS · Int J Obes · Int J Epidemiol · Eur J Clin Nutr · Sleep Health · Sleep Med Rev · Mayo Clinic · AASM<br>
     PubMed 编号（点开即原文摘要）：睡眠规律性 <a href="https://pubmed.ncbi.nlm.nih.gov/37738616/">37738616</a> · 入睡时刻与心血管病 <a href="https://pubmed.ncbi.nlm.nih.gov/36713092/">36713092</a> · 运动时段 <a href="https://pubmed.ncbi.nlm.nih.gov/36805455/">36805455</a> / <a href="https://pubmed.ncbi.nlm.nih.gov/38592034/">38592034</a> · 晚间运动与睡眠 <a href="https://pubmed.ncbi.nlm.nih.gov/30374942/">30374942</a> · 咖啡因 <a href="https://pubmed.ncbi.nlm.nih.gov/24235903/">24235903</a> / <a href="https://pubmed.ncbi.nlm.nih.gov/36870101/">36870101</a> · 睡前进食 <a href="https://pubmed.ncbi.nlm.nih.gov/35015083/">35015083</a> / <a href="https://pubmed.ncbi.nlm.nih.gov/16393212/">16393212</a> · NutriNet-Santé <a href="https://pubmed.ncbi.nlm.nih.gov/38097547/">38097547</a> / <a href="https://pubmed.ncbi.nlm.nih.gov/37328450/">37328450</a> · NHANES <a href="https://pubmed.ncbi.nlm.nih.gov/42538400/">42538400</a> · 生物钟与血糖 <a href="https://pubmed.ncbi.nlm.nih.gov/25870289/">25870289</a> · 午餐时间 <a href="https://pubmed.ncbi.nlm.nih.gov/23357955/">23357955</a> · 早餐 <a href="https://pubmed.ncbi.nlm.nih.gov/30700403/">30700403</a> / <a href="https://pubmed.ncbi.nlm.nih.gov/31918985/">31918985</a> · 限时进食 <a href="https://pubmed.ncbi.nlm.nih.gov/41586347/">41586347</a> · 时型与死亡 <a href="https://pubmed.ncbi.nlm.nih.gov/29642757/">29642757</a> · 同步效应 <a href="https://pubmed.ncbi.nlm.nih.gov/40293205/">40293205</a>
@@ -519,7 +519,7 @@ body::before {
        → 卧床时长 tib        → 与中国 2025 睡眠核心信息的 7–8h 比对
        → 睡眠中点 MSF        → 时型（MCTQ 分档）→ 认知高峰时段
        → 体温最低点 Tmin≈W−2.5h → 晨光窗口（相位反应曲线的前移侧）
-       → 咖啡因截止 = S−8h   → Drake 2013 RCT（6h 仍有影响）+ Sleep Med Rev 2023 meta（一杯咖啡 ≥8.8h）
+       → 咖啡因截止 = S−9h   → Drake 2013 RCT（6h 仍有影响）+ Sleep Med Rev 2023 meta（一杯咖啡 ≥8.8h）
        → 剧烈运动截止 = S−1h → Stutz 2019 meta
        → 进食窗口            → 最长 12h，末餐距就寝 ≥4h，且不晚于 21:00（窗口长短证据不一致，只做上限不做下限警告）
        → 午餐 / 午睡         → 午餐晚于 15:00 就不单独排（首餐兼午餐）；午睡跟着午餐，开始不晚于 15:00
@@ -539,8 +539,10 @@ const DEFAULTS = { sleepT: 1350, wakeT: 360, autoS: true, autoW: true, freeOn: f
    ③ 在 7–8 小时内，没有证据说明哪个具体时长最优
    所以时长的取舍只能靠"平局打破"，规则写在 tie-break 注释里，界面上也照实说。
 */
-const BED_LO = 1320, BED_HI = 1379;      // 22:00–22:59
-const DUR_MIN = 420, DUR_MAX = 480;      // 7–8 小时（中国 2025 官方值）
+const BED_LO = 1320, BED_HI = 1380;      // 22:00–23:00（中国 2025 睡眠核心信息「晚上 10–11 点入睡」，两端都算）
+// 中国 2025 推荐的 7–8 小时是「睡着」的时长；页面能算的是卧床时长（含入睡时间）。
+// 同一份文件说良好睡眠「入睡在 30 分钟以内」，所以卧床上限放宽 30 分钟：7–8.5 小时。
+const DUR_MIN = 420, DUR_MAX = 510;
 const DUR_TIE = 450;                     // 平局时取 7.5h：在区间内，且恰好 5 个 90 分钟周期
 
 function recommend(a) {
@@ -737,8 +739,8 @@ function derivedCards(d) {
   cards.push({
     t: "睡眠时长", v: hTxt(d.tib),
     b: durOk
-      ? "落在 <strong>7–8 小时</strong>推荐区间内。"
-      : "<strong>在 7–8 小时推荐区间之外。</strong>" + (d.tib < 420 ? "长期不足会累积影响代谢、血压与认知。" : "长期过长也与更高的健康风险相关。"),
+      ? "卧床时长落在推荐区间内（睡着 7–8 小时，加上不超过 30 分钟的入睡时间）。"
+      : (d.tib < DUR_MIN ? "<strong>不足 7 小时。</strong>长期不足会累积影响代谢、血压与认知。" : "<strong>卧床超过 8.5 小时</strong>，比中国 2025 推荐的 7–8 小时睡眠多出不少；偶尔没关系，长期如此可以留意白天是否仍困。"),
     src: "全国爱卫办《睡眠健康核心信息及释义》（2025）：成年人 7–8 小时；美国 AASM 为 ≥7 小时、AHA 为 7–9 小时"
   });
 
@@ -798,8 +800,8 @@ function keyMoments(d) {
       n: d.hasNap
         ? "午饭后，开始不晚于 15:00。<strong>10–20 分钟</strong>是被验证的量；超过 30 分钟但不足一个完整周期反而更昏沉。"
         : "按你的起床时间，午饭后已经过了 15:00。Mayo Clinic 医生建议午睡在 14–15 点前后、Sleep Foundation 建议别在 15 点后睡，太晚会推迟晚上入睡。困的话优先把晚上睡够。" },
-    { icon: "☕", bg: "var(--red-soft)", t: "咖啡因截止", v: fmt(d.bed - 480),
-      n: "就寝前 8 小时。RCT 里<strong>睡前 6 小时</strong>服用 400mg 咖啡因（约 2–3 杯咖啡）仍让客观睡眠明显减少（Drake 2013），所以 6 小时只是「至少」；24 项研究的 meta 分析估算，<strong>一杯咖啡要在睡前约 8.8 小时前喝完</strong>才不缩短睡眠（Sleep Med Rev 2023）。奶茶、可乐、功能饮料都算。" },
+    { icon: "☕", bg: "var(--red-soft)", t: "咖啡因截止", v: fmt(d.bed - 540),
+      n: "就寝前 9 小时。RCT 里<strong>睡前 6 小时</strong>服用 400mg 咖啡因（约 2–3 杯咖啡）仍让客观睡眠明显减少（Drake 2013），所以 6 小时只是「至少」；24 项研究的 meta 分析估算，<strong>一杯咖啡要在睡前约 8.8 小时前喝完</strong>才不缩短睡眠（Sleep Med Rev 2023）。奶茶、可乐、功能饮料都算。" },
     { icon: "🏃", bg: "var(--green-soft)", t: "剧烈运动截止", v: fmt(d.bed - 60),
       n: "就寝前 1 小时。系统综述（23 项研究）结论是<strong>晚上运动本身并不影响睡眠</strong>，只有<strong>结束于睡前 1 小时内的剧烈运动</strong>可能延长入睡时间、降低睡眠效率。中低强度更宽松。" },
     { icon: "🕯️", bg: "var(--blue-soft)", t: "关刺激 · 调暗灯光", v: fmt(d.bed - 120),
@@ -989,10 +991,12 @@ function writeTime(el, min) { el.value = fmt(min); }
 
 function renderAnchorOut(a, d) {
   const notes = [];
-  if (d.tib < DUR_MIN || d.tib > DUR_MAX) {
-    notes.push({ k: "warn", i: "⚠️", t: "睡眠时长 <strong>" + hTxt(d.tib) + "</strong> 在中国 2025 睡眠核心信息推荐的 7–8 小时之外。这是全表里最该优先解决的一项——它排在周期对齐前面。" });
+  if (d.tib < DUR_MIN) {
+    notes.push({ k: "warn", i: "⚠️", t: "卧床只有 <strong>" + hTxt(d.tib) + "</strong>，睡不到中国 2025 睡眠核心信息推荐的 7–8 小时。这是全表里最该优先解决的一项——它排在周期对齐前面。" });
+  } else if (d.tib > DUR_MAX) {
+    notes.push({ k: "info", i: "ℹ️", t: "卧床 <strong>" + hTxt(d.tib) + "</strong>，超过「睡 7–8 小时 + 30 分钟入睡」。偶尔多睡没关系；如果天天如此还白天犯困，可以留意睡眠质量。" });
   }
-  if (d.effWin < 360) {
+  if (d.effWin < 360 && !d.squeezed) {
     notes.push({ k: "warn", i: "⚠️", t: "算下来进食窗口只有 <strong>" + hTxt(d.effWin) + "</strong>，比限时进食随机试验里常见的窗口都短。<strong>这不是目标</strong>，多半是醒着的时间太晚、太颠倒造成的，先调作息；末餐距就寝 " + hTxt(d.bed - d.lastMealEnd) + "。" });
   } else if (d.effWin < 600) {
     notes.push({ k: "info", i: "ℹ️", t: "算下来进食窗口是 <strong>" + hTxt(d.effWin) + "</strong>，比常见的 10–12 小时短。<strong>这不算问题</strong>：现有 RCT 里窗口长短的效果并不一致，一致的只有「早吃优于晚吃」。末餐距就寝 " + hTxt(d.bed - d.lastMealEnd) + "。" });

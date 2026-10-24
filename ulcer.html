@@ -251,6 +251,7 @@ body::before {
   </footer>
 
 </div>
+<script src="assets/storage.js"></script>
 <script>
 const phases = [
   {
@@ -370,11 +371,6 @@ function renderContent(activeId) {
   `;
 }
 
-// 本地存储可能被浏览器禁用（读写会抛错），存的旧值也可能已经对不上现在的阶段——都退回默认，方案照常显示
-function readSaved(key, valid, fallback) {
-  try { const v = localStorage.getItem(key); return valid.indexOf(v) >= 0 ? v : fallback; } catch (e) { return fallback; }
-}
-function writeSaved(key, v) { try { localStorage.setItem(key, v); } catch (e) {} }
 const saved = readSaved(STORE_KEY, phases.map(p => p.id), "early");
 renderTabs(saved);
 renderContent(saved);

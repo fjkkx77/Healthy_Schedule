@@ -253,6 +253,7 @@ body::before {
   </footer>
 
 </div>
+<script src="assets/storage.js"></script>
 <script>
 const routines = [
   {
@@ -352,11 +353,6 @@ function defaultRoutine() {
   return (h >= 18 || h < 5) ? "pm" : "am";
 }
 
-// 本地存储可能被浏览器禁用（读写会抛错），存的旧值也可能对不上——都退回按时间推的默认值
-function readSaved(key, valid, fallback) {
-  try { const v = localStorage.getItem(key); return valid.indexOf(v) >= 0 ? v : fallback; } catch (e) { return fallback; }
-}
-function writeSaved(key, v) { try { localStorage.setItem(key, v); } catch (e) {} }
 const saved = readSaved(STORE_KEY, routines.map(r => r.id), defaultRoutine());
 renderTabs(saved);
 renderContent(saved);

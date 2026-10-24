@@ -244,11 +244,6 @@ function renderGroupContent(activeId) {
   `;
 }
 
-// 本地存储可能被浏览器禁用（读写会抛错），存的旧值也可能已经对不上现在的选项——都退回默认，内容照常显示
-function readSaved(key, valid, fallback) {
-  try { const v = localStorage.getItem(key); return valid.indexOf(v) >= 0 ? v : fallback; } catch (e) { return fallback; }
-}
-function writeSaved(key, v) { try { localStorage.setItem(key, v); } catch (e) {} }
 const savedGroup = readSaved(STORE_KEY, groups.map(g => g.id), "student");
 renderGroupTabs(savedGroup);
 renderGroupContent(savedGroup);
