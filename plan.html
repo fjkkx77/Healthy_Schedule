@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#f6f8fa" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)">
 <title>我的专属方案 · 健康网站</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
 <link rel="stylesheet" href="assets/style.css">
 <style>
 :root {
@@ -105,13 +105,13 @@ body::before {
 .ag-tag { display: inline-block; font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 6px; margin-right: 6px; vertical-align: 1px; }
 .ag-note { font-size: var(--text-xs); color: var(--text-3); line-height: 1.6; margin-top: 2px; }
 .ag-now { display: inline-block; font-size: 11px; font-weight: 800; color: #fff; background: var(--accent); padding: 1px 7px; border-radius: 6px; margin-left: 6px; vertical-align: 1px; }
-.k-class .ag-dot > i { background: var(--blue); }   .k-class .ag-tag { background: var(--blue-soft); color: var(--blue); }
-.k-meal  .ag-dot > i { background: var(--orange); } .k-meal  .ag-tag { background: var(--orange-soft); color: var(--orange); }
-.k-sleep .ag-dot > i { background: var(--indigo); } .k-sleep .ag-tag { background: var(--indigo-soft); color: var(--indigo); }
-.k-move  .ag-dot > i { background: var(--green); }  .k-move  .ag-tag { background: var(--green-soft); color: var(--green); }
-.k-cut   .ag-dot > i { background: var(--red); }    .k-cut   .ag-tag { background: var(--red-soft); color: var(--red); }
-.k-light .ag-dot > i { background: var(--orange); } .k-light .ag-tag { background: var(--orange-soft); color: var(--orange); }
-.k-nap   .ag-dot > i { background: var(--teal); }   .k-nap   .ag-tag { background: var(--teal-soft); color: var(--teal); }
+.k-class .ag-dot > i { background: var(--blue); }   .k-class .ag-tag { background: var(--blue-soft); color: color-mix(in srgb, var(--blue) 60%, var(--text-1)); }
+.k-meal  .ag-dot > i { background: var(--orange); } .k-meal  .ag-tag { background: var(--orange-soft); color: color-mix(in srgb, var(--orange) 60%, var(--text-1)); }
+.k-sleep .ag-dot > i { background: var(--indigo); } .k-sleep .ag-tag { background: var(--indigo-soft); color: color-mix(in srgb, var(--indigo) 60%, var(--text-1)); }
+.k-move  .ag-dot > i { background: var(--green); }  .k-move  .ag-tag { background: var(--green-soft); color: color-mix(in srgb, var(--green) 60%, var(--text-1)); }
+.k-cut   .ag-dot > i { background: var(--red); }    .k-cut   .ag-tag { background: var(--red-soft); color: color-mix(in srgb, var(--red) 60%, var(--text-1)); }
+.k-light .ag-dot > i { background: var(--orange); } .k-light .ag-tag { background: var(--orange-soft); color: color-mix(in srgb, var(--orange) 60%, var(--text-1)); }
+.k-nap   .ag-dot > i { background: var(--teal); }   .k-nap   .ag-tag { background: var(--teal-soft); color: color-mix(in srgb, var(--teal) 60%, var(--text-1)); }
 .k-off   .ag-title { color: var(--text-4); text-decoration: line-through; }
 .k-off   .ag-dot > i { background: var(--border); }
 .ag-empty { padding: 22px 16px; text-align: center; font-size: var(--text-sm); color: var(--text-4); }
@@ -205,9 +205,9 @@ body::before {
 
   <div class="slabel fadeup" style="animation-delay:.13s">🎯 这套方案的优先级 <em>· 按证据强度排</em></div>
   <div class="prio fadeup" style="animation-delay:.14s">
-    <div class="prow"><div class="pnum">1</div><div class="pb"><div class="pt">每天同一时间起床，周末也是（最多晚 30 分钟）</div><div class="pn">规律性比睡眠时长更能预测死亡风险（UK Biobank 60,977 人，Sleep 2024）。周一、周二 10 点才上课，最容易睡懒觉——那两个上午当成固定自习时间。</div></div></div>
+    <div class="prow"><div class="pnum">1</div><div class="pb"><div class="pt">每天同一时间起床，周末也尽量别晚太多</div><div class="pn">规律性比睡眠时长更能预测死亡风险（UK Biobank 60,977 人，Sleep 2024）。周一、周二 10 点才上课，最容易睡懒觉——那两个上午当成固定自习时间。</div></div></div>
     <div class="prow"><div class="pnum">2</div><div class="pb"><div class="pt">把睡眠从 6 小时拉到 7 小时以上</div><div class="pn">AASM：6 小时及以下不足以维持健康与安全。你 08:00 有课、起床时间挪不动，缺的只能从晚上补——上面的睡眠卡会每天自动给出今晚的目标。</div></div></div>
-    <div class="prow"><div class="pnum">3</div><div class="pb"><div class="pt">晚饭可以吃得多，但要吃得早</div><div class="pn">早餐多吃和晚餐多吃减重一样多（Cell Metabolism 2022 交叉 RCT），问题不在份量，在时间：末餐晚于 21:00 卒中风险 +28%（观察性）。</div></div></div>
+    <div class="prow"><div class="pnum">3</div><div class="pb"><div class="pt">晚饭可以吃得多，但要吃得早</div><div class="pn">早餐多吃和晚餐多吃减重一样多（Cell Metabolism 2022 交叉 RCT），问题不在份量，在时间：末餐晚于 21:00 脑血管病风险 +28%（法国 10 万人队列，观察性）。</div></div></div>
     <div class="prow"><div class="pnum">4</div><div class="pb"><div class="pt">午睡 20 分钟 · 每周运动凑够 150 分钟</div><div class="pn">有证据，但前两条没解决之前收益排在后面。运动放哪个时段都行，总量才是关键。</div></div></div>
   </div>
 
@@ -245,10 +245,10 @@ body::before {
   <div class="srcs fadeup" style="animation-delay:.2s">
     <ul>
       <li><strong>规律性比时长更重要</strong>：UK Biobank 60,977 人加速度计数据，最规律四档全因死亡风险低 20–48%（Sleep 2024）</li>
-      <li><strong>成人睡眠 ≥7 小时</strong>：AASM 共识声明；6 小时及以下不足以维持健康与安全</li>
+      <li><strong>成人睡眠 7–8 小时</strong>：全国爱卫办《睡眠健康核心信息及释义》（2025）；AASM 共识为「7 小时及以上」，长期不足 7 小时与多种不良健康结局相关</li>
       <li><strong>生物钟前移速度</strong>：Eastman / Burgess 等，晨间强光 + 逐步提前睡眠，约 1 小时/天（实验室条件）</li>
       <li><strong>体温最低点与光照方向</strong>：Tmin 约在习惯起床前 2–2.5 小时；之后见光前移生物钟、之前见光后移（光照相位反应曲线）</li>
-      <li><strong>咖啡因截止</strong>：Drake 等 2013（JCSM）RCT，睡前 6 小时 400mg 使客观总睡眠减少 1 小时以上，受试者主观未察觉（n=12）</li>
+      <li><strong>咖啡因截止（睡前 8 小时）</strong>：Drake 等 2013（JCSM）RCT，睡前 6 小时 400mg 仍明显扰乱睡眠，建议「至少」提前 6 小时；Gardiner 等 2023（Sleep Med Rev）24 项研究 meta：一杯咖啡要在睡前约 8.8 小时前喝完</li>
       <li><strong>剧烈运动截止</strong>：Stutz 等 2019（Sports Medicine）系统综述 23 项研究，只有结束于睡前 1 小时内的剧烈运动可能影响入睡</li>
       <li><strong>不吃早餐</strong>：BMJ 2019 RCT meta，不吃早餐组体重低 0.44 kg，吃早餐组每日多摄入约 260 kcal；对成人上午认知的影响证据不足</li>
       <li><strong>晚餐份量</strong>：Ruddick-Collins 等 2022（Cell Metabolism）交叉 RCT，早重/晚重热量分配减重相同（−3.33 vs −3.38 kg），晚重组更饿</li>
@@ -261,7 +261,7 @@ body::before {
 
   <footer class="fadeup" style="animation-delay:.22s">
     <strong>重要提醒</strong><br>
-    这是按你的课表与饮食习惯、基于公开研究整理的个人作息方案，不是医疗建议。<br>
+    这是按你的课表与饮食习惯、基于公开研究整理的个人作息方案，不是医疗建议。<strong>最后核对：2026-10-25</strong><br>
     若长期失眠、白天严重嗜睡或睡眠时长怎么调都上不去，请到医院睡眠门诊评估。
   </footer>
 
@@ -527,7 +527,7 @@ function buildDay(S, p, date) {
   const dinS = Math.max(18 * 60, lastEnd + 20);
   const dinE = Math.min(dinS + 90, 20 * 60, bedAbs - 240);
   items.push({ k: "meal", t: dinS, t2: Math.max(dinE, dinS + 30), tag: "晚餐", title: "晚餐 · 可以吃得多",
-    note: fmt(Math.max(dinE, dinS + 30)) + " 前吃完。份量不是问题，时间才是：末餐晚于 21:00 卒中风险 +28%" });
+    note: fmt(Math.max(dinE, dinS + 30)) + " 前吃完。份量不是问题，时间才是：末餐晚于 21:00 脑血管病风险 +28%（观察性）" });
 
   // 运动：运动日优先 16:00–16:50，冲突就往后找空，必须在入睡前 1 小时结束
   if (p.moveDays.indexOf(di) >= 0 && !trainUnknown) {
@@ -544,8 +544,8 @@ function buildDay(S, p, date) {
   }
 
   // 截止时刻
-  items.push({ k: "cut", t: bedAbs - 360, t2: null, tag: "截止", title: "咖啡因截止",
-    note: "奶茶、咖啡、可乐、功能饮料都算。睡前 6 小时的咖啡因让客观睡眠少 1 小时以上，而你感觉不到" });
+  items.push({ k: "cut", t: bedAbs - 480, t2: null, tag: "截止", title: "咖啡因截止",
+    note: "奶茶、咖啡、可乐、功能饮料都算。睡前 6 小时喝仍会明显少睡，一杯咖啡最好在睡前 8~9 小时前喝完" });
   items.push({ k: "cut", t: bedAbs - 120, t2: null, tag: "调暗", title: "调暗屏幕和灯光",
     note: "这段时间在体温最低点之前，强光会把生物钟往后推，抵消早睡的努力" });
   items.push({ k: "cut", t: bedAbs - 60, t2: null, tag: "截止", title: "剧烈运动截止",
@@ -581,7 +581,8 @@ function render() {
 
   const chips = [];
   if (r.week !== null) {
-    const practical = S.courses.some(function (c) { return c.day === "all" && r.week >= c.weekStart && r.week <= c.weekEnd; });
+    // 课表网站 10-15 起把部分实训改成按节次排（day 是具体星期几），所以要同时认 type: "practical"
+    const practical = S.courses.some(function (c) { return (c.day === "all" || c.type === "practical") && r.week >= c.weekStart && r.week <= c.weekEnd; });
     chips.push('<span class="chip chip-week">第 ' + r.week + ' 周 · ' + (practical ? "实训周" : "理论课") + "</span>");
   } else {
     chips.push('<span class="chip chip-week">不在学期内</span>');
@@ -594,7 +595,7 @@ function render() {
   $("srcLine").className = "srcline" + (SCHED.live ? "" : " is-warn");
   $("srcLine").innerHTML = SCHED.live
     ? "课表：实时读取自课表网站（" + pad2(SCHED.at.getHours()) + ":" + pad2(SCHED.at.getMinutes()) + " 读取），你那边改课表、加调休这里自动跟上"
-    : "⚠️ 没读到课表网站（" + SCHED.err + "），暂用 " + SNAPSHOT_AT + " 的快照。之后的调课可能没反映出来";
+    : "⚠️ 没读到课表网站（" + errText(SCHED.err) + "），暂用 " + SNAPSHOT_AT + " 的快照。之后的调课可能没反映出来";
 
   // 今晚睡眠目标卡
   const bp = day.bp;
@@ -654,6 +655,13 @@ function render() {
   const url = new URL(location.href);
   if (isToday(VIEW)) url.searchParams.delete("date"); else url.searchParams.set("date", ymd(VIEW));
   history.replaceState(null, "", url.pathname + url.search);
+}
+// 把浏览器的英文报错换成能看懂的原因
+function errText(e) {
+  if (/abort/i.test(e)) return "6 秒没连上，可能是网络慢或断网";
+  if (/^HTTP /.test(e)) return "课表网站返回 " + e.slice(5) + " 错误";
+  if (/fetch|network/i.test(e)) return "网络不通";
+  return "课表数据格式变了：" + e;
 }
 function ymdShort(d) { return (d.getMonth() + 1) + "/" + d.getDate() + "（" + WD[weekday(d)] + "）"; }
 
