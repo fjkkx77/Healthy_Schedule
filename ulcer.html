@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#f6f8fa" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)">
 <title>口腔溃疡管理 · 健康网站</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
 <link rel="stylesheet" href="assets/style.css">
 <style>
 :root {
@@ -72,6 +72,9 @@ body::before {
 .ptab:active { transform: scale(.96); }
 .ptab .pico { display: block; font-size: 21px; margin-bottom: 5px; }
 .ptab.on { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow: var(--shadow-2); }
+/* 选中的选项卡要白字可读：浅色 #1f8863 白字 4.41:1、深色亮绿 2.54:1，都换成深一档的绿（5.08 / 4.63:1） */
+.ptab.on { background: #1a7f37; border-color: #1a7f37; }
+@media (prefers-color-scheme: dark) { .ptab.on { background: #238636; border-color: #238636; } }
 
 /* PHASE CONTENT */
 .pcontent {
@@ -99,6 +102,8 @@ body::before {
   display: inline-block; font-size: var(--text-xs); font-weight: 700; color: #fff;
   background: var(--text-3); border-radius: 6px; padding: 3px 10px; margin-bottom: 8px;
 }
+/* 深色下灰底白字只有 2.91:1，换深灰底浅色字 */
+@media (prefers-color-scheme: dark) { .sched-time { background: var(--border); color: var(--text-1); } }
 .med-row {
   display: flex; align-items: center; gap: 12px; padding: 9px 0;
   border-bottom: 1px solid var(--border-soft);
@@ -190,13 +195,13 @@ body::before {
   <div class="slabel fadeup" style="animation-delay:.05s">⚠️ 全程铁律 <em>· 任何阶段都不能违反</em></div>
   <div class="rulecard fadeup" style="animation-delay:.07s">
     <div class="rulelist">
-      <div class="ruleitem"><span class="num">1</span><div class="rt">全程不叠加单独维生素B6 —— 复合维生素B已含足量B6。长期额外补充可能引起周围神经病变（手脚麻木、刺痛、走路发飘）；监管机构审查显示<strong>低于 50mg/日也可能发生</strong>，且找不到公认的安全下限。<strong>及时停用多数可以恢复，但恢复不一定完全</strong>——所以一旦出现手脚麻木刺痛，立即停用并就医，不要拖</div></div>
+      <div class="ruleitem"><span class="num">1</span><div class="rt">全程不叠加单独维生素B6 —— 复合维生素B片每片含 B6 0.2mg（常见 OTC 规格，以药盒为准），日常够用；单独的 B6 片一般每片 10mg，没有确诊缺乏就不额外吃。长期额外补充可能引起周围神经病变（手脚麻木、刺痛、走路发飘）；监管机构审查显示<strong>低于 50mg/日也可能发生</strong>，且找不到公认的安全下限。<strong>及时停用多数可以恢复，但恢复不一定完全</strong>——所以一旦出现手脚麻木刺痛，立即停用并就医，不要拖</div></div>
       <div class="ruleitem"><span class="num">2</span><div class="rt">单独维生素B2仅在「中期剧痛」短期加服，日常和预防期都不吃</div></div>
       <div class="ruleitem"><span class="num">3</span><div class="rt">维生素C仅在发作期短期服用，愈合后立刻停，长期吃会刺激肠胃</div></div>
       <div class="ruleitem"><span class="num">4</span><div class="rt">所有内服药物必须饭后温水送服，不空腹吃</div></div>
-      <div class="ruleitem"><span class="num">5</span><div class="rt">外用药二选一 —— 蜂胶口腔膜和意可贴禁止同时贴</div></div>
+      <div class="ruleitem"><span class="num">5</span><div class="rt">外用药二选一 —— 蜂胶口腔膜和意可贴禁止同时贴（意可贴说明书【药物相互作用】：使用本品时不能同时使用其他口腔用药）</div></div>
       <div class="ruleitem"><span class="num">6</span><div class="rt">意可贴（激素贴片）连续使用不超过5天，5天无好转立刻停用并就医。<em>（说明书上限是「连用不得超过1周」，这里取更保守的自我约束）</em></div></div>
-      <div class="ruleitem"><span class="num">7</span><div class="rt"><strong>用意可贴前先确认自己不在禁忌人群里</strong>：说明书明确禁用——严重高血压、糖尿病、胃与十二指肠溃疡、骨质疏松症、有神经病史或癫痫病史、青光眼等患者。不确定就先问医生或药师，别先贴了再说</div></div>
+      <div class="ruleitem"><span class="num">7</span><div class="rt"><strong>用意可贴前先确认自己不在禁用人群里</strong>：说明书【禁忌】——严重活动性结核病、高血压、糖尿病、胃或十二指肠溃疡、骨质疏松症、早期妊娠、角膜溃疡及有<strong>精神病史</strong>、癫痫病史、青光眼和严重心或肾功能不全者禁用；孕妇、哺乳期妇女、儿童慎用；只用于<strong>非感染性</strong>口腔溃疡。不同批次说明书略有出入，<strong>以你手上那盒为准</strong>；不确定就先问医生或药师，别先贴了再说</div></div>
     </div>
   </div>
 
@@ -206,19 +211,19 @@ body::before {
 
   <div class="slabel fadeup" style="animation-delay:.16s">💊 药箱总览</div>
   <div class="cabinet fadeup" style="animation-delay:.18s">
-    <div class="cabrow"><div class="cabrow-icon">💊</div><div><div class="cabrow-t">复合维生素B片</div><div class="cabrow-v">日常主力 · 几乎所有阶段都吃</div></div></div>
-    <div class="cabrow"><div class="cabrow-icon">💊</div><div><div class="cabrow-t">叶酸片（B9）</div><div class="cabrow-v">日常主力 · 配合复合B修复黏膜</div></div></div>
-    <div class="cabrow"><div class="cabrow-icon">💊</div><div><div class="cabrow-t">维生素B12片</div><div class="cabrow-v">日常主力 · 黏膜修复关键营养素</div></div></div>
-    <div class="cabrow"><div class="cabrow-icon">💊</div><div><div class="cabrow-t">维生素C片</div><div class="cabrow-v">仅发作期短期用，愈合后立刻停</div></div></div>
+    <div class="cabrow"><div class="cabrow-icon">💊</div><div><div class="cabrow-t">复合维生素B片</div><div class="cabrow-v">常见规格每片 B1 3mg、B2 1.5mg、B6 0.2mg · 每天 2~3 片（说明书成人一次 1~3 片、一日 3 次以内）</div></div></div>
+    <div class="cabrow"><div class="cabrow-icon">💊</div><div><div class="cabrow-t">叶酸片（B9）</div><div class="cabrow-v">常见 OTC 规格 0.4mg/片 · <strong>每天最多 2 片</strong>（合成叶酸可耐受上限 1mg/天，NIH）；<strong>5mg 规格是治疗贫血用的处方量，别自己长期吃</strong>——先看药盒</div></div></div>
+    <div class="cabrow"><div class="cabrow-icon">💊</div><div><div class="cabrow-t">维生素B12片</div><div class="cabrow-v">常见规格 25μg/片 · 每天 2~3 片，在说明书一日 25~100μg 以内。说明书提示「维生素C可破坏维生素B12」，影响大小没查到可靠数据，介意的话和维C错开一会儿再吃</div></div></div>
+    <div class="cabrow"><div class="cabrow-icon">💊</div><div><div class="cabrow-t">维生素C片</div><div class="cabrow-v">常见规格 100mg/片 · 仅发作期短期用，每天最多 3 片（有夜宵 3 片、没夜宵 2 片），愈合后立刻停</div></div></div>
     <div class="cabrow"><div class="cabrow-icon warn">⚠️</div><div><div class="cabrow-t">单独维生素B2片</div><div class="cabrow-v">仅「中期剧痛」短期应急，不日常吃</div></div></div>
-    <div class="cabrow"><div class="cabrow-icon warn">🚫</div><div><div class="cabrow-t">单独维生素B6片</div><div class="cabrow-v">不建议吃！复合B已含足量，长期叠加有神经损伤风险，闲置存放</div></div></div>
-    <div class="cabrow"><div class="cabrow-icon">🧴</div><div><div class="cabrow-t">蜂胶口腔膜</div><div class="cabrow-v">外用 · 无激素 · 可全程用到愈合</div></div></div>
-    <div class="cabrow"><div class="cabrow-icon warn">🩹</div><div><div class="cabrow-t">醋酸地塞米松贴片（意可贴）</div><div class="cabrow-v">外用 · 含激素 · 剧痛期专用，每日≤3片、连续≤5天<br><strong>⚠️ 禁用人群：严重高血压、糖尿病、胃十二指肠溃疡、骨质疏松、有神经病史或癫痫史、青光眼患者禁用</strong>——用前请对照说明书确认自己不在其中</div></div></div>
+    <div class="cabrow"><div class="cabrow-icon warn">🚫</div><div><div class="cabrow-t">单独维生素B6片</div><div class="cabrow-v">不建议吃！单片剂量大（常见 10mg），长期叠加有周围神经病变风险，闲置存放</div></div></div>
+    <div class="cabrow"><div class="cabrow-icon">🧴</div><div><div class="cabrow-t">蜂胶口腔膜</div><div class="cabrow-v">外用 · 无激素 · 一日 3 次 · <strong>用 3 天没缓解就去口腔科</strong>（说明书）；蜂胶是常见过敏原，过敏体质慎用，贴后局部红肿、起疹立刻停</div></div></div>
+    <div class="cabrow"><div class="cabrow-icon warn">🩹</div><div><div class="cabrow-t">醋酸地塞米松贴片（意可贴）</div><div class="cabrow-v">外用 · 含激素 · 剧痛期专用，规格 0.3mg/片，每日≤3片、连续≤5天<br><strong>⚠️ 禁用：严重活动性结核、高血压、糖尿病、胃或十二指肠溃疡、骨质疏松、早期妊娠、角膜溃疡、有精神病史或癫痫病史、青光眼、严重心或肾功能不全</strong>；孕妇、哺乳期、儿童慎用——用前对照你手上那盒的说明书</div></div></div>
   </div>
 
   <div class="slabel fadeup" style="animation-delay:.21s">🌙 配套增效建议 <em>· 针对熬夜、压力大的根源</em></div>
   <div class="tgrid fadeup" style="animation-delay:.23s">
-    <div class="tcard2"><div class="ticon2">🧪</div><div><div class="ttitle2">每天补锌</div><div class="tdesc2">葡萄糖酸锌，修复黏膜、抵消熬夜带来的免疫损伤</div></div></div>
+    <div class="tcard2"><div class="ticon2">🧪</div><div><div class="ttitle2">锌：先查再补</div><div class="tdesc2">葡萄糖酸锌说明书写「确诊缺锌时使用，长期服用须医师指导」；没缺锌长期补不一定有用，每天 50mg 以上连吃数周还会导致缺铜（NIH）</div></div></div>
     <div class="tcard2"><div class="ticon2">⏰</div><div><div class="ttitle2">固定睡眠区间</div><div class="tdesc2">昼夜颠倒是反复发作的核心诱因，尽量减少偏差</div></div></div>
     <div class="tcard2"><div class="ticon2">🌶️</div><div><div class="ttitle2">忌辛辣过烫</div><div class="tdesc2">少吃火锅、烧烤、过烫、辛辣食物，减少黏膜刺激</div></div></div>
     <div class="tcard2"><div class="ticon2">🍚</div><div><div class="ttitle2">先垫肚子再吃药</div><div class="tdesc2">第一餐常是午饭，空腹一整晚，吃几口饭再服药</div></div></div>
@@ -228,16 +233,20 @@ body::before {
   <div class="slabel fadeup" style="animation-delay:.28s">🚨 何时必须就医</div>
   <div class="rfcard fadeup" style="animation-delay:.30s">
     <div class="rflist">
-      <div class="rfitem">单个溃疡超过 2 周仍不愈合</div>
+      <div class="rfitem">单个溃疡超过 2 周仍不愈合（NHS 的线是 3 周，这里取更严）</div>
+      <div class="rfitem">和以往不一样：比平时大很多、长在靠近喉咙的位置</div>
+      <div class="rfitem">出血，或越来越痛、越来越红（可能感染了）</div>
       <div class="rfitem">溃疡大面积溃烂，或数量异常增多</div>
-      <div class="rfitem">伴随发烧、关节痛等全身症状</div>
+      <div class="rfitem">身上其他地方（皮肤、生殖器）也有溃疡，或伴随发烧、关节红肿疼痛</div>
+      <div class="rfitem">一个月发好几次、反反复复——去查血常规、铁蛋白、维生素B12、叶酸、锌，缺哪个补哪个（反复口腔溃疡的人这几项偏低的多）</div>
     </div>
-    <div class="rfcta">→ 立即停止自行用药，及时就诊口腔科</div>
+    <div class="rfcta">→ 立即停止自行用药，及时就诊口腔科（出处：NHS「Mouth ulcers」）</div>
   </div>
 
   <footer class="fadeup" style="animation-delay:.32s">
     <strong>重要提醒</strong><br>
     本页方案基于个人与AI过往多轮讨论整理，是个人用药记录，不是医生处方，不能替代专业诊疗。<br>
+    药品用法、禁忌按各药说明书（国药准字号见仓库 PROJECT_STATUS.md）核对；<strong>最后核对：2026-10-25</strong>。<br>
     如有异常请及时就医，调整用药前请咨询医生或药师。
   </footer>
 
@@ -256,7 +265,7 @@ const phases = [
       ]}
     ],
     ext:{text:"无需贴药，每日淡盐水漱口 2 次，冲刷口腔黏膜"},
-    tip:"逻辑：提前补足黏膜修复营养素，阻断溃疡成型，从源头避免溃烂爆发"
+    tip:"说实话：复合维生素预防溃疡复发的随机试验没有效果（Lalla 2012，160 人吃一年）；有效的证据只有大剂量 B12（舌下 1000μg 吃半年）。这几种按说明书吃风险低，可以吃，但别指望它一定能拦住——反复发作就去查血"
   },
   {
     id:"early", tabLabel:"刚发作", icon:"🌱",
@@ -264,17 +273,17 @@ const phases = [
     subtitle:"创面很小、轻微疼，吃饭基本不受影响",
     until:"持续到：进入疼痛高峰期为止",
     schedules:[
-      { tag:"有夜宵（推荐，一天3次）", blocks:[
+      { tag:"有夜宵（推荐，一天3次）", note:"叶酸一天只吃 2 片（午饭、晚饭各 1），夜宵后不加——0.4mg 片 3 片就超过 1mg 上限", blocks:[
         {time:"午饭后", meds:[{n:"复合维生素B",d:"1片"},{n:"叶酸片(B9)",d:"1片"},{n:"维生素B12",d:"1片"},{n:"维生素C",d:"1片"}]},
         {time:"晚饭后", meds:[{n:"复合维生素B",d:"1片"},{n:"叶酸片(B9)",d:"1片"},{n:"维生素B12",d:"1片"},{n:"维生素C",d:"1片"}]},
-        {time:"夜宵后", meds:[{n:"复合维生素B",d:"1片"},{n:"叶酸片(B9)",d:"1片"},{n:"维生素B12",d:"1片"},{n:"维生素C",d:"1片"}]},
+        {time:"夜宵后", meds:[{n:"复合维生素B",d:"1片"},{n:"维生素B12",d:"1片"},{n:"维生素C",d:"1片"}]},
       ]},
-      { tag:"没有夜宵（一天2次）", note:"维C全天总量不超过2片", blocks:[
+      { tag:"没有夜宵（一天2次）", note:"没有夜宵就只吃 2 片维C，不要把第 3 片补到别的餐", blocks:[
         {time:"午饭后", meds:[{n:"复合维生素B",d:"1片"},{n:"叶酸片(B9)",d:"1片"},{n:"维生素B12",d:"1片"},{n:"维生素C",d:"1片"}]},
         {time:"晚饭后", meds:[{n:"复合维生素B",d:"1片"},{n:"叶酸片(B9)",d:"1片"},{n:"维生素B12",d:"1片"},{n:"维生素C",d:"1片"}]},
       ]}
     ],
-    ext:{text:"蜂胶口腔膜（无激素），每次餐后清洁口腔后贴于溃疡处，可全程贴到愈合"},
+    ext:{text:"蜂胶口腔膜（无激素），一日 3 次，餐后清洁口腔后贴于溃疡处", warn:"⚠️ 用 3 天没缓解就去口腔科（说明书）；贴后局部红肿、起疹、头晕恶心立刻停用——蜂胶可能过敏"},
     tip:null
   },
   {
@@ -283,24 +292,24 @@ const phases = [
     subtitle:"创面大、剧烈疼痛，吃饭喝水刺痛难忍",
     until:"最多连续服用 5 天；剧痛缓解、创面开始收缩就减量停用单独B2",
     schedules:[
-      { tag:"有夜宵（推荐，一天3次）", blocks:[
+      { tag:"有夜宵（推荐，一天3次）", note:"叶酸一天只吃 2 片（午饭、晚饭各 1），夜宵后不加——0.4mg 片 3 片就超过 1mg 上限", blocks:[
         {time:"午饭后", meds:[{n:"复合维生素B",d:"1片"},{n:"叶酸片(B9)",d:"1片"},{n:"维生素B12",d:"1片"},{n:"维生素C",d:"1片"},{n:"单独维生素B2",d:"1片 · 短期应急"}]},
         {time:"晚饭后", meds:[{n:"复合维生素B",d:"1片"},{n:"叶酸片(B9)",d:"1片"},{n:"维生素B12",d:"1片"},{n:"维生素C",d:"1片"},{n:"单独维生素B2",d:"1片 · 短期应急"}]},
-        {time:"夜宵后", meds:[{n:"复合维生素B",d:"1片"},{n:"叶酸片(B9)",d:"1片"},{n:"维生素B12",d:"1片"},{n:"维生素C",d:"1片"},{n:"单独维生素B2",d:"1片 · 短期应急"}]},
+        {time:"夜宵后", meds:[{n:"复合维生素B",d:"1片"},{n:"维生素B12",d:"1片"},{n:"维生素C",d:"1片"},{n:"单独维生素B2",d:"1片 · 短期应急"}]},
       ]},
       { tag:"没有夜宵（一天2次）", note:"取消额外B2，减少单次药量负担", blocks:[
         {time:"午饭后", meds:[{n:"复合维生素B",d:"1片"},{n:"叶酸片(B9)",d:"1片"},{n:"维生素B12",d:"1片"},{n:"维生素C",d:"1片"}]},
         {time:"晚饭后", meds:[{n:"复合维生素B",d:"1片"},{n:"叶酸片(B9)",d:"1片"},{n:"维生素B12",d:"1片"},{n:"维生素C",d:"1片"}]},
       ]}
     ],
-    ext:{text:"剧痛优先选：醋酸地塞米松贴片（意可贴），每日不超过3片，连用不超过5天；若抵触激素可换蜂胶口腔膜", warn:"⚠️ 贴之前先确认不在禁忌人群里：严重高血压、糖尿病、胃十二指肠溃疡、骨质疏松、有神经病史或癫痫史、青光眼患者禁用。5天仍无好转，立即停用并去口腔科就诊"},
+    ext:{text:"剧痛优先选：醋酸地塞米松贴片（意可贴），每日不超过3片，连用不超过5天；若抵触激素可换蜂胶口腔膜", warn:"⚠️ 贴之前先确认不在禁用人群里：严重活动性结核、高血压、糖尿病、胃或十二指肠溃疡、骨质疏松、早期妊娠、角膜溃疡、有精神病史或癫痫病史、青光眼、严重心或肾功能不全者禁用；孕妇、哺乳期、儿童慎用。5天仍无好转，立即停用并去口腔科就诊"},
     tip:"⚠️ 单独B2仅此阶段短期加服，疼痛缓解立刻停用，不可长期吃"
   },
   {
     id:"heal", tabLabel:"愈合预防", icon:"🛡️",
     title:"愈合后 · 长期预防",
     subtitle:"溃疡完全长平、无疼痛感，进入 1~2 个月稳定调理期",
-    until:"持续 1~2 个月，是控制反复发作的关键阶段",
+    until:"持续 1~2 个月（个人方案；复合维生素防复发的随机试验没有效果，若仍每月发作，去查血找原因）",
     schedules:[
       { tag:null, blocks:[
         {time:"午饭后", meds:[{n:"复合维生素B",d:"1片"},{n:"叶酸片(B9)",d:"1片"},{n:"维生素B12",d:"1片"}]},
@@ -323,7 +332,7 @@ function renderTabs(activeId) {
     </div>`).join("");
   ptabs.querySelectorAll(".ptab").forEach(el => {
     el.addEventListener("click", () => {
-      localStorage.setItem(STORE_KEY, el.dataset.id);
+      writeSaved(STORE_KEY, el.dataset.id);
       renderTabs(el.dataset.id);
       renderContent(el.dataset.id);
     });
@@ -361,7 +370,12 @@ function renderContent(activeId) {
   `;
 }
 
-const saved = localStorage.getItem(STORE_KEY) || "early";
+// 本地存储可能被浏览器禁用（读写会抛错），存的旧值也可能已经对不上现在的阶段——都退回默认，方案照常显示
+function readSaved(key, valid, fallback) {
+  try { const v = localStorage.getItem(key); return valid.indexOf(v) >= 0 ? v : fallback; } catch (e) { return fallback; }
+}
+function writeSaved(key, v) { try { localStorage.setItem(key, v); } catch (e) {} }
+const saved = readSaved(STORE_KEY, phases.map(p => p.id), "early");
 renderTabs(saved);
 renderContent(saved);
 </script>
