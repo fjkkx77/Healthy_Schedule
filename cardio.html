@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#f6f8fa" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)">
 <title>心梗 · 脑梗 · 猝死急救 · 健康网站</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
 <link rel="stylesheet" href="assets/style.css">
 <style>
 :root {
@@ -53,6 +53,18 @@ body::before {
   font-size: var(--text-xs); color: var(--text-3); font-weight: 500;
   box-shadow: var(--shadow-1);
 }
+
+/* 一键拨打 120：急救时最先要做的事，放在首屏、按 iPhone 拇指热区做大 */
+.callbtn {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  margin-top: 16px; min-height: 56px; padding: 14px 18px;
+  background: #cf222e; color: #fff; text-decoration: none;
+  border-radius: var(--radius-lg); box-shadow: 0 6px 20px rgba(207,34,46,.28);
+  font-size: var(--text-lg); font-weight: 800; letter-spacing: .02em;
+  touch-action: manipulation; transition: transform .15s ease;
+}
+.callbtn:active { transform: scale(.97); }
+.callbtn small { font-size: var(--text-xs); font-weight: 500; opacity: .9; }
 
 /* STAT GRID */
 .statgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -243,6 +255,8 @@ body::before {
 .ptab:active { transform: scale(.96); }
 .ptab .pico { display: block; font-size: 21px; margin-bottom: 5px; }
 .ptab.on { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow: var(--shadow-2); }
+/* 深色下亮红底配白字只有 3.35:1，选中的选项卡用浅色主题的红（5.36:1） */
+@media (prefers-color-scheme: dark) { .ptab.on { background: #cf222e; border-color: #cf222e; } }
 
 .pcontent {
   background: var(--card); border: 1px solid var(--border); border-left: 4px solid var(--accent);
@@ -305,16 +319,17 @@ body::before {
   <a class="backnav" href="index.html">← 返回健康网站首页</a>
 
   <header class="fadeup" style="animation-delay:.02s">
-    <div class="eyebrow">🫀 心脑血管风险专题 · 2026 权威证据版</div>
+    <div class="eyebrow">🫀 心脑血管风险专题 · 最后核对 2026-10-25</div>
     <h1>心梗 · 脑梗 · 猝死 全指南</h1>
     <p class="header-sub">识别信号 · 日常预防 · CPR急救 · 分人群方案（大学生 / 年轻上班族 / 中老年人）</p>
+    <a class="callbtn" href="tel:120">📞 拨打 120 <small>疑似心梗 / 中风 / 有人倒地</small></a>
     <div class="pills">
-      <span class="pill">国家心血管病中心</span>
+      <span class="pill">AHA 2025 指南</span>
+      <span class="pill">英国复苏委员会 2025</span>
+      <span class="pill">NHS</span>
+      <span class="pill">中国高血压防治指南 2024</span>
+      <span class="pill">中国卒中学会 2024</span>
       <span class="pill">WHO</span>
-      <span class="pill">AHA / ASA</span>
-      <span class="pill">CDC</span>
-      <span class="pill">国家卫健委</span>
-      <span class="pill">脑血管病防治指南 2024</span>
     </div>
   </header>
 
@@ -325,11 +340,11 @@ body::before {
   <div class="rulecard fadeup" style="animation-delay:.10s">
     <div class="rulecard-h">立即拨打 120，不要犹豫、不要自行处理</div>
     <div class="rulelist">
-      <div class="ruleitem"><span class="num">1</span><div class="rt"><strong>疑似心梗：</strong>立即停止活动，坐下或半卧位休息，拨打120；在确认无阿司匹林过敏、无活动性消化道出血的前提下，可<strong>嚼服阿司匹林 300mg</strong>（中国指南推荐量；国际指南区间为 162~325mg）。<strong>⚠️ 家里常备的多是 100mg 肠溶片 → 取 3 片嚼碎后服下</strong>：肠溶片平时确实不能掰开嚼，但急性心梗是例外——整片吞下去在胃里不溶解、起效极慢，必须嚼碎才能快速起效。平时有医生开具的硝酸甘油可按医嘱含服，但不要借用别人的药；不要继续走动、开车或硬扛</div></div>
+      <div class="ruleitem"><span class="num">1</span><div class="rt"><strong>疑似心梗：</strong>立即停止活动，坐下或半卧位休息，拨打120；在确认无阿司匹林过敏、无活动性消化道出血的前提下，可<strong>嚼服阿司匹林 300mg</strong>（英国 NHS 写法；美国 ACC/AHA 指南区间为 162~325mg）。<strong>⚠️ 家里常备的多是 100mg 肠溶片 → 取 3 片嚼碎后服下</strong>：肠溶片平时确实不能掰开嚼，但急性心梗是例外——整片吞下去在胃里不溶解、起效极慢，必须嚼碎才能快速起效。平时有医生开具的硝酸甘油可按医嘱含服，但不要借用别人的药；不要继续走动、开车或硬扛</div></div>
       <div class="ruleitem"><span class="num">2</span><div class="rt"><strong>疑似脑梗/卒中：</strong>立刻拨打120并记录发病时间，不要喂水喂药；若患者呕吐或意识不清但仍有呼吸，让其侧卧、头偏向一侧，保持气道通畅、清除口腔异物防止误吸，不要等症状"自己缓解"</div></div>
-      <div class="ruleitem"><span class="num">3</span><div class="rt"><strong>突然倒地无反应：</strong>不呼吸或只有喘气样呼吸，立即呼救 + 胸外按压 + 找 AED，不要等"再看看"</div></div>
-      <div class="ruleitem"><span class="num">4</span><div class="rt"><strong>黄金时间：</strong>心肺复苏黄金 4 分钟；脑卒中静脉溶栓黄金 4.5 小时——每延误 1 分钟，抢救成功率和预后都在下降</div></div>
-      <div class="ruleitem"><span class="num">5</span><div class="rt"><strong>绝对别做：</strong>掐人中、硬灌水喂药、拍打患者、找硬币刮痧放血、自己开车硬扛去医院</div></div>
+      <div class="ruleitem"><span class="num">3</span><div class="rt"><strong>突然倒地无反应：</strong>叫不醒就打 120（开免提），不呼吸或只有喘气样呼吸，立即胸外按压 + 让人去取 AED，不要等"再看看"，<strong>不要去摸脉搏</strong></div></div>
+      <div class="ruleitem"><span class="num">4</span><div class="rt"><strong>越快越好：</strong>心脏骤停时每拖 1 分钟，生存机会都在下降，有人按压就能把下降速度放慢；脑卒中静脉溶栓的标准时间窗是 4.5 小时，<strong>但这不是截止线</strong>——经影像筛选可延至 24 小时，不论发病多久都要立刻打 120，能不能治由医院决定</div></div>
+      <div class="ruleitem"><span class="num">5</span><div class="rt"><strong>绝对别做：</strong>掐人中、硬灌水喂药、用力摇晃或拍打背部胸口、找硬币刮痧放血、自己开车硬扛去医院</div></div>
     </div>
   </div>
 
@@ -377,7 +392,7 @@ body::before {
   <div class="slabel fadeup" style="animation-delay:.24s">🌙 "熬夜猝死"到底是什么</div>
   <div class="hlbox fadeup" style="animation-delay:.26s">
     <div class="hlbox-h">不是独立病名，是睡眠剥夺放大了原有风险</div>
-    <div class="hlbox-b">长期睡眠不足、作息紊乱会让交感神经持续兴奋、迷走神经受抑，推高血压和心率、恶化血糖代谢、增加血栓倾向，同时削弱判断力——一旦叠加原有高血压 / 冠心病 / 心律失常 / 睡眠呼吸暂停，或再遇上吸烟饮酒 / 能量饮料 / 感染后硬练 / 寒冷刺激，就更容易触发心梗、卒中或恶性心律失常。深夜凌晨是交感神经和迷走神经"交接班"的时刻，此时心血管事件风险显著升高。</div>
+    <div class="hlbox-b">长期睡眠不足、作息紊乱会让交感神经持续兴奋、迷走神经受抑，推高血压和心率、恶化血糖代谢、增加血栓倾向，同时削弱判断力——一旦叠加原有高血压 / 冠心病 / 心律失常 / 睡眠呼吸暂停，或再遇上吸烟饮酒 / 能量饮料 / 感染后硬练 / 寒冷刺激，就更容易触发心梗、卒中或恶性心律失常。熬了通宵之后的那个早上尤其要当心：心梗和心脏骤停最常发生在上午（Muller 1985 NEJM：心梗发病高峰在早 6 点到中午；上海 2018–2022 年社区 10,210 例心脏骤停，高峰在 8:00–11:59，Open Heart 2024）。</div>
     <div class="hlsub">最常见的高危组合</div>
     <div class="hllist">
       <div class="hlitem">连续缺觉 / 夜班后睡眠严重不足 + 大量咖啡因能量饮料 + 吸烟电子烟</div>
@@ -456,11 +471,11 @@ body::before {
   <div class="urgstack fadeup" style="animation-delay:.60s">
     <div class="urgcard" style="--u-color:var(--red)">
       <div class="urg-h">立刻拨打 120</div>
-      <div class="urg-b">压榨样胸痛 &gt;5 分钟或反复发作；嘴歪、手臂无力、说话不清；突然倒地无反应；明显气短、冷汗、濒死感；血压 &gt;180/120 且伴胸痛/神经症状/呼吸困难</div>
+      <div class="urg-b">压榨样胸痛 &gt;5 分钟或反复发作；嘴歪、手臂无力、说话不清——<strong>正在发生，或几分钟前刚发生过、现在好了，也一样立刻打</strong>（可能是「小中风」TIA，早期分不清是不是正在中风，NHS 原文）；突然倒地无反应；明显气短、冷汗、濒死感；血压 &gt;180/120 且伴胸痛/神经症状/呼吸困难</div>
     </div>
     <div class="urgcard" style="--u-color:var(--orange)">
       <div class="urg-h">当天尽快就医 / 急诊</div>
-      <div class="urg-b">反复心悸伴头晕、脉搏不规则；短暂性单侧麻木无力或短暂说不清；运动中胸闷、濒晕；感染后胸痛、心悸、气短</div>
+      <div class="urg-b">反复心悸伴头晕、脉搏不规则；<strong>事后才想起来</strong>（比如几天前）出现过、早已恢复的单侧麻木或说不清——当天去急诊或神经内科；运动中胸闷、濒晕；感染后胸痛、心悸、气短</div>
     </div>
     <div class="urgcard" style="--u-color:var(--blue)">
       <div class="urg-h">门诊尽快评估</div>
@@ -470,7 +485,8 @@ body::before {
 
   <footer class="fadeup" style="animation-delay:.62s">
     <strong>重要提醒</strong><br>
-    本页内容基于《中国心血管健康与疾病报告2024》、《脑血管病防治指南（2024年版）》、《临床运动处方实践专家共识（2025）》、AHA / CDC / WHO / USPSTF 公开资料及国家卫健委睡眠健康核心信息整理，仅供健康科普参考，不构成专业医疗建议，不能替代医生的个体化诊疗。<br>
+    本页内容基于《中国心血管健康与疾病报告2024》、国家卫健委《脑血管病防治指南（2024年版）》、《中国高血压防治指南（2024年修订版）》、中国卒中学会再灌注治疗指南 2024、全国爱卫办《睡眠健康核心信息及释义》（2025）、《中国居民膳食指南（2022）》、AHA 2025 心肺复苏指南要点、英国复苏委员会 2025 成人基础生命支持指南、NHS、WHO、USPSTF、NIH 膳食补充剂办公室公开资料整理，仅供健康科普参考，不构成专业医疗建议，不能替代医生的个体化诊疗。<br>
+    <strong>最后核对：2026-10-25</strong>（逐条出处见仓库 PROJECT_STATUS.md）<br>
     出现文中所述预警信号请立即就医，任何用药与运动方案调整请咨询医生。
   </footer>
 
