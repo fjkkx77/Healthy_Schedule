@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#f6f8fa" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)">
 <title>每日护肤流程 · 健康网站</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
 <link rel="stylesheet" href="assets/style.css">
 <style>
 :root {
@@ -70,6 +70,8 @@ body::before {
 .ptab:active { transform: scale(.96); }
 .ptab .pico { display: block; font-size: 21px; margin-bottom: 5px; }
 .ptab.on { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow: var(--shadow-2); }
+/* 深色下亮玫红底配白字只有 3.36:1，选中的选项卡用浅色主题的玫红（5.05:1） */
+@media (prefers-color-scheme: dark) { .ptab.on { background: #bf3989; border-color: #bf3989; } }
 
 /* 流程内容 */
 .pcontent {
@@ -245,7 +247,7 @@ body::before {
 
   <footer class="fadeup" style="animation-delay:.30s">
     <strong>重要提醒</strong><br>
-    本页流程基于个人与AI过往讨论整理的个人护肤记录，不是医生或药师的处方，不能替代专业诊疗。<br>
+    本页流程基于个人与AI过往讨论整理的个人护肤记录，不是医生或药师的处方，不能替代专业诊疗。<strong>最后核对：2026-10-25</strong>（护肤品说法证据等级低，见仓库 PROJECT_STATUS.md）。<br>
     市面常见的「裂可宁」为化妆品（妆字号）而非药品，不具备治疗皮肤病的作用；<br>
     购买时请以自己手上那支包装标注的备案号/批准文号为准。皮肤出现持续破损、渗液、大面积红肿请及时就医。
   </footer>
@@ -308,7 +310,7 @@ function renderTabs(activeId) {
     </div>`).join("");
   ptabs.querySelectorAll(".ptab").forEach(el => {
     el.addEventListener("click", () => {
-      localStorage.setItem(STORE_KEY, el.dataset.id);
+      writeSaved(STORE_KEY, el.dataset.id);
       renderTabs(el.dataset.id);
       renderContent(el.dataset.id);
     });
@@ -350,7 +352,12 @@ function defaultRoutine() {
   return (h >= 18 || h < 5) ? "pm" : "am";
 }
 
-const saved = localStorage.getItem(STORE_KEY) || defaultRoutine();
+// 本地存储可能被浏览器禁用（读写会抛错），存的旧值也可能对不上——都退回按时间推的默认值
+function readSaved(key, valid, fallback) {
+  try { const v = localStorage.getItem(key); return valid.indexOf(v) >= 0 ? v : fallback; } catch (e) { return fallback; }
+}
+function writeSaved(key, v) { try { localStorage.setItem(key, v); } catch (e) {} }
+const saved = readSaved(STORE_KEY, routines.map(r => r.id), defaultRoutine());
 renderTabs(saved);
 renderContent(saved);
 </script>
